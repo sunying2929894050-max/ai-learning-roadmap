@@ -327,6 +327,124 @@
       padding-left: 20px;
     }
 
+    .concept-map {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .concept-node {
+      position: relative;
+      padding: 15px;
+      border: 1px solid rgba(223, 230, 241, 0.95);
+      border-radius: var(--radius);
+      background: #ffffff;
+    }
+
+    .concept-node strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .concept-node span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .concept-node.primary {
+      border-color: rgba(37, 99, 235, 0.24);
+      background: linear-gradient(135deg, #f7faff, #ffffff);
+    }
+
+    .concept-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .concept-flow .concept-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 18px;
+      width: 12px;
+      height: 12px;
+      border-left: 1px solid rgba(37, 99, 235, 0.28);
+      border-bottom: 1px solid rgba(37, 99, 235, 0.28);
+      background: #ffffff;
+      transform: rotate(135deg);
+    }
+
+    .lesson-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .lesson-card {
+      min-height: 132px;
+      padding: 16px;
+      border: 1px solid rgba(223, 230, 241, 0.95);
+      border-radius: var(--radius);
+      background: #ffffff;
+    }
+
+    .lesson-card .icon {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #eaf1ff, #e6f7f7);
+      color: var(--primary-dark);
+      font-weight: 800;
+    }
+
+    .lesson-card strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .lesson-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .practice-card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #f7faff, #f4fbfa);
+      border: 1px solid rgba(37, 99, 235, 0.16);
+    }
+
+    .practice-row {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .practice-row strong {
+      color: var(--primary-dark);
+      font-size: 13px;
+    }
+
+    .practice-row span {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
     .quiz {
       display: grid;
       gap: 10px;
@@ -417,6 +535,16 @@
       .step-action {
         grid-column: 1 / -1;
         width: 100%;
+      }
+
+      .concept-flow,
+      .lesson-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .practice-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
       }
 
       .detail-head,
@@ -511,34 +639,75 @@
 
         <div class="detail-body">
           <section class="content-slot is-visible" id="step-1-content" data-step="1">
-            <p class="placeholder">学习目标：用 1-2 小时建立 AI 的全局认知，能分清 AI、机器学习、深度学习、生成式 AI，并能判断一个真实场景是否适合用 AI 解决。</p>
+            <p class="placeholder">学习目标：用中文建立 AI 的第一张认知地图。学完后，你应该能说清 AI 在做什么、它依赖什么、适合解决什么问题，以及什么时候不该盲目使用它。</p>
 
             <div class="content-block">
               <div class="mini-section">
-                <h4>你需要掌握的核心概念</h4>
-                <ul>
-                  <li>AI：让计算机完成学习、理解、推理、决策、创作等通常需要人类智能参与的任务。</li>
-                  <li>机器学习：从数据中学习规律，用模型做预测、分类或决策。</li>
-                  <li>深度学习：机器学习的一个分支，常用多层神经网络处理图像、语音、文本等复杂数据。</li>
-                  <li>生成式 AI：基于提示词生成文本、图片、代码、音频或视频等新内容。</li>
-                  <li>训练与推理：训练是让模型从数据中学习，推理是用训练好的模型回答新问题。</li>
-                  <li>数据、模型、评估：数据决定学习材料，模型承载规律，评估判断结果是否可靠。</li>
-                </ul>
+                <h4>概念关系图</h4>
+                <div class="concept-map" aria-label="AI 概念关系图">
+                  <div class="concept-node primary">
+                    <strong>AI 人工智能</strong>
+                    <span>让机器完成理解、判断、生成、推荐、预测等智能任务。它不是单一工具，而是一组方法和系统的总称。</span>
+                  </div>
+                  <div class="concept-flow">
+                    <div class="concept-node">
+                      <strong>机器学习</strong>
+                      <span>让模型从数据里学习规律，用来分类、预测或做决策。</span>
+                    </div>
+                    <div class="concept-node">
+                      <strong>深度学习</strong>
+                      <span>用多层神经网络处理复杂模式，常见于图像、语音、文本任务。</span>
+                    </div>
+                    <div class="concept-node">
+                      <strong>生成式 AI</strong>
+                      <span>根据提示词生成文本、图片、代码、音频或视频等新内容。</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="mini-section">
-                <h4>推荐学习资料</h4>
-                <ul>
-                  <li><a href="https://www.ibm.com/think/topics/artificial-intelligence" target="_blank" rel="noopener">IBM：What is artificial intelligence?</a>，适合快速理解 AI、机器学习、深度学习和生成式 AI 的关系。</li>
-                  <li><a href="https://www.elementsofai.com/" target="_blank" rel="noopener">Elements of AI</a>，适合零基础系统入门，偏概念和应用思维。</li>
-                  <li><a href="https://grow.google/ai-essentials/" target="_blank" rel="noopener">Google AI Essentials</a>，适合了解日常工作中如何使用 AI 工具。</li>
-                  <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank" rel="noopener">Google Machine Learning Crash Course</a>，想提前看看机器学习路线时可以收藏。</li>
-                </ul>
+                <h4>四个入门知识块</h4>
+                <div class="lesson-grid">
+                  <div class="lesson-card">
+                    <div class="icon">01</div>
+                    <strong>AI 能做什么</strong>
+                    <p>识别图片、理解文字、生成内容、推荐商品、预测趋势、辅助决策。先从“输入是什么、输出是什么”理解每个 AI 应用。</p>
+                  </div>
+                  <div class="lesson-card">
+                    <div class="icon">02</div>
+                    <strong>AI 依赖什么</strong>
+                    <p>AI 通常依赖数据、算法、算力和明确的目标。没有高质量数据和清晰评价标准，模型就很难可靠。</p>
+                  </div>
+                  <div class="lesson-card">
+                    <div class="icon">03</div>
+                    <strong>模型如何工作</strong>
+                    <p>训练阶段从样本中学习规律；推理阶段用学到的规律处理新输入。你可以把模型理解成“被数据训练过的判断器”。</p>
+                  </div>
+                  <div class="lesson-card">
+                    <div class="icon">04</div>
+                    <strong>需要警惕什么</strong>
+                    <p>AI 可能出错、编造、带有偏见，也可能泄露隐私。重要任务要保留人工复核和来源检查。</p>
+                  </div>
+                </div>
               </div>
 
               <div class="mini-section">
                 <h4>实践任务：AI 场景判断卡</h4>
-                <p>选择 3 个你熟悉的场景，例如客服问答、文章摘要、学习计划生成、图片分类、销售预测。为每个场景写下：输入是什么、希望输出什么、是否需要大量数据、结果如何验证、可能有什么风险。</p>
+                <div class="practice-card">
+                  <div class="practice-row">
+                    <strong>任务</strong>
+                    <span>选择 3 个你熟悉的场景，例如客服问答、文章摘要、学习计划生成、图片分类、销售预测。</span>
+                  </div>
+                  <div class="practice-row">
+                    <strong>判断</strong>
+                    <span>分别写下输入、输出、AI 类型、验证方式和风险提醒。</span>
+                  </div>
+                  <div class="practice-row">
+                    <strong>目标</strong>
+                    <span>训练自己不要只问“能不能用 AI”，而是进一步判断“是否值得用、怎么验证、风险在哪里”。</span>
+                  </div>
+                </div>
               </div>
 
               <div class="mini-section">
