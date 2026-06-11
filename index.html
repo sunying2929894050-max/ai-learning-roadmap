@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 学习路线 · 从入门到实践</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --panel-soft: #f9fbff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #dfe6f1;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #00a6a6;
+      --accent-soft: #e6f7f7;
+      --violet: #725cff;
+      --shadow: 0 18px 45px rgba(30, 41, 59, 0.10);
+      --radius: 8px;
+      --max: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.10), transparent 30%),
+        radial-gradient(circle at 90% 0%, rgba(0, 166, 166, 0.12), transparent 28%),
+        linear-gradient(180deg, #fbfdff 0%, var(--bg) 42%, #eef4f8 100%);
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+      padding: 48px 0 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.7fr);
+      gap: 28px;
+      align-items: end;
+      padding: 36px 0 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      padding: 7px 11px;
+      border: 1px solid rgba(37, 99, 235, 0.20);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(0, 166, 166, 0.13);
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(36px, 7vw, 76px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.8;
+    }
+
+    .hero-panel {
+      position: relative;
+      min-height: 220px;
+      padding: 22px;
+      border: 1px solid rgba(223, 230, 241, 0.86);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(249, 251, 255, 0.70)),
+        repeating-linear-gradient(90deg, rgba(37, 99, 235, 0.06) 0 1px, transparent 1px 28px),
+        repeating-linear-gradient(0deg, rgba(0, 166, 166, 0.05) 0 1px, transparent 1px 28px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -35% 30%;
+      height: 140px;
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.0), rgba(37, 99, 235, 0.22), rgba(0, 166, 166, 0.18));
+      transform: rotate(-8deg);
+    }
+
+    .metric {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 14px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid rgba(223, 230, 241, 0.92);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .metric-row span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric-row strong {
+      font-size: 20px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.52fr);
+      gap: 24px;
+      align-items: start;
+      margin-top: 26px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+    }
+
+    .step-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 20px;
+      border: 1px solid rgba(223, 230, 241, 0.95);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 10px 26px rgba(30, 41, 59, 0.06);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .step-card:hover,
+    .step-card.is-active {
+      transform: translateY(-2px);
+      border-color: rgba(37, 99, 235, 0.38);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 18px 38px rgba(37, 99, 235, 0.10);
+    }
+
+    .step-number {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #eaf1ff, #e6f7f7);
+      color: var(--primary-dark);
+      font-size: 20px;
+      font-weight: 800;
+      border: 1px solid rgba(37, 99, 235, 0.18);
+    }
+
+    .step-copy h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .step-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-action {
+      min-width: 110px;
+      height: 42px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--text);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .step-action:hover,
+    .step-action:focus-visible {
+      background: var(--primary);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .detail-panel {
+      position: sticky;
+      top: 18px;
+      border: 1px solid rgba(223, 230, 241, 0.95);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .detail-head {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #ffffff, #f5f9ff);
+    }
+
+    .detail-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .detail-kicker::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: currentColor;
+    }
+
+    .detail-head h3 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.35;
+    }
+
+    .detail-body {
+      padding: 22px;
+    }
+
+    .content-slot {
+      display: none;
+      animation: fadeUp 220ms ease both;
+    }
+
+    .content-slot.is-visible {
+      display: block;
+    }
+
+    .placeholder {
+      margin: 0 0 18px;
+      padding: 16px;
+      border: 1px dashed rgba(37, 99, 235, 0.34);
+      border-radius: var(--radius);
+      background: #f7faff;
+      color: #31527d;
+      line-height: 1.7;
+    }
+
+    .content-block {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .mini-section {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+    }
+
+    .mini-section h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .mini-section p,
+    .mini-section ul {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .mini-section ul {
+      padding-left: 20px;
+    }
+
+    .quiz {
+      display: grid;
+      gap: 10px;
+    }
+
+    .quiz label {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #007a7a;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: 34px;
+      padding: 20px 0 4px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 880px) {
+      .page {
+        width: min(100% - 24px, var(--max));
+        padding-top: 28px;
+      }
+
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        min-height: 180px;
+      }
+
+      .detail-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        padding-top: 20px;
+      }
+
+      .step-card {
+        grid-template-columns: 52px minmax(0, 1fr);
+        align-items: start;
+        padding: 16px;
+      }
+
+      .step-number {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        font-size: 17px;
+      }
+
+      .step-action {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+
+      .detail-head,
+      .detail-body {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <section>
+        <p class="eyebrow">Learning roadmap for AI builders</p>
+        <h1>AI 学习路线 · 从入门到实践</h1>
+        <p class="lead">
+          用 5 个阶段搭建清晰、可扩展的 AI 学习框架。你可以先保留概览，之后逐步把课程、文章、视频和练习链接填入对应内容区。
+        </p>
+      </section>
+
+      <aside class="hero-panel" aria-label="学习路线概览">
+        <div class="metric">
+          <div class="metric-row">
+            <span>阶段数量</span>
+            <strong>5</strong>
+          </div>
+          <div class="metric-row">
+            <span>学习方式</span>
+            <strong>概念 → 实战</strong>
+          </div>
+          <div class="metric-row">
+            <span>页面模式</span>
+            <strong>可展开内容</strong>
+          </div>
+        </div>
+      </aside>
+    </header>
+
+    <section class="layout" aria-label="AI 学习阶段">
+      <div class="steps">
+        <article class="step-card is-active" data-step="1">
+          <div class="step-number">01</div>
+          <div class="step-copy">
+            <h2>AI 基础概念</h2>
+            <p>建立对人工智能、数据、模型和应用场景的整体认知。</p>
+          </div>
+          <button class="step-action" type="button" data-target="step-1-content">查看内容</button>
+        </article>
+
+        <article class="step-card" data-step="2">
+          <div class="step-number">02</div>
+          <div class="step-copy">
+            <h2>编程与数学预备</h2>
+            <p>补齐 Python、数据处理、线性代数与概率统计等关键基础。</p>
+          </div>
+          <button class="step-action" type="button" data-target="step-2-content">查看内容</button>
+        </article>
+
+        <article class="step-card" data-step="3">
+          <div class="step-number">03</div>
+          <div class="step-copy">
+            <h2>机器学习入门</h2>
+            <p>理解监督学习、无监督学习、评估指标和经典建模流程。</p>
+          </div>
+          <button class="step-action" type="button" data-target="step-3-content">查看内容</button>
+        </article>
+
+        <article class="step-card" data-step="4">
+          <div class="step-number">04</div>
+          <div class="step-copy">
+            <h2>深度学习与实战</h2>
+            <p>进入神经网络、深度学习框架、计算机视觉与自然语言处理实践。</p>
+          </div>
+          <button class="step-action" type="button" data-target="step-4-content">查看内容</button>
+        </article>
+
+        <article class="step-card" data-step="5">
+          <div class="step-number">05</div>
+          <div class="step-copy">
+            <h2>项目与进阶</h2>
+            <p>通过完整项目沉淀能力，并扩展到大模型、部署、评估和产品化。</p>
+          </div>
+          <button class="step-action" type="button" data-target="step-5-content">查看内容</button>
+        </article>
+      </div>
+
+      <aside class="detail-panel" aria-live="polite">
+        <div class="detail-head">
+          <div class="detail-kicker" id="detail-kicker">STEP 01</div>
+          <h3 id="detail-title">AI 基础概念</h3>
+        </div>
+
+        <div class="detail-body">
+          <section class="content-slot is-visible" id="step-1-content" data-step="1">
+            <p class="placeholder">✏️ 学习内容待补充：这里可以放课程、文章、视频链接或你的学习笔记。</p>
+
+            <div class="content-block">
+              <div class="mini-section">
+                <h4>示例内容结构</h4>
+                <p>目标：理解 AI、机器学习、深度学习、生成式 AI 之间的关系，并能说出常见应用场景。</p>
+              </div>
+              <div class="mini-section">
+                <h4>可添加资料</h4>
+                <ul>
+                  <li><a href="#" aria-label="替换为你的课程链接">课程链接占位</a></li>
+                  <li><a href="#" aria-label="替换为你的文章链接">文章链接占位</a></li>
+                  <li><a href="#" aria-label="替换为你的视频链接">视频链接占位</a></li>
+                </ul>
+              </div>
+              <div class="mini-section quiz">
+                <h4>小测验占位</h4>
+                <label><input type="checkbox" /> 我能解释什么是模型、训练和推理。</label>
+                <label><input type="checkbox" /> 我能举出 3 个 AI 在真实工作中的应用。</label>
+              </div>
+            </div>
+
+            <div class="tag-row">
+              <span class="tag">概念</span>
+              <span class="tag">认知地图</span>
+              <span class="tag">入门友好</span>
+            </div>
+          </section>
+
+          <section class="content-slot" id="step-2-content" data-step="2">
+            <p class="placeholder">✏️ 学习内容待补充：建议填入 Python 基础、NumPy、Pandas、线性代数、概率统计等资料。</p>
+            <div class="content-block">
+              <div class="mini-section">
+                <h4>学习目标</h4>
+                <p>能读写基础 Python 脚本，理解矩阵、向量、导数、概率分布等机器学习常用概念。</p>
+              </div>
+              <div class="mini-section">
+                <h4>资料占位</h4>
+                <ul>
+                  <li>Python 入门课程链接</li>
+                  <li>数据分析练习链接</li>
+                  <li>数学复习笔记链接</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-slot" id="step-3-content" data-step="3">
+            <p class="placeholder">✏️ 学习内容待补充：建议填入分类、回归、聚类、模型评估和特征工程资料。</p>
+            <div class="content-block">
+              <div class="mini-section">
+                <h4>学习目标</h4>
+                <p>能完成一个基础机器学习任务：清洗数据、训练模型、评估效果并解释结果。</p>
+              </div>
+              <div class="mini-section">
+                <h4>练习占位</h4>
+                <ul>
+                  <li>房价预测项目</li>
+                  <li>鸢尾花分类项目</li>
+                  <li>模型评估笔记</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-slot" id="step-4-content" data-step="4">
+            <p class="placeholder">✏️ 学习内容待补充：建议填入 PyTorch 或 TensorFlow、CNN、RNN、Transformer、NLP/CV 实战资料。</p>
+            <div class="content-block">
+              <div class="mini-section">
+                <h4>学习目标</h4>
+                <p>理解神经网络的训练过程，并能基于框架完成一个图像或文本方向的小项目。</p>
+              </div>
+              <div class="mini-section">
+                <h4>项目占位</h4>
+                <ul>
+                  <li>图像分类 Demo</li>
+                  <li>文本情感分析 Demo</li>
+                  <li>模型训练记录模板</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-slot" id="step-5-content" data-step="5">
+            <p class="placeholder">✏️ 学习内容待补充：建议填入端到端项目、模型部署、提示词工程、RAG、大模型应用和评估资料。</p>
+            <div class="content-block">
+              <div class="mini-section">
+                <h4>学习目标</h4>
+                <p>把知识转化为可展示的作品：定义问题、选择模型、构建应用、部署上线并持续优化。</p>
+              </div>
+              <div class="mini-section">
+                <h4>作品集占位</h4>
+                <ul>
+                  <li>个人 AI 助手项目</li>
+                  <li>知识库问答项目</li>
+                  <li>模型评估与复盘文档</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      后续你可以在每个步骤里自由添加文档、视频或练习链接。
+    </footer>
+  </main>
+
+  <script>
+    const cards = Array.from(document.querySelectorAll(".step-card"));
+    const buttons = Array.from(document.querySelectorAll(".step-action"));
+    const slots = Array.from(document.querySelectorAll(".content-slot"));
+    const detailTitle = document.querySelector("#detail-title");
+    const detailKicker = document.querySelector("#detail-kicker");
+
+    function showStep(targetId) {
+      const slot = document.getElementById(targetId);
+      if (!slot) return;
+
+      const step = slot.dataset.step;
+      const activeCard = document.querySelector(`.step-card[data-step="${step}"]`);
+      const title = activeCard?.querySelector("h2")?.textContent || "学习阶段";
+
+      cards.forEach((card) => card.classList.toggle("is-active", card.dataset.step === step));
+      slots.forEach((item) => item.classList.toggle("is-visible", item.id === targetId));
+
+      detailTitle.textContent = title;
+      detailKicker.textContent = `STEP ${String(step).padStart(2, "0")}`;
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        showStep(button.dataset.target);
+
+        if (window.matchMedia("(max-width: 880px)").matches) {
+          document.querySelector(".detail-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
