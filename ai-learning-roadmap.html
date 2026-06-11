@@ -445,6 +445,38 @@
       line-height: 1.7;
     }
 
+    .chapter-note {
+      padding: 15px;
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: #f4fbfa;
+      color: #31527d;
+      line-height: 1.75;
+    }
+
+    .reference-list {
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .reference-list li {
+      padding: 13px;
+      border: 1px solid rgba(223, 230, 241, 0.95);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .reference-list a {
+      display: inline-block;
+      margin-bottom: 4px;
+      font-weight: 800;
+    }
+
     .quiz {
       display: grid;
       gap: 10px;
@@ -639,7 +671,7 @@
 
         <div class="detail-body">
           <section class="content-slot is-visible" id="step-1-content" data-step="1">
-            <p class="placeholder">学习目标：用中文建立 AI 的第一张认知地图。学完后，你应该能说清 AI 在做什么、它依赖什么、适合解决什么问题，以及什么时候不该盲目使用它。</p>
+            <p class="placeholder">学习目标：用中文完成 AI 基础概念这一章。学完后，你应该能说清 AI、机器学习、深度学习、生成式 AI 的关系，能判断一个场景是否适合用 AI，并能设计一个简单的验证方法。</p>
 
             <div class="content-block">
               <div class="mini-section">
@@ -667,6 +699,11 @@
               </div>
 
               <div class="mini-section">
+                <h4>本章学习路径</h4>
+                <div class="chapter-note">先理解“AI 是什么”，再理解“模型如何从数据中学习”，最后回到真实场景里判断：这个问题是否真的需要 AI、结果怎样验证、风险如何控制。</div>
+              </div>
+
+              <div class="mini-section">
                 <h4>四个入门知识块</h4>
                 <div class="lesson-grid">
                   <div class="lesson-card">
@@ -690,6 +727,43 @@
                     <p>AI 可能出错、编造、带有偏见，也可能泄露隐私。重要任务要保留人工复核和来源检查。</p>
                   </div>
                 </div>
+              </div>
+
+              <div class="mini-section">
+                <h4>从生活场景理解 AI</h4>
+                <div class="lesson-grid">
+                  <div class="lesson-card">
+                    <div class="icon">A</div>
+                    <strong>分类：这是什么</strong>
+                    <p>例如垃圾邮件识别、图片分类、用户评论情绪判断。核心问题是：把输入归到哪个类别。</p>
+                  </div>
+                  <div class="lesson-card">
+                    <div class="icon">B</div>
+                    <strong>预测：接下来会怎样</strong>
+                    <p>例如销量预测、价格预测、流失风险预测。核心问题是：根据历史数据估计未来结果。</p>
+                  </div>
+                  <div class="lesson-card">
+                    <div class="icon">C</div>
+                    <strong>生成：产出新内容</strong>
+                    <p>例如写摘要、生成图片、辅助写代码。核心问题是：根据要求生成可用的新内容。</p>
+                  </div>
+                  <div class="lesson-card">
+                    <div class="icon">D</div>
+                    <strong>推荐：帮人做选择</strong>
+                    <p>例如短视频推荐、商品推荐、课程推荐。核心问题是：在大量选项中找出更可能需要的内容。</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mini-section">
+                <h4>五个容易混淆的点</h4>
+                <ul>
+                  <li>AI 不是一定正确的答案机器，它更像一个基于数据和概率工作的辅助系统。</li>
+                  <li>生成式 AI 会“写得很像真的”，但仍可能编造内容，所以关键结论要查来源。</li>
+                  <li>模型效果不只看技术，也取决于数据质量、任务定义和评价方式。</li>
+                  <li>能用 AI 不代表值得用 AI，简单规则、表格筛选或人工流程有时更稳。</li>
+                  <li>学习 AI 不必一开始就写复杂代码，先建立概念和判断框架更重要。</li>
+                </ul>
               </div>
 
               <div class="mini-section">
@@ -722,6 +796,15 @@
                 </ul>
               </div>
 
+              <div class="mini-section">
+                <h4>本章学习产出</h4>
+                <ul>
+                  <li>写出一段 100 字以内的解释：AI、机器学习、深度学习、生成式 AI 分别是什么。</li>
+                  <li>完成 3 张“AI 场景判断卡”，每张都包含输入、输出、AI 类型、验证方式和风险。</li>
+                  <li>选出一个最适合继续深入的小项目，作为后续阶段的练习素材。</li>
+                </ul>
+              </div>
+
               <div class="mini-section quiz">
                 <h4>实践测验</h4>
                 <label><input type="checkbox" /> 我能用自己的话解释 AI、机器学习、深度学习、生成式 AI 的区别。</label>
@@ -729,6 +812,17 @@
                 <label><input type="checkbox" /> 我能判断一个任务更像分类、预测、生成，还是检索问答。</label>
                 <label><input type="checkbox" /> 我已经完成 3 张“AI 场景判断卡”。</label>
                 <label><input type="checkbox" /> 我能指出至少 2 个 AI 使用风险，比如隐私、偏见、幻觉或版权问题。</label>
+              </div>
+
+              <div class="mini-section">
+                <h4>参考来源</h4>
+                <p>本章正文不是逐字翻译，而是基于以下权威资料进行中文化整理、概念重组和学习路径优化，目的是让初学者更容易理解和实践。</p>
+                <ul class="reference-list">
+                  <li><a href="https://www.ibm.com/think/topics/artificial-intelligence" target="_blank" rel="noopener">IBM：What is artificial intelligence?</a><br />用于校准 AI、机器学习、深度学习、生成式 AI 等基础概念之间的关系。</li>
+                  <li><a href="https://www.elementsofai.com/" target="_blank" rel="noopener">Elements of AI</a><br />用于参考零基础 AI 课程的学习顺序、应用视角和问题判断方式。</li>
+                  <li><a href="https://grow.google/ai-essentials/" target="_blank" rel="noopener">Google AI Essentials</a><br />用于参考普通学习者和职场用户如何理解并使用 AI 工具。</li>
+                  <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank" rel="noopener">Google Machine Learning Crash Course</a><br />用于参考机器学习中的训练、推理、数据、模型和评估等基础表述。</li>
+                </ul>
               </div>
             </div>
 
