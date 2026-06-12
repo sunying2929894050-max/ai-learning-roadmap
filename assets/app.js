@@ -59,6 +59,7 @@ function enterChapter(ch) {
 // Called once chapter HTML is confirmed in the DOM
 function _activateChapter(ch) {
   // Hide all panels, show only the requested one
+  const panelEl = mount.querySelector(`#ch-${ch}`);
   mount.querySelectorAll(".ch-panel").forEach(p =>
     p.classList.toggle("active", p.id === `ch-${ch}`)
   );
@@ -73,7 +74,23 @@ function _activateChapter(ch) {
   renderToc(ch);
 
   // Setup scroll observer (needs two rAF frames for layout to settle)
-  requestAnimationFrame(() => requestAnimationFrame(() => setupObserver(ch)));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    setupObserver(ch);
+    // Initialize all chapter-scoped components (drawer, term chips, prompt-runner, etc.)
+    // panelEl is the live DOM node for this chapter — safe to query inside it here.
+    if (panelEl) initChapterComponents(panelEl);
+  }));
+}
+
+// ── Chapter component initialization hook ──
+// Called every time a chapter panel becomes active (including on re-entry after back→forward).
+// Each feature module should register its setup logic here.
+// panelEl — the <div class="ch-panel" id="ch-N"> node that just became active.
+function initChapterComponents(panelEl) {
+  // Placeholder — future components attach here, e.g.:
+  //   initDrawers(panelEl);
+  //   initTermChips(panelEl);
+  //   initPromptRunner(panelEl);
 }
 
 // ── Back to map ──
