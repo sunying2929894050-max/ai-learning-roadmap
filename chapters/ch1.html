@@ -22,11 +22,21 @@
             </div>
           </div>
 
-          <!-- S1: AI 是什么 -->
+          <!-- S1: 开场钩子 + AI 是什么 -->
           <div class="content-section" id="ch1-s1">
-            <div class="sec-head"><div class="sec-ico">⬡</div><h3>AI 是什么：从生活开始</h3></div>
-            <div class="panel" style="display:grid;gap:14px">
-              <p style="font-size:14px;color:var(--light-muted);line-height:1.8">你每天都在使用 AI，只是可能没有意识到：</p>
+            <div class="sec-head"><div class="sec-ico">⬡</div><h3>AI 是什么：从一个事故开始</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <!-- 律师钩子 -->
+              <div class="hook-story">
+                <div class="hook-label">⚖️ 真实事故 · 2023年</div>
+                <p>美国律师 Steven Schwartz 承接一起航空公司诉讼案，为节省时间让 ChatGPT 协助查找相关法律先例。AI 给出了六份案例——完整的案例编号、法官姓名、判决摘要，格式无懈可击。</p>
+                <p>律师将这些"先例"写进正式法庭文书并提交。法官随后查证发现：六份案例<strong>全部不存在</strong>，系 ChatGPT 一字一句捏造。律师当庭道歉，面临制裁，案件陷入危机。</p>
+                <div class="hook-question">→ 为什么一个如此强大的 AI 会做这种事？这不是偶然的 bug，而是这类模型的结构性局限。本章末尾，你将能从原理上解释它。</div>
+              </div>
+
+              <!-- 生活中的 AI -->
+              <p style="font-size:14px;color:var(--light-muted);line-height:1.8">在理解"为什么"之前，先建立直觉——你每天都在使用 AI，只是可能没有意识到：</p>
               <div class="lesson-grid">
                 <div class="lesson-card"><div class="l-ico">📱</div><strong>手机人脸解锁</strong><p>AI 学习了你的脸部特征，能在不同光线、角度下识别你，而不是用固定规则匹配像素点。</p></div>
                 <div class="lesson-card"><div class="l-ico">🎵</div><strong>音乐/视频推荐</strong><p>根据你的收听/观看历史，预测你下一首想听什么——每个人看到的推荐都不一样。</p></div>
@@ -44,17 +54,18 @@
           <!-- S2: 四大核心概念 -->
           <div class="content-section" id="ch1-s2">
             <div class="sec-head"><div class="sec-ico">◈</div><h3>四大核心概念详解</h3></div>
-            <div class="panel" style="display:grid;gap:12px">
+            <div class="panel" style="display:grid;gap:16px">
               <p style="font-size:13px;color:var(--light-muted)">AI、机器学习、深度学习、生成式 AI 是<strong>嵌套关系</strong>，不是并列关系。理解这一点是本章最重要的任务。</p>
 
+              <!-- 嵌套关系概览 drawer -->
               <div class="concept-drawer">
-                <div class="drawer-surface">🔍 <strong>概念速览</strong>：人工智能（AI）是最大的圆；机器学习（ML）是 AI 的核心子集；深度学习（DL）是 ML 的子集；生成式 AI（GenAI）是 DL 的一类应用。每一层都在上一层基础上增加约束和能力。</div>
+                <div class="drawer-surface">🔍 <strong>嵌套关系速览</strong>：人工智能（AI）是最大的圆；机器学习（ML）是 AI 的核心子集；深度学习（DL）是 ML 的子集；生成式 AI（GenAI）是 DL 的一类应用。每一层都在上一层基础上增加约束和能力。</div>
                 <div class="drawer-mechanism" hidden>
                   四层嵌套的内在逻辑：<br><br>
                   ① <strong>AI</strong> — 让机器完成智能任务的所有方法，包含规则系统、搜索算法、机器学习等。<br>
-                  ② <strong>ML</strong> — 限定为「从数据中自动学习」的方法，排除了手写规则。核心公式：输入数据 + 目标函数 → 优化参数。<br>
-                  ③ <strong>DL</strong> — 限定为用多层神经网络作为参数化函数族，能自动提取特征，解决高维非结构化数据。<br>
-                  ④ <strong>生成式 AI</strong> — 限定为建模数据分布 P(X) 或条件分布 P(X|条件)，可以「采样」出新内容，而非仅做分类/回归。
+                  ② <strong>ML</strong> — 限定为「从数据中自动学习」的方法，排除了手写规则。核心公式：输入数据 + 目标函数 → 优化<span class="term-chip" data-term="参数">参数</span>。<br>
+                  ③ <strong>DL</strong> — 限定为用多层<span class="term-chip" data-term="神经网络">神经网络</span>作为参数化函数族，能自动提取特征，解决高维非结构化数据。<br>
+                  ④ <strong>生成式 AI</strong> — 建模内容分布 P(X) 或条件分布 P(X|条件)，可以「采样」出新内容（<em>判别式</em>模型学 P(Y|X)，做的是分类/回归，不能生成新内容）。
                 </div>
                 <div class="drawer-sources" hidden>
                   <a href="https://www.3blue1brown.com/topics/neural-networks" target="_blank" rel="noopener">3Blue1Brown：神经网络可视化系列（英文）</a>
@@ -62,40 +73,81 @@
                 </div>
               </div>
 
-              <div style="padding:14px 16px;border:1px solid rgba(37,99,235,.2);border-radius:10px;background:linear-gradient(135deg,#f0f5ff,#fff)">
-                <div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:8px">🔹 机器学习（Machine Learning，ML）</div>
-                <p style="font-size:13px;color:var(--light-muted);line-height:1.7;margin:0 0 10px">AI 的一个主要分支。让计算机通过分析大量数据，<strong>自动</strong>找规律，而不需要程序员手动写出每一条规则。</p>
-                <div class="analogy-box">
-                  <div class="analogy-label">类比：教孩子认猫</div>
-                  <div class="analogy-text">传统方式：告诉孩子"猫有4条腿、会发出喵声、有尾巴和胡须"——列规则。<br>机器学习方式：给孩子看10000张猫的照片，让他自己总结出猫长什么样——从数据学规律。</div>
+              <!-- ML drawer -->
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:6px">🔹 机器学习（Machine Learning，ML）</div>
+                  AI 的主要分支：让计算机通过分析大量数据，<strong>自动</strong>找规律，不需要程序员手动写出每一条规则。<br>
+                  <div class="analogy-box" style="margin-top:10px">
+                    <div class="analogy-label">类比：教孩子认猫</div>
+                    <div class="analogy-text">传统方式：告诉孩子"猫有4条腿、会发出喵声、有尾巴和胡须"——列规则。<br>机器学习方式：给孩子看10000张猫的照片，让他自己总结出猫长什么样——从数据学规律。</div>
+                  </div>
+                  <div class="key-point" style="margin-top:10px">关键词：数据 → 自动学习规律 → 判断 / 预测</div>
                 </div>
-                <div class="key-point" style="margin-top:10px">关键词：数据 → 自动学习规律 → 判断 / 预测</div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>机器学习的三大范式：</strong><br><br>
+                  ① <em>监督学习（Supervised）</em>——每条训练数据都有人工标注的正确答案（标签）。模型学习从输入映射到标签。例：垃圾邮件分类、图像识别。<br><br>
+                  ② <em>无监督学习（Unsupervised）</em>——只有数据，没有标签，模型自行发现数据内部的结构和规律。例：客户分群、异常检测、词嵌入（Word Embedding）。<br><br>
+                  ③ <em>强化学习（Reinforcement Learning）</em>——智能体在环境中行动，根据奖励/惩罚信号调整策略。AlphaGo 用的就是强化学习。<br><br>
+                  <strong>核心数学直觉：</strong>监督学习就是在寻找一个函数 f，使得 f(输入) ≈ 真实标签，并且在没见过的新输入上也表现好（泛化能力）。<span class="term-chip" data-term="损失函数">损失函数</span>量化了"当前差多少"，<span class="term-chip" data-term="梯度下降">梯度下降</span>指引怎么改进。
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank" rel="noopener">3Blue1Brown：什么是神经网络？（英文，有中文字幕）</a>
+                  <a href="https://www.statlearning.com/" target="_blank" rel="noopener">An Introduction to Statistical Learning（免费电子书，英文）</a>
+                </div>
               </div>
 
-              <div style="padding:14px 16px;border:1px solid rgba(124,58,237,.2);border-radius:10px;background:linear-gradient(135deg,#f5f3ff,#fff)">
-                <div style="font-size:14px;font-weight:800;color:#6d28d9;margin-bottom:8px">🔸 深度学习（Deep Learning，DL）</div>
-                <p style="font-size:13px;color:var(--light-muted);line-height:1.7;margin:0 0 10px">机器学习的一个子领域。使用多层"神经网络"来处理复杂的非结构化数据（图像、语音、文字）。"深度"指神经网络的层数很多（可达数百层）。</p>
-                <div class="analogy-box" style="background:linear-gradient(135deg,#faf5ff,#f3f4f6);border-color:rgba(124,58,237,.2)">
-                  <div class="analogy-label" style="color:#5b21b6">类比：大脑识别人脸</div>
-                  <div class="analogy-text" style="color:#4c1d95">你看到一张脸时，大脑先感知边缘轮廓，再识别五官形状，再判断整张脸的特征——是逐层、逐步深入处理信息的。深度学习就是模仿这种层层递进的方式。</div>
+              <!-- DL drawer -->
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <div style="font-size:14px;font-weight:800;color:#6d28d9;margin-bottom:6px">🔸 深度学习（Deep Learning，DL）</div>
+                  机器学习的子领域：使用多层<span class="term-chip" data-term="神经网络">神经网络</span>处理复杂的非结构化数据（图像、语音、文字）。"深度"指网络的层数很多（可达数百层）。<br>
+                  <div class="analogy-box" style="margin-top:10px;background:linear-gradient(135deg,#faf5ff,#f3f4f6);border-color:rgba(124,58,237,.2)">
+                    <div class="analogy-label" style="color:#5b21b6">类比：大脑识别人脸</div>
+                    <div class="analogy-text" style="color:#4c1d95">你看到一张脸时，大脑先感知边缘轮廓，再识别五官形状，再判断整张脸的特征——是逐层、逐步深入处理信息的。深度学习就是模仿这种层层递进的方式。</div>
+                  </div>
+                  <div class="key-point" style="margin-top:10px;border-left-color:#7c3aed;background:#f5f3ff;color:#4c1d95">关键词：神经网络 → 多层处理 → 图像 / 语音 / 文字的复杂模式</div>
                 </div>
-                <div class="key-point" style="margin-top:10px;border-left-color:#7c3aed;background:#f5f3ff;color:#4c1d95">关键词：神经网络 → 多层处理 → 图像 / 语音 / 文字的复杂模式</div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>为什么"深度"很关键？</strong><br><br>
+                  浅层（1-2层）网络只能学习简单线性关系。增加层数后，每一层学习更抽象的特征：<br>
+                  第1层 → 检测像素级边缘<br>
+                  第2层 → 组合出纹理和形状<br>
+                  第3层 → 识别眼睛、鼻子等部件<br>
+                  第N层 → 判断"这是谁"<br><br>
+                  <strong>关键结构：</strong>每个"神经元"对输入做加权求和，再经过一个非线性激活函数（如 ReLU）输出。非线性是关键——没有它，多层等价于单层，无法表达复杂函数。<br><br>
+                  <strong>参数数量：</strong>GPT-4 约有 1.8 万亿个<span class="term-chip" data-term="参数">参数</span>，每个参数是一个浮点数。训练就是同时优化这1.8万亿个数字。
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://www.3blue1brown.com/topics/neural-networks" target="_blank" rel="noopener">3Blue1Brown 神经网络系列（英文+中文字幕，强烈推荐）</a>
+                  <a href="https://cs231n.stanford.edu/" target="_blank" rel="noopener">斯坦福 CS231n：深度视觉学习（免费讲义）</a>
+                </div>
               </div>
 
-              <div style="padding:14px 16px;border:1px solid rgba(0,212,170,.25);border-radius:10px;background:linear-gradient(135deg,#f0fbf9,#fff)">
-                <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:8px">⬩ 生成式 AI（Generative AI）</div>
-                <p style="font-size:13px;color:var(--light-muted);line-height:1.7;margin:0 0 10px">一种 AI 应用方向，能根据输入的提示词（prompt）<strong>生成全新的内容</strong>。ChatGPT 写文章、Midjourney 画图、GitHub Copilot 写代码都是生成式 AI。通常基于深度学习实现。</p>
-                <div class="analogy-box" style="background:linear-gradient(135deg,#f0fbf9,#ecfdf5);border-color:rgba(0,212,170,.3)">
-                  <div class="analogy-label" style="color:#065f46">类比：判断者 vs 创作者</div>
-                  <div class="analogy-text" style="color:#064e3b">以前的 AI 像"判断者"——看一张图，告诉你是不是猫。生成式 AI 像"创作者"——你说"画一只橘色的猫坐在月亮上"，它直接画出来。</div>
+              <!-- GenAI drawer -->
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:6px">⬩ 生成式 AI（Generative AI）</div>
+                  一种 AI 应用方向，能根据输入的<span class="term-chip" data-term="提示词">提示词</span>生成<strong>全新的内容</strong>。ChatGPT 写文章、Midjourney 画图、GitHub Copilot 写代码都是生成式 AI。通常基于深度学习实现。<br>
+                  <div class="analogy-box" style="margin-top:10px;background:linear-gradient(135deg,#f0fbf9,#ecfdf5);border-color:rgba(0,212,170,.3)">
+                    <div class="analogy-label" style="color:#065f46">类比：判断者 vs 创作者</div>
+                    <div class="analogy-text" style="color:#064e3b">以前的 AI 像"判断者"——看一张图，告诉你是不是猫。生成式 AI 像"创作者"——你说"画一只橘色的猫坐在月亮上"，它直接画出来。</div>
+                  </div>
+                  <div class="key-point" style="margin-top:10px;border-left-color:var(--accent);background:#f0fbf9;color:#065f46">关键词：输入提示词 → 生成新内容（文字 / 图片 / 代码 / 音频 / 视频）</div>
                 </div>
-                <div style="margin-top:12px;padding:12px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px">
-                  <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px">▸ 更深一层：它们在数学上做的事不同</div>
-                  <p style="font-size:12.5px;color:#78350f;line-height:1.75;margin:0">判别式模型（传统分类/预测 AI）学的是：<em>给定输入 X，输出结果 Y 的概率是多少？</em>（比如：这张图 → 是猫的概率 95%）<br>
-                  生成式模型学的是：<em>什么样的内容 X 在这个世界里是合理的？</em> 它建模的是内容本身的分布，所以才能"凭空"创作出看起来真实的文字、图片。<br>
-                  这就是为什么同一个"深度学习"技术，既能产生"判断者"也能产生"创作者"——两者的训练目标根本不同。</p>
+                <div class="drawer-mechanism" hidden>
+                  <strong>判别式 vs 生成式：数学上做的事根本不同</strong><br><br>
+                  <em>判别式模型</em>（传统分类/预测 AI）学的是条件概率：<strong>P(标签 Y | 输入 X)</strong><br>
+                  给定一张图片 X，预测它是猫的概率——它只需要在已知输入的前提下打标签，不需要理解"猫"的完整形态。<br><br>
+                  <em>生成式模型</em>学的是内容本身的分布：<strong>P(内容 X)</strong> 或 <strong>P(内容 X | 条件)</strong><br>
+                  它需要理解"哪些内容是合理的"，因此可以从这个分布中采样——也就是"生成"新内容。<br><br>
+                  这就是为什么同一个"深度学习"技术，既能产生"判断者"也能产生"创作者"：两者的<span class="term-chip" data-term="损失函数">损失函数</span>和训练目标根本不同。<br><br>
+                  <strong>大语言模型的具体机制：</strong>以"预测下一个<span class="term-chip" data-term="token">token</span>"为训练目标（P(下一个词 | 所有前面的词)），在极大规模语料上训练后，这个预测能力泛化到了理解和生成。
                 </div>
-                <div class="key-point" style="margin-top:10px;border-left-color:var(--accent);background:#f0fbf9;color:#065f46">关键词：输入提示词 → 生成新内容（文字 / 图片 / 代码 / 音频 / 视频）</div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://www.anthropic.com/research" target="_blank" rel="noopener">Anthropic 研究（大模型机制研究，英文）</a>
+                  <a href="https://jalammar.github.io/illustrated-gpt2/" target="_blank" rel="noopener">The Illustrated GPT-2（可视化解释，英文）</a>
+                </div>
               </div>
             </div>
           </div>
@@ -124,26 +176,47 @@
           <div class="content-section" id="ch1-s4">
             <div class="sec-head"><div class="sec-ico">⟳</div><h3>模型如何工作：训练与推理</h3></div>
             <div class="panel" style="display:grid;gap:14px">
-              <div class="analogy-box">
-                <div class="analogy-label">💡 生活类比：学生备考与上考场</div>
-                <div class="analogy-text"><strong>训练阶段</strong> = 学生备考：看书做题、犯错纠正，反复练习，逐渐掌握规律。<br><strong>推理阶段</strong> = 上考场：用学到的知识处理从没见过的新题目，快速给出答案。<br>模型训练结束后，参数固定，就像毕业后不再上课，靠已有知识工作。</div>
+
+              <!-- 训练推理 overview drawer -->
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <div style="font-size:13.5px;font-weight:700;color:var(--light-text);margin-bottom:8px">💡 生活类比：学生备考与上考场</div>
+                  <strong>训练阶段</strong> = 学生备考：看书做题、犯错纠正，反复练习，逐渐掌握规律。<br>
+                  <strong><span class="term-chip" data-term="推理">推理</span>阶段</strong> = 上考场：用学到的知识处理从没见过的新题目，快速给出答案。<br>
+                  模型<span class="term-chip" data-term="训练">训练</span>结束后，<span class="term-chip" data-term="参数">参数</span>固定，就像毕业后不再上课，靠已有知识工作。
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>训练循环的三步核心（反复数十亿次）：</strong><br><br>
+                  <strong>① 前向传播 → 计算<span class="term-chip" data-term="损失函数">损失</span></strong><br>
+                  模型对一批训练样本做预测，与正确答案对比，计算"错了多少"。衡量这个差距的函数叫<span class="term-chip" data-term="损失函数">损失函数（Loss Function）</span>。损失越大，说明预测越糟糕。<br><br>
+                  <strong>② <span class="term-chip" data-term="反向传播">反向传播（Backpropagation）</span></strong><br>
+                  利用微积分的链式法则，从输出层反向逐层计算：每个<span class="term-chip" data-term="参数">参数</span>对这次损失"贡献了多少"。就像追责——这次答错，有多少怪到参数 A 头上，多少怪到参数 B 头上。<br><br>
+                  <strong>③ <span class="term-chip" data-term="梯度下降">梯度下降（Gradient Descent）</span></strong><br>
+                  根据反向传播算出的"贡献度"（梯度），沿着让损失减小的方向，对每个参数做一点微小调整。<br><br>
+                  <div style="padding:8px 12px;background:rgba(37,99,235,.08);border-left:3px solid #3b82f6;border-radius:4px;font-size:12.5px;line-height:1.6">
+                    <strong>类比：</strong>你学骑自行车，摔一跤（损失），大脑复盘"是因为左手握太松了"（反向传播找原因），下次专门纠正左手力度（梯度下降调参数）。重复足够多次，平衡感就建立了。GPT 的训练就是把这个循环执行了数千亿次。
+                  </div>
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://www.3blue1brown.com/lessons/backpropagation" target="_blank" rel="noopener">3Blue1Brown：反向传播是什么（英文，有字幕）</a>
+                  <a href="https://karpathy.github.io/2019/04/25/recipe/" target="_blank" rel="noopener">Andrej Karpathy：训练神经网络的实用指南（英文）</a>
+                </div>
               </div>
+
+              <!-- 训练5步骤 -->
               <div style="border:1px solid var(--light-line);border-radius:10px;overflow:hidden">
                 <div style="padding:10px 16px;background:linear-gradient(135deg,#f0f5ff,#f0fbf9);font-size:11px;font-weight:800;color:#1d4ed8;letter-spacing:.08em;text-transform:uppercase">训练阶段的五个步骤</div>
                 <div style="padding:0 16px" class="flow-steps">
                   <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>准备训练数据</strong><p>收集大量带标注的数据。例如训练猫狗分类器，需要数万张已标注"猫"或"狗"的图片。数据越多越高质量，模型通常越好。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>初始化模型</strong><p>创建一个空白模型，此时它的参数是随机的，预测结果完全随机，什么都不会。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>反复训练（核心步骤）</strong><p>模型对每张图片做预测 → 与正确答案对比，计算一个数字叫<strong>损失（loss）</strong>，代表"错了多少" → 用<strong>反向传播（backpropagation）</strong>算出每个参数对这次出错的"贡献度" → 沿着<strong>梯度下降（gradient descent）</strong>的方向微调每个参数，让下次预测误差更小。这个循环重复数百万次乃至数十亿次。</p>
-                  <div style="margin-top:8px;padding:8px 12px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:4px;font-size:12px;color:#1e40af;line-height:1.6">
-                    <strong>类比：</strong>你学骑自行车，摔一跤（误差），大脑复盘"是因为左手握太松了"（反向传播找到原因），下次专门纠正左手力度（梯度下降调整）。重复足够多次，平衡感就建立了。
-                  </div></div></div>
-                  <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>训练完成，参数固化</strong><p>损失降到可接受水平时停止训练。模型参数（即所有学到的"经验"）保存下来，不再改变——这就是我们通常说的"已训练好的模型"。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>推理（使用模型）</strong><p>用户输入新图片，模型用固定参数快速给出预测结果。你每次用 ChatGPT 提问，就是在触发推理过程。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>初始化模型</strong><p>创建一个空白模型，此时它的<span class="term-chip" data-term="参数">参数</span>是随机的，预测结果完全随机，什么都不会。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>反复训练（核心步骤）</strong><p>模型对每批样本做预测 → 计算<span class="term-chip" data-term="损失函数">损失</span> → <span class="term-chip" data-term="反向传播">反向传播</span>算出每个参数的"责任" → <span class="term-chip" data-term="梯度下降">梯度下降</span>微调参数。这个循环重复数百万次乃至数十亿次。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>训练完成，参数固化</strong><p>损失降到可接受水平时停止。模型<span class="term-chip" data-term="参数">参数</span>（所有学到的"经验"）保存下来，不再改变——这就是已训练好的模型。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong><span class="term-chip" data-term="推理">推理</span>（使用模型）</strong><p>用户输入新数据，模型用固定参数快速给出预测结果。你每次用 ChatGPT 提问，就是在触发推理过程。</p></div></div>
                 </div>
               </div>
               <div class="lesson-grid">
                 <div class="lesson-card"><div class="l-ico">🎓</div><strong>训练（Training）</strong><p>计算量大、耗时长、成本极高（大型模型训练成本可达数千万美元）。通常由 AI 公司或研究机构完成，普通用户不参与。</p></div>
-                <div class="lesson-card"><div class="l-ico">⚡</div><strong>推理（Inference）</strong><p>速度快（毫秒到秒级），成本相对低。你每次使用 AI 产品（提问、上传图片）都是在触发推理，背后是已训练好的模型在运算。</p></div>
+                <div class="lesson-card"><div class="l-ico">⚡</div><strong><span class="term-chip" data-term="推理">推理</span>（Inference）</strong><p>速度快（毫秒到秒级），成本相对低。你每次使用 AI 产品（提问、上传图片）都是在触发推理，背后是已训练好的模型在运算。</p></div>
               </div>
             </div>
           </div>
@@ -175,26 +248,28 @@
             <div class="sec-head"><div class="sec-ico">◉</div><h3>AI 的四类核心任务</h3></div>
             <div class="panel" style="display:grid;gap:12px">
               <p style="font-size:13px;color:var(--light-muted)">几乎所有 AI 应用都属于以下四类任务之一。理解这个分类，你就能快速判断一个 AI 产品"在做什么事情"。</p>
-              <div class="risk-grid">
-                <div style="padding:15px 16px;border:1px solid rgba(37,99,235,.2);border-radius:10px;background:#f0f5ff">
-                  <div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:6px;display:flex;align-items:center;gap:8px">🔍 分类（Classification）<span style="font-size:11px;background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:999px;font-weight:700">输出：类别</span></div>
-                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">判断一个输入属于哪个类别。<strong>核心问题：这是什么？它属于 A 还是 B（还是 C、D……）？</strong></div>
-                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>垃圾邮件识别（垃圾/正常）、肿瘤良恶性诊断、图片分类（猫/狗/鸟）、评论情感分析（正面/负面/中性）、人脸识别（这是谁）</div>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div style="padding:12px;background:#f0f5ff;border-radius:8px;border:1px solid rgba(37,99,235,.15)"><div style="font-weight:800;color:#1d4ed8;font-size:13px;margin-bottom:4px">🔍 分类</div><div style="font-size:12px;color:var(--light-muted)">这是什么？属于哪一类？</div></div>
+                    <div style="padding:12px;background:#f0fdf4;border-radius:8px;border:1px solid rgba(16,185,129,.15)"><div style="font-weight:800;color:#047857;font-size:13px;margin-bottom:4px">📈 预测</div><div style="font-size:12px;color:var(--light-muted)">接下来会怎样？值是多少？</div></div>
+                    <div style="padding:12px;background:#f0fbf9;border-radius:8px;border:1px solid rgba(0,212,170,.15)"><div style="font-weight:800;color:#0d7e6e;font-size:13px;margin-bottom:4px">✨ 生成</div><div style="font-size:12px;color:var(--light-muted)">帮我创作/写/画/生成……</div></div>
+                    <div style="padding:12px;background:#faf5ff;border-radius:8px;border:1px solid rgba(168,85,247,.15)"><div style="font-weight:800;color:#7c3aed;font-size:13px;margin-bottom:4px">🎯 推荐</div><div style="font-size:12px;color:var(--light-muted)">这个用户最可能喜欢什么？</div></div>
+                  </div>
                 </div>
-                <div style="padding:15px 16px;border:1px solid rgba(16,185,129,.2);border-radius:10px;background:#f0fdf4">
-                  <div style="font-size:14px;font-weight:800;color:#047857;margin-bottom:6px;display:flex;align-items:center;gap:8px">📈 预测（Prediction）<span style="font-size:11px;background:#d1fae5;color:#047857;padding:2px 8px;border-radius:999px;font-weight:700">输出：数值/概率</span></div>
-                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">根据历史数据预测未来的数值或结果。<strong>核心问题：接下来会怎样？这个值是多少？</strong></div>
-                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>房价预测、销售额预测、用户流失概率估计、天气预报、股票走势分析、信贷违约风险评分</div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>🔍 分类（Classification）— 输出：类别</strong><br>
+                  判断一个输入属于哪个类别。<em>生活例子：</em>垃圾邮件识别、肿瘤良恶性诊断、图片分类、评论情感分析、人脸识别。<br><br>
+                  <strong>📈 预测（Prediction）— 输出：数值/概率</strong><br>
+                  根据历史数据预测未来的数值或结果。<em>生活例子：</em>房价预测、销售额预测、用户流失概率、天气预报、信贷违约风险评分。<br><br>
+                  <strong>✨ 生成（Generation）— 输出：新内容</strong><br>
+                  根据<span class="term-chip" data-term="提示词">提示词</span>创作全新内容。<em>生活例子：</em>ChatGPT 写文章摘要、Midjourney 画图、GitHub Copilot 写代码、Sora 生成视频。<br><br>
+                  <strong>🎯 推荐（Recommendation）— 输出：排序列表</strong><br>
+                  在大量选项中找出最匹配某用户偏好的内容。<em>生活例子：</em>抖音/YouTube 视频推荐、淘宝商品推荐、Spotify 歌单、Netflix 影视推荐。
                 </div>
-                <div style="padding:15px 16px;border:1px solid rgba(0,212,170,.25);border-radius:10px;background:#f0fbf9">
-                  <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:6px;display:flex;align-items:center;gap:8px">✨ 生成（Generation）<span style="font-size:11px;background:#ccfbf1;color:#0d7e6e;padding:2px 8px;border-radius:999px;font-weight:700">输出：新内容</span></div>
-                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">根据输入提示，创作全新的内容。<strong>核心问题：能帮我创作/写/画/生成……吗？</strong></div>
-                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>ChatGPT 写文章摘要、Midjourney/DALL-E 画图、GitHub Copilot 写代码、ElevenLabs 合成语音、Sora 生成视频</div>
-                </div>
-                <div style="padding:15px 16px;border:1px solid rgba(168,85,247,.2);border-radius:10px;background:#faf5ff">
-                  <div style="font-size:14px;font-weight:800;color:#7c3aed;margin-bottom:6px;display:flex;align-items:center;gap:8px">🎯 推荐（Recommendation）<span style="font-size:11px;background:#ede9fe;color:#7c3aed;padding:2px 8px;border-radius:999px;font-weight:700">输出：排序列表</span></div>
-                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">在大量选项中，找出最匹配某个用户偏好的内容。<strong>核心问题：这个用户最可能喜欢什么？</strong></div>
-                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>抖音/YouTube 视频推荐、淘宝/亚马逊商品推荐、Spotify 歌单、Netflix 影视推荐、微信好友可能认识的人</div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://developers.google.com/machine-learning/problem-framing" target="_blank" rel="noopener">Google：机器学习问题拆解指南（英文，有中文版）</a>
                 </div>
               </div>
             </div>
@@ -206,25 +281,59 @@
             <div class="panel" style="display:grid;gap:12px">
               <div class="key-point">AI 很强大，但不是万能的。理解它的局限和风险，是负责任使用 AI 的前提，也是判断 AI 产品好坏的基础能力。</div>
               <div class="risk-grid">
+
+                <!-- 幻觉 risk card -->
                 <div class="risk-card hi">
-                  <div class="risk-title">幻觉（Hallucination）<span class="risk-badge hi">高度警惕</span></div>
-                  <div class="risk-body">生成式 AI 会"编造"看起来合理但实际上是错误的信息。它不知道自己不知道什么，会非常自信地给出错误答案。这是当前大模型最严重的问题之一。</div>
-                  <div style="margin:8px 0;padding:10px 12px;background:#fff7ed;border-left:3px solid #f97316;border-radius:4px;font-size:12px;color:#7c2d12;line-height:1.7">
-                    <strong>为什么会幻觉？——根源在于它的工作方式：</strong><br>
-                    大语言模型本质上是在做"下一个词预测"——每次输出一个词（token），都是根据前面所有词，预测"接下来哪个词最可能出现"。它没有一个"事实数据库"去查，也没有"我不确定就不说"的内置机制。当它"不知道"某个事实时，它不会停下来，而是继续预测"这里应该有一个听起来合理的词"——于是造出了听起来真实的错误内容。这不是 bug，而是这类模型的结构性局限。
-                  </div>
-                  <div class="risk-example"><strong>真实案例：</strong>2023年，美国律师 Steven Schwartz 让 ChatGPT 帮忙查法律先例，AI 编造了多个根本不存在的案例编号、法官姓名和判决内容。律师引用后被法官发现，面临处分。<br><strong>应对方法：</strong>对事实性信息（日期、数据、引用、法律条文），务必查阅原始来源确认。</div>
+                  <div class="risk-title"><span class="term-chip" data-term="幻觉">幻觉（Hallucination）</span><span class="risk-badge hi">高度警惕</span></div>
+                  <div class="risk-body">生成式 AI 会"编造"看起来合理但实际上是错误的信息，非常自信地给出错误答案，且<strong>不知道自己不知道什么</strong>。这是当前大模型最严重的结构性问题之一。</div>
+                  <div class="risk-example"><strong>真实案例：</strong>本章开头的律师事故——ChatGPT 编造了六份根本不存在的法律先例。<br><strong>应对方法：</strong>对事实性信息（日期、数据、引用、法律条文），务必查阅原始来源确认。</div>
                 </div>
+
+                <!-- 幻觉机制 demo + drawer -->
+                <div style="grid-column:1/-1">
+                  <p style="font-size:13px;color:var(--light-muted);margin-bottom:10px">想亲眼看看幻觉？下面这个演示让模型帮你生成论文引用——<strong>它几乎必然会编造</strong>不存在的作者、期刊和DOI：</p>
+
+                  <div class="ai-demo">
+                    <div class="demo-label">🤖 互动演示：幻觉复现</div>
+                    <div class="demo-prompt">请给我推荐5篇关于"Transformer 注意力机制在自然语言处理中的应用"的学术论文，包括完整的作者姓名、发表年份、期刊/会议名称和DOI编号。</div>
+                    <button class="demo-run">运行演示</button>
+                    <div class="demo-output" hidden></div>
+                  </div>
+
+                  <div style="margin-top:12px">
+                    <div class="concept-drawer">
+                      <div class="drawer-surface">🔬 <strong>为什么会幻觉？——根源在工作机制</strong>：大语言模型本质上是一个"下一个词预测机器"，没有内置的事实数据库，也没有"不确定就不说"的机制。</div>
+                      <div class="drawer-mechanism" hidden>
+                        <strong><span class="term-chip" data-term="自回归">自回归</span>预测：一次只输出一个 <span class="term-chip" data-term="token">token</span></strong><br><br>
+                        大语言模型每次生成文本的方式是：<br>
+                        看到所有已有的内容 → 预测下一个 <span class="term-chip" data-term="token">token</span>（词或词的一部分）最可能是什么 → 输出那个 token → 把它加入已有内容 → 再预测下一个……<br><br>
+                        <strong>关键：它没有在"查事实"，它在"续写"。</strong><br><br>
+                        当你问它"2019年有哪些关于 Transformer 的论文"，它不会去查数据库，而是根据训练数据中"这类问题的回答应该长什么样"来续写。如果训练数据里恰好有真实论文，它可能说对；但它同样可以生成一个<em>格式完全正确、语气十足自信、内容完全捏造</em>的答案——因为在"续写"这件事上，捏造一个合理的论文引用和回忆一个真实的引用，对模型来说是完全一样的操作。<br><br>
+                        这不是 bug，而是<strong>结构性局限</strong>：这类模型的设计目标是生成连贯合理的文本，而不是核实事实真伪。没有外部检索（如 RAG、搜索插件）的加持，它无法区分"我知道的事实"和"我续写出的合理内容"。
+                      </div>
+                      <div class="drawer-sources" hidden>
+                        <a href="https://arxiv.org/abs/2202.03629" target="_blank" rel="noopener">Survey of Hallucination in Natural Language Generation（综述论文，英文）</a>
+                        <a href="https://lilianweng.github.io/posts/2024-07-07-hallucination/" target="_blank" rel="noopener">Lilian Weng：Extrinsic Hallucinations in LLMs（深度技术博客）</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 偏见 -->
                 <div class="risk-card hi">
                   <div class="risk-title">偏见（Bias）<span class="risk-badge hi">高度警惕</span></div>
                   <div class="risk-body">AI 模型从数据中学习，训练数据中存在的偏见会被模型继承，甚至放大。在招聘、贷款、司法等高影响力场景尤为危险。</div>
                   <div class="risk-example"><strong>真实案例：</strong>亚马逊曾研发 AI 简历筛选系统，后来发现因训练数据中男性简历占多数，系统会自动给女性候选人打低分。该项目在2018年被迫叫停。<br><strong>应对方法：</strong>高风险决策（招聘、贷款、医疗）中，AI 结论只作参考，必须有人工审核环节。</div>
                 </div>
+
+                <!-- 隐私 -->
                 <div class="risk-card md">
                   <div class="risk-title">隐私泄露<span class="risk-badge md">注意</span></div>
                   <div class="risk-body">向 AI 输入的信息可能被服务提供商用于训练，或在数据安全事故中泄露。此外，模型可能在特定引导下输出训练数据中的隐私内容。</div>
                   <div class="risk-example"><strong>注意事项：</strong>不要向公共 AI 服务输入身份证号、银行卡信息、未公开的商业数据、他人隐私。企业内部使用时需确认数据安全协议。</div>
                 </div>
+
+                <!-- 过度依赖 -->
                 <div class="risk-card md">
                   <div class="risk-title">过度依赖<span class="risk-badge md">注意</span></div>
                   <div class="risk-body">长期依赖 AI 完成思考任务，可能导致自身判断力退化，且在 AI 出错时无法识别错误——这种情况被称为"自动化偏见"（Automation Bias）。</div>
@@ -353,10 +462,11 @@
               <ul class="summary-list">
                 <li>AI 是让计算机完成智能任务的技术总称，不依赖人工编写的固定规则，而是从数据中学习。</li>
                 <li>嵌套关系：AI ⊃ 机器学习 ⊃ 深度学习；生成式 AI 是应用方向，基于深度学习实现。</li>
-                <li>模型分两阶段：训练（从数据学习，调整参数）→ 推理（用固定参数处理新输入）。</li>
+                <li>判别式模型学 P(Y|X)（做判断），生成式模型学 P(X) 或 P(X|条件)（可生成新内容），训练目标根本不同。</li>
+                <li>训练循环：前向传播 → 损失函数 → 反向传播 → 梯度下降，重复数十亿次。推理是用固定参数处理新输入。</li>
+                <li>幻觉的根源：自回归逐 token 预测没有事实核查能力，在"续写"和"核实"之间没有区别。</li>
                 <li>数据是 AI 的燃料：质量和数量决定模型好坏，偏见数据 → 有偏见的模型。</li>
                 <li>四类核心任务：分类（这是什么）、预测（会怎样）、生成（创作内容）、推荐（你可能喜欢）。</li>
-                <li>主要风险：幻觉（编造事实）、偏见（歧视特定群体）、隐私泄露、过度依赖。</li>
                 <li>判断是否用 AI 的核心问题：数据够吗？任务有规律吗？出错代价多大？有更简单的方案吗？</li>
               </ul>
             </div>
@@ -370,13 +480,17 @@
                 <div class="glossary-item"><div class="glossary-term">人工智能（AI）</div><div class="glossary-def">让计算机完成需要人类智能才能完成任务的技术总称，不依赖固定规则，而是从数据中学习。</div></div>
                 <div class="glossary-item"><div class="glossary-term">机器学习（ML）</div><div class="glossary-def">AI 的子集，让计算机从数据中自动学习规律，而非由程序员手动编写每一条规则。</div></div>
                 <div class="glossary-item"><div class="glossary-term">深度学习（DL）</div><div class="glossary-def">机器学习的子集，使用多层神经网络处理复杂数据（图像、语音、文字），是近年 AI 爆发的核心驱动力。</div></div>
-                <div class="glossary-item"><div class="glossary-term">生成式 AI</div><div class="glossary-def">能根据输入提示生成全新内容（文字/图片/代码/音频）的 AI 系统，通常基于深度学习实现。</div></div>
-                <div class="glossary-item"><div class="glossary-term">训练（Training）</div><div class="glossary-def">让模型从大量数据中学习，通过反复调整内部参数来减少预测误差的过程，计算成本极高。</div></div>
+                <div class="glossary-item"><div class="glossary-term">生成式 AI</div><div class="glossary-def">能根据输入提示生成全新内容（文字/图片/代码/音频）的 AI 系统，建模内容分布 P(X)，与判别式模型训练目标不同。</div></div>
+                <div class="glossary-item"><div class="glossary-term">训练（Training）</div><div class="glossary-def">让模型从大量数据中学习，通过"前向传播→损失→反向传播→梯度下降"的循环反复调整参数，计算成本极高。</div></div>
                 <div class="glossary-item"><div class="glossary-term">推理（Inference）</div><div class="glossary-def">使用训练好的模型（参数固定）处理新输入、得到预测结果的过程，速度快、成本低。</div></div>
                 <div class="glossary-item"><div class="glossary-term">参数（Parameters）</div><div class="glossary-def">模型内部的数值，通过训练不断调整。GPT-4 约有1.8万亿个参数。参数决定了模型"学到了什么"。</div></div>
-                <div class="glossary-item"><div class="glossary-term">幻觉（Hallucination）</div><div class="glossary-def">生成式 AI 产生看起来合理但实际错误的信息。根源：大语言模型以"预测下一个词"为机制，没有事实核查能力，不知道自己不知道什么，是当前大模型的结构性局限。</div></div>
-                <div class="glossary-item"><div class="glossary-term">数据偏见（Bias）</div><div class="glossary-def">训练数据中存在的不平衡或偏颇，会导致模型对特定群体或场景表现不公平，亚马逊招聘 AI 是典型案例。</div></div>
+                <div class="glossary-item"><div class="glossary-term">损失函数（Loss Function）</div><div class="glossary-def">衡量模型预测值与正确答案之间差距的数学函数，训练目标就是最小化它。</div></div>
+                <div class="glossary-item"><div class="glossary-term">反向传播（Backpropagation）</div><div class="glossary-def">从输出误差反向逐层计算每个参数对误差贡献的算法，是梯度下降的基础。</div></div>
+                <div class="glossary-item"><div class="glossary-term">梯度下降（Gradient Descent）</div><div class="glossary-def">沿损失函数下降方向微调参数的优化算法，每次迭代让模型预测更准一点点。</div></div>
+                <div class="glossary-item"><div class="glossary-term">Token</div><div class="glossary-def">语言模型处理文本的最小单位，通常对应一个词或半个词。自回归生成就是逐 token 预测续写。</div></div>
+                <div class="glossary-item"><div class="glossary-term">幻觉（Hallucination）</div><div class="glossary-def">生成式 AI 产生看起来合理但实际错误的信息。根源：自回归 token 预测机制是在"续写"而非"核实"，没有事实检查能力。</div></div>
                 <div class="glossary-item"><div class="glossary-term">提示词（Prompt）</div><div class="glossary-def">用户输入给生成式 AI 的指令或问题，是生成式 AI 应用的核心交互方式，提示词质量直接影响输出质量。</div></div>
+                <div class="glossary-item"><div class="glossary-term">数据偏见（Bias）</div><div class="glossary-def">训练数据中存在的不平衡或偏颇，会导致模型对特定群体或场景表现不公平，亚马逊招聘 AI 是典型案例。</div></div>
               </div>
             </div>
             <div class="tag-row"><span class="tag">AI 概念</span><span class="tag">训练与推理</span><span class="tag">四类任务</span><span class="tag">AI 风险</span><span class="tag">场景判断</span></div>

@@ -587,3 +587,108 @@
       font-size: 13px;
     }
     .drawer-sources a:hover { text-decoration: underline; }
+
+    /* ── hook-story ── */
+    .hook-story {
+      background: linear-gradient(135deg,#fffbeb,#fef3c7);
+      border: 1px solid #fde68a;
+      border-left: 4px solid #f59e0b;
+      border-radius: var(--r);
+      padding: 18px 20px;
+      display: grid;
+      gap: 10px;
+    }
+    .hook-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #92400e;
+    }
+    .hook-story p { font-size: 14px; line-height: 1.8; color: #451a03; margin: 0; }
+    .hook-question {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #b45309;
+      padding-top: 4px;
+      border-top: 1px solid rgba(245,158,11,.3);
+    }
+
+    /* ── term-chip ── */
+    .term-chip {
+      display: inline;
+      border-bottom: 1.5px dashed var(--accent);
+      cursor: help;
+      color: inherit;
+      transition: color .15s;
+    }
+    .term-chip:hover, .term-chip:focus { color: var(--accent); outline: none; }
+    .chip-tooltip {
+      position: absolute;
+      z-index: 9999;
+      max-width: 300px;
+      background: var(--bg2);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      line-height: 1.65;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      pointer-events: none;
+    }
+
+    /* ── ai-demo ── */
+    .ai-demo {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: var(--bg2);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .demo-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .demo-prompt {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: inherit;
+    }
+    .demo-run {
+      align-self: start;
+      padding: 8px 18px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      color: var(--accent);
+      font: 700 13px/1 inherit;
+      cursor: pointer;
+      transition: background .15s;
+      width: fit-content;
+    }
+    .demo-run:hover { background: rgba(0,212,170,.3); }
+    .demo-output {
+      font-size: 13px;
+      line-height: 1.7;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .demo-pending {
+      padding: 12px 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px dashed rgba(255,255,255,.12);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }

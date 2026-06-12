@@ -88,6 +88,8 @@ function _activateChapter(ch) {
 // panelEl — the <div class="ch-panel" id="ch-N"> node that just became active.
 function initChapterComponents(panelEl) {
   initDrawers(panelEl);
+  initTermChips(panelEl);
+  initAiDemos(panelEl);
 }
 
 // ── Back to map ──
