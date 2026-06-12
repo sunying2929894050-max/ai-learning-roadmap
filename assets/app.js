@@ -87,10 +87,7 @@ function _activateChapter(ch) {
 // Each feature module should register its setup logic here.
 // panelEl — the <div class="ch-panel" id="ch-N"> node that just became active.
 function initChapterComponents(panelEl) {
-  // Placeholder — future components attach here, e.g.:
-  //   initDrawers(panelEl);
-  //   initTermChips(panelEl);
-  //   initPromptRunner(panelEl);
+  initDrawers(panelEl);
 }
 
 // ── Back to map ──
