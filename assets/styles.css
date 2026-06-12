@@ -538,17 +538,15 @@
       margin: 12px 0;
       background: var(--bg2);
     }
-    .cd-surface {
+    /* always-visible top layer */
+    .drawer-surface {
       padding: 14px 16px;
       font-size: 14px;
       line-height: 1.7;
       color: var(--text);
       border-bottom: 1px solid var(--line);
     }
-    .cd-row {
-      border-bottom: 1px solid var(--line);
-    }
-    .cd-row:last-child { border-bottom: none; }
+    /* toggle button (injected by JS before each collapsible layer) */
     .cd-toggle {
       width: 100%;
       display: flex;
@@ -557,26 +555,35 @@
       padding: 10px 16px;
       background: none;
       border: none;
+      border-top: 1px solid var(--line);
       cursor: pointer;
       color: var(--accent);
-      font-size: 13px;
-      font-weight: 600;
+      font: 600 13px/1 inherit;
       text-align: left;
       transition: background .15s;
+      outline-offset: 2px;
     }
-    .cd-toggle:hover { background: rgba(0,212,170,.06); }
-    .cd-chevron { display: inline-block; width: 10px; transition: transform .2s; }
-    .cd-body { padding: 0; }
-    .cd-content {
-      padding: 12px 16px;
+    .cd-toggle:first-of-type { border-top: none; }
+    .cd-toggle:hover  { background: rgba(0,212,170,.06); }
+    .cd-toggle:focus-visible { outline: 2px solid var(--accent); }
+    .cd-chevron { display: inline-block; width: 10px; }
+    /* collapsible content layers */
+    .drawer-mechanism,
+    .drawer-sources {
+      padding: 12px 16px 14px;
       font-size: 13px;
       line-height: 1.75;
       color: var(--light-muted);
+      border-top: 1px solid var(--line);
     }
-    .cd-sources {
-      padding: 10px 16px 12px 28px;
-      list-style: disc;
+    .drawer-sources {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .drawer-sources a {
+      color: var(--accent);
+      text-decoration: none;
       font-size: 13px;
     }
-    .cd-sources a { color: var(--accent); text-decoration: none; }
-    .cd-sources a:hover { text-decoration: underline; }
+    .drawer-sources a:hover { text-decoration: underline; }

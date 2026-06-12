@@ -47,10 +47,19 @@
             <div class="panel" style="display:grid;gap:12px">
               <p style="font-size:13px;color:var(--light-muted)">AI、机器学习、深度学习、生成式 AI 是<strong>嵌套关系</strong>，不是并列关系。理解这一点是本章最重要的任务。</p>
 
-              <div class="concept-drawer"
-                data-surface="🔍 <strong>概念速览</strong>：人工智能（AI）是最大的圆；机器学习（ML）是 AI 的核心子集；深度学习（DL）是 ML 的子集；生成式 AI（GenAI）是 DL 的一类应用。每一层都在上一层基础上增加约束和能力。"
-                data-mechanism="四层嵌套的内在逻辑：<br><br>① <strong>AI</strong> — 让机器完成智能任务的所有方法，包含规则系统、搜索算法、机器学习等。<br>② <strong>ML</strong> — 限定为「从数据中自动学习」的方法，排除了手写规则。核心公式：输入数据 + 目标函数 → 优化参数。<br>③ <strong>DL</strong> — 限定为用多层神经网络作为参数化函数族，能自动提取特征，解决高维非结构化数据。<br>④ <strong>生成式 AI</strong> — 限定为建模数据分布 P(X) 或条件分布 P(X|条件)，可以「采样」出新内容，而非仅做分类/回归。"
-                data-sources='[{"label":"3Blue1Brown：神经网络可视化系列（英文）","url":"https://www.3blue1brown.com/topics/neural-networks"},{"label":"吴恩达《AI For Everyone》入门课（中文字幕）","url":"https://www.coursera.org/learn/ai-for-everyone"}]'>
+              <div class="concept-drawer">
+                <div class="drawer-surface">🔍 <strong>概念速览</strong>：人工智能（AI）是最大的圆；机器学习（ML）是 AI 的核心子集；深度学习（DL）是 ML 的子集；生成式 AI（GenAI）是 DL 的一类应用。每一层都在上一层基础上增加约束和能力。</div>
+                <div class="drawer-mechanism" hidden>
+                  四层嵌套的内在逻辑：<br><br>
+                  ① <strong>AI</strong> — 让机器完成智能任务的所有方法，包含规则系统、搜索算法、机器学习等。<br>
+                  ② <strong>ML</strong> — 限定为「从数据中自动学习」的方法，排除了手写规则。核心公式：输入数据 + 目标函数 → 优化参数。<br>
+                  ③ <strong>DL</strong> — 限定为用多层神经网络作为参数化函数族，能自动提取特征，解决高维非结构化数据。<br>
+                  ④ <strong>生成式 AI</strong> — 限定为建模数据分布 P(X) 或条件分布 P(X|条件)，可以「采样」出新内容，而非仅做分类/回归。
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://www.3blue1brown.com/topics/neural-networks" target="_blank" rel="noopener">3Blue1Brown：神经网络可视化系列（英文）</a>
+                  <a href="https://www.coursera.org/learn/ai-for-everyone" target="_blank" rel="noopener">吴恩达《AI For Everyone》入门课（中文字幕）</a>
+                </div>
               </div>
 
               <div style="padding:14px 16px;border:1px solid rgba(37,99,235,.2);border-radius:10px;background:linear-gradient(135deg,#f0f5ff,#fff)">
