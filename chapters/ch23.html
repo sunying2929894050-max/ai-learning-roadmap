@@ -1,0 +1,377 @@
+      <!-- Chapter 23 -->
+      <div class="ch-panel" id="ch-23">
+        <div class="ch-header">
+          <div class="ch-badge"><div class="ch-big">23</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 23</div><div class="ch-name">深度学习与实战</div></div></div>
+          <p class="ch-desc">进入神经网络、深度学习框架、计算机视觉与自然语言处理实践。</p>
+        </div>
+        <div class="content-body">
+
+          <!-- S0: 概览 -->
+          <div class="content-section" id="ch4-s0">
+            <div class="sec-head"><div class="sec-ico">◈</div><h3>本章概览</h3></div>
+            <div class="panel">
+              <div class="overview-grid">
+                <div class="overview-card"><div class="ov-num">6~10h</div><div class="ov-label">建议学习时间</div></div>
+                <div class="overview-card"><div class="ov-num">4</div><div class="ov-label">核心架构</div></div>
+                <div class="overview-card"><div class="ov-num">2</div><div class="ov-label">完整实战项目</div></div>
+                <div class="overview-card"><div class="ov-num">5</div><div class="ov-label">自测题</div></div>
+              </div>
+              <div class="key-point" style="margin-top:16px"><strong>本章目标：</strong>理解神经网络的结构与训练机制；能用 PyTorch 搭建并训练一个简单的分类模型；了解 CNN 和 Transformer 的核心原理；能完成图像分类或文本情感分析任务。</div>
+              <div style="margin-top:12px;padding:10px 14px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:6px;font-size:13px;color:#1e3a5f;line-height:1.7"><strong>学习路径：</strong>神经网络基础原理 → PyTorch 核心 API → CNN（图像）→ RNN/Transformer（文本）→ 实战项目。</div>
+            </div>
+          </div>
+
+          <!-- S1: 神经网络基础 -->
+          <div class="content-section" id="ch4-s1">
+            <div class="sec-head"><div class="sec-ico">①</div><h3>神经网络基础：从感知机到深度网络</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">神经网络的灵感来自人脑，但实际上是纯数学结构——多层矩阵乘法 + 非线性激活函数的组合。</p>
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>单个神经元 = 加权求和 + 激活函数</strong><p>每个神经元接收多个输入，对每个输入乘以一个权重，求和后加偏置，再经过激活函数输出。</p><div style="font-family:monospace;background:#f1f5f9;padding:8px 12px;border-radius:6px;font-size:12px;color:#334155;margin-top:6px">输出 = f( w₁x₁ + w₂x₂ + ... + wₙxₙ + b )<br>其中 f 是激活函数（如 ReLU = max(0, x)）</div></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>为什么需要激活函数？</strong><p>没有激活函数，多层线性变换叠加等价于单层线性变换，无论多少层都没用。激活函数引入非线性，让网络能拟合任意复杂的函数。</p><div style="margin-top:8px;padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:12.5px;color:#475569"><strong>常用激活函数：</strong><br>ReLU: f(x) = max(0, x)——最常用，计算简单，解决梯度消失<br>Sigmoid: f(x) = 1/(1+e⁻ˣ)——输出 0~1，用于二分类输出层<br>Softmax: 多分类输出层，输出各类别概率之和为 1</div></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>深度网络 = 多层堆叠</strong><p>输入层 → 隐藏层₁ → 隐藏层₂ → ... → 输出层。"深度"就是指多个隐藏层。层数越多，能表达的函数越复杂，但也越难训练（梯度消失问题）。</p><div class="analogy-box" style="margin-top:8px"><div class="analogy-label">类比：特征抽象层级</div><div class="analogy-text">图像识别时：第一层检测边缘和纹理 → 第二层组合成形状（圆、角）→ 第三层组合成部件（眼睛、耳朵）→ 输出层判断"这是一只猫"。深度的价值就在这里。</div></div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S2: PyTorch -->
+          <div class="content-section" id="ch4-s2">
+            <div class="sec-head"><div class="sec-ico">②</div><h3>PyTorch 核心：张量、自动求导、训练循环</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">PyTorch 是目前研究和工业界最流行的深度学习框架。核心优势：动态计算图（易调试）+ Pythonic API（代码直观）。</p>
+              <div style="margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px">▸ 张量（Tensor）= 支持 GPU 加速的 NumPy 数组</div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>import torch
+
+# 创建张量
+x = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+print(x.shape)   # torch.Size([2, 2])
+print(x.dtype)   # torch.float32
+
+# 矩阵运算
+y = torch.zeros(2, 3)
+z = x @ torch.ones(2, 3)   # 矩阵乘法
+
+# GPU 加速（有 CUDA 时）
+if torch.cuda.is_available():
+    x = x.cuda()   # 迁移到 GPU</code></pre>
+              </div>
+              <div style="margin-bottom:16px">
+                <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px">▸ 自动求导（Autograd）= 自动计算梯度</div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>x = torch.tensor(3.0, requires_grad=True)   # 跟踪梯度
+y = x ** 2 + 2 * x + 1                       # y = x² + 2x + 1
+y.backward()                                   # 反向传播
+print(x.grad)   # dy/dx = 2x+2 → 在 x=3 时 = 8.0</code></pre>
+                <div class="key-point">Autograd 是 PyTorch 的核心魔法：你只需写出前向计算（y如何从x得到），.backward() 会自动追溯链式法则，计算出所有参数的梯度。</div>
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px">▸ 完整训练循环</div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0"><code>import torch
+import torch.nn as nn
+
+# 1. 定义模型（全连接网络，2输入→4隐藏→1输出）
+model = nn.Sequential(
+    nn.Linear(2, 4),
+    nn.ReLU(),
+    nn.Linear(4, 1),
+    nn.Sigmoid()
+)
+
+# 2. 损失函数 + 优化器
+criterion = nn.BCELoss()                            # 二分类交叉熵
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+
+# 3. 训练循环（标准模板）
+for epoch in range(100):
+    optimizer.zero_grad()   # 清除上一步的梯度（必须！）
+    outputs = model(X_train)
+    loss = criterion(outputs, y_train)
+    loss.backward()         # 反向传播，计算梯度
+    optimizer.step()        # 更新参数
+
+    if epoch % 20 == 0:
+        print(f"Epoch {epoch}: loss={loss.item():.4f}")</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: CNN -->
+          <div class="content-section" id="ch4-s3">
+            <div class="sec-head"><div class="sec-ico">③</div><h3>卷积神经网络（CNN）：图像的专用架构</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">传统全连接网络处理图像时，100×100 像素的图片有 10000 个输入，第一层就有几百万个参数——太多了。CNN 用"局部连接 + 权重共享"解决这个问题。</p>
+              <div class="flow-steps" style="margin-bottom:16px">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>卷积层（Conv Layer）</strong><p>用一个小的滑动窗口（卷积核/Filter）在图像上滑动，每个位置做点积，提取局部特征（边缘、纹理）。多个不同的卷积核提取多种特征，输出"特征图（Feature Map）"。</p><div style="padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;color:#475569;margin-top:6px">类比：用不同的放大镜分别看"横线"、"竖线"、"斜线"——每种放大镜是一个卷积核。</div></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>池化层（Pooling Layer）</strong><p>对特征图进行下采样（如 Max Pooling 取每个 2×2 区域的最大值），减少参数量，保留最显著的特征，增强位置不变性。</p></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>全连接层（FC Layer）</strong><p>卷积层提取的特征展平后，接入全连接层做最终分类。</p></div></div>
+              </div>
+              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 12px"><code>import torch.nn as nn
+
+class SimpleCNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),  # 卷积层（灰度图输入）
+            nn.ReLU(),
+            nn.MaxPool2d(2),                              # 池化层：尺寸减半
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(64 * 7 * 7, 128),                  # 28×28 图像经过两次池化 → 7×7
+            nn.ReLU(),
+            nn.Linear(128, 10)                            # 10分类（如 MNIST 手写数字）
+        )
+
+    def forward(self, x):
+        return self.classifier(self.features(x))
+
+model = SimpleCNN()
+print(f"模型参数量: {sum(p.numel() for p in model.parameters()):,}")</code></pre>
+              <div style="padding:10px 14px;background:#f0fdf4;border-left:3px solid #22c55e;border-radius:6px;font-size:12.5px;color:#166534">
+                <strong>CNN 里程碑：</strong>2012 年 AlexNet 在 ImageNet 竞赛上准确率大幅领先传统方法，开启深度学习时代。VGG、ResNet、EfficientNet 是后续经典架构，ResNet 引入"残差连接"解决了深层网络的梯度消失问题。
+              </div>
+            </div>
+          </div>
+
+          <!-- S4: Transformer & NLP -->
+          <div class="content-section" id="ch4-s4">
+            <div class="sec-head"><div class="sec-ico">④</div><h3>Transformer 与自然语言处理（NLP）</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">从 RNN 到 Transformer，是 NLP 领域最重要的架构演进。ChatGPT、BERT 都基于 Transformer。</p>
+
+              <div style="margin-bottom:18px">
+                <div style="font-size:14px;font-weight:800;color:#1e40af;margin-bottom:8px">◆ RNN（循环神经网络）的局限</div>
+                <p style="font-size:13px;color:var(--light-muted);margin-bottom:8px">RNN 逐字处理文本，每一步把当前词和"记忆（hidden state）"一起处理。但长序列时早期词的信息会逐渐"遗忘"（梯度消失），且无法并行计算（必须一步步来）。</p>
+                <div class="analogy-box">
+                  <div class="analogy-label">类比：短期记忆 vs 全局视角</div>
+                  <div class="analogy-text">RNN 像一个人一边读文章一边记笔记，读到第 500 个词时可能已经忘了第 1 个词的内容。Transformer 则像同时能看到整篇文章，每个词可以直接"关注"任何其他词。</div>
+                </div>
+              </div>
+
+              <div style="margin-bottom:18px">
+                <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:8px">◆ Transformer 的核心：自注意力机制（Self-Attention）</div>
+                <p style="font-size:13px;color:var(--light-muted);margin-bottom:10px">对于输入序列的每个词，计算它与序列中所有其他词的"相关性分数"（注意力权重），加权求和，得到该词的新表示。让模型能捕捉长距离依赖关系。</p>
+                <div style="padding:10px 14px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:6px;font-size:12.5px;color:#1e40af;line-height:1.7;margin-bottom:12px">
+                  <strong>例子：</strong>"The animal didn't cross the street because <u>it</u> was too tired."<br>
+                  "it" 指代什么？人类看上下文就知道是"animal"，不是"street"。<br>
+                  自注意力让模型在处理"it"时，自动对"animal"赋予高权重——捕捉到了这种跨越多词的依赖关系。RNN 在长句中常常做不到这一点。
+                </div>
+                <div class="compare-table">
+                  <table>
+                    <thead><tr><th>特性</th><th>RNN</th><th>Transformer</th></tr></thead>
+                    <tbody>
+                      <tr><td>并行计算</td><td>❌ 只能顺序处理</td><td>✅ 所有位置同时计算</td></tr>
+                      <tr><td>长距离依赖</td><td>⚠️ 容易遗忘早期信息</td><td>✅ 每个词直接关注任意位置</td></tr>
+                      <tr><td>训练速度</td><td>慢</td><td>快（GPU 利用率高）</td></tr>
+                      <tr><td>代表模型</td><td>LSTM、GRU</td><td>BERT、GPT、T5</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:14px;font-weight:800;color:#7c3aed;margin-bottom:8px">◆ 用 HuggingFace 做情感分析（5行代码）</div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>from transformers import pipeline
+
+# 加载预训练的情感分析模型（自动下载）
+classifier = pipeline("sentiment-analysis")
+
+results = classifier([
+    "This movie was absolutely fantastic!",
+    "I wasted two hours of my life on this.",
+    "It was okay, nothing special."
+])
+
+for r in results:
+    print(f"{r['label']}: {r['score']:.3f}")</code></pre>
+                <div class="key-point">HuggingFace Transformers 库提供了数千个预训练模型，通过 pipeline API 几行代码就能完成情感分析、文本翻译、问答、摘要等任务。"微调（Fine-tuning）"让你用自己的数据在预训练模型上继续训练，往往只需要少量数据就能达到很好效果。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: 迁移学习 -->
+          <div class="content-section" id="ch4-s5">
+            <div class="sec-head"><div class="sec-ico">⑤</div><h3>迁移学习：站在巨人肩膀上</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">从头训练大模型需要海量数据和大量计算资源。迁移学习：借用已经在大规模数据上训练好的模型，在自己的小数据集上微调，花很少代价获得很好效果。</p>
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>预训练（Pre-training）</strong><p>在海量通用数据上训练，让模型学到通用特征。ImageNet（1400万图片）上训练的 ResNet，学到了识别边缘、纹理、形状等通用视觉特征。GPT-3 在万亿词上训练，学到了语言的通用规律。</p></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>微调（Fine-tuning）</strong><p>冻结预训练模型的大部分层，只训练最后几层（或全部层用极小学习率）。你的任务数据（可以很少）引导模型把通用特征适配到特定任务。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code>import torchvision.models as models
+
+# 加载 ImageNet 预训练的 ResNet-18
+model = models.resnet18(pretrained=True)
+
+# 替换最后一层，适配你的任务（如识别3种花）
+model.fc = nn.Linear(model.fc.in_features, 3)
+
+# 只训练最后一层（冻结前面的层）
+for param in model.parameters():
+    param.requires_grad = False
+model.fc.requires_grad_(True)</code></pre></div></div>
+              </div>
+              <div class="analogy-box" style="margin-top:14px">
+                <div class="analogy-label">类比：专科培训</div>
+                <div class="analogy-text">一个医学博士（预训练模型）已经掌握了解剖学、生理学等通用知识。让他去做皮肤科（特定任务），只需要几个月的专科培训（微调），而不是从头读 8 年医学院（从头训练）。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S6: 实战 -->
+          <div class="content-section" id="ch4-s6">
+            <div class="sec-head"><div class="sec-ico">⑥</div><h3>实战：MNIST 手写数字识别（完整 PyTorch 代码）</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">MNIST 是深度学习的"Hello World"——识别手写的 0-9 数字（28×28 像素灰度图）。</p>
+              <pre style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:10px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 12px"><code>import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+# ① 数据加载 + 预处理
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.1307,), (0.3081,))  # MNIST 的均值和标准差
+])
+train_data = datasets.MNIST('./data', train=True,  download=True, transform=transform)
+test_data  = datasets.MNIST('./data', train=False, download=True, transform=transform)
+train_loader = DataLoader(train_data, batch_size=64, shuffle=True)
+test_loader  = DataLoader(test_data,  batch_size=64)
+
+# ② 定义模型（简单全连接网络）
+model = nn.Sequential(
+    nn.Flatten(),
+    nn.Linear(28*28, 256), nn.ReLU(),
+    nn.Dropout(0.3),         # Dropout 防止过拟合
+    nn.Linear(256, 128),     nn.ReLU(),
+    nn.Linear(128, 10)       # 10个数字类别
+)
+
+# ③ 训练
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+criterion = nn.CrossEntropyLoss()
+
+for epoch in range(5):
+    model.train()
+    for X_batch, y_batch in train_loader:
+        optimizer.zero_grad()
+        loss = criterion(model(X_batch), y_batch)
+        loss.backward()
+        optimizer.step()
+
+    # ④ 每轮评估
+    model.eval()
+    correct = 0
+    with torch.no_grad():
+        for X_batch, y_batch in test_loader:
+            correct += (model(X_batch).argmax(1) == y_batch).sum().item()
+    print(f"Epoch {epoch+1}: 测试集准确率 {correct/len(test_data):.3f}")</code></pre>
+              <div style="padding:10px 14px;background:#f0fdf4;border-left:3px solid #22c55e;border-radius:6px;font-size:12.5px;color:#166534">
+                <strong>动手练习：</strong>① 在 nn.Sequential 里把全连接层换成 SimpleCNN（上一节代码），对比准确率提升。② 把 Dropout(0.3) 改成 0.8，观察过拟合现象。③ 把 epoch 从 5 改成 1，观察训练不足的影响。
+              </div>
+            </div>
+          </div>
+
+          <!-- S7: 知识自测 -->
+          <div class="content-section" id="ch4-s7">
+            <div class="sec-head"><div class="sec-ico">⑦</div><h3>知识自测</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">点击选项查看解析。</p>
+              <div class="quiz-mc">
+
+                <div class="mc-item">
+                  <div class="mc-question">1. 神经网络中激活函数的主要作用是什么？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','加快训练速度是一些激活函数（如 ReLU）的副产品，但不是激活函数存在的根本原因。')"><span class="mc-opt-label">A</span>加快模型训练速度，减少计算量。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','正则化是防止过拟合的技术（如 Dropout、L2），激活函数的作用与正则化无关。')"><span class="mc-opt-label">B</span>防止模型过拟合，起到正则化作用。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！没有激活函数，无论多少层线性变换叠加，结果仍然是线性变换。激活函数引入非线性，使网络能够拟合任意复杂的非线性函数。')"><span class="mc-opt-label">C</span>引入非线性，使网络能拟合复杂函数。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','初始化权重用的是随机初始化（如 Xavier/He 初始化），不是激活函数的作用。')"><span class="mc-opt-label">D</span>初始化网络的权重参数，使训练更稳定。</div>
+                  </div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">2. 卷积神经网络（CNN）相比全连接网络处理图像的核心优势是什么？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','CNN 的准确率更高是结果，不是原因。理解"为什么"比记结论更重要。')"><span class="mc-opt-label">A</span>CNN 的准确率天生比全连接网络高。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！卷积核在图像上滑动（局部连接），且同一卷积核的参数在所有位置共享（权重共享）。这大幅减少了参数量，同时让网络学到位置无关的特征（猫无论在图片哪个位置都能被识别）。')"><span class="mc-opt-label">B</span>局部连接 + 权重共享，参数量少且能学位置无关特征。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','CNN 的池化层会减小图像尺寸，不是保持分辨率。而且 CNN 主要优势不在分辨率而在参数效率。')"><span class="mc-opt-label">C</span>能保持图像的原始分辨率，信息损失更少。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','CNN 并不要求图像必须是 RGB，它同样能处理灰度图（1通道）或任意通道数的图像。')"><span class="mc-opt-label">D</span>只能处理 RGB 彩色图像，不支持灰度图。</div>
+                  </div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">3. Transformer 相比 RNN 最关键的改进是什么？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','Transformer 并不一定参数更少，实际上大型 Transformer（GPT-4 等）参数量极其庞大。参数量不是核心改进点。')"><span class="mc-opt-label">A</span>Transformer 的参数量更少，更轻量。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','RNN 可以处理任意长度的序列，Transformer 也可以，这不是区别所在。')"><span class="mc-opt-label">B</span>Transformer 能处理更长的文本序列（RNN 不能）。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！自注意力让每个词可以直接"关注"序列中任意其他词，解决了 RNN 的长距离依赖问题。同时，所有位置可以并行计算（RNN 必须顺序处理），大幅提升训练效率。')"><span class="mc-opt-label">C</span>自注意力机制解决长距离依赖，且支持并行计算。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','Transformer 并不是专门为图像设计的，它最初用于 NLP。ViT（Vision Transformer）后来把它应用到图像，但这不是 Transformer 相对 RNN 的核心改进。')"><span class="mc-opt-label">D</span>Transformer 专门为图像处理设计，不适合文本。</div>
+                  </div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">4. 在 PyTorch 训练循环中，每步都必须调用 optimizer.zero_grad()，原因是什么？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','重置学习率用的是学习率调度器（scheduler），不是 zero_grad()。')"><span class="mc-opt-label">A</span>重置学习率到初始值，防止学习率衰减。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！PyTorch 默认会累积梯度（每次 backward() 把新梯度加到已有梯度上）。如果不清除，梯度会越来越大，导致错误的参数更新。每步训练前清零是标准做法。')"><span class="mc-opt-label">B</span>PyTorch 默认累积梯度，不清零会导致错误更新。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','清除模型权重会让训练从头开始，完全不对。zero_grad() 只清除梯度，不影响权重参数本身。')"><span class="mc-opt-label">C</span>清除上一批次的模型权重，让每批数据独立训练。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','DataLoader 处理数据加载，与 zero_grad() 无关。zero_grad() 是梯度管理操作。')"><span class="mc-opt-label">D</span>通知 DataLoader 加载下一批数据。</div>
+                  </div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">5. 迁移学习（Transfer Learning）最适合哪种场景？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','数据量极其充足时，从头训练往往能达到最好效果，不一定需要迁移学习。')"><span class="mc-opt-label">A</span>你有海量标注数据，计算资源也充足。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','迁移学习主要用于深度学习，不是传统机器学习（随机森林、决策树）。')"><span class="mc-opt-label">B</span>你的任务是传统机器学习，如用随机森林预测房价。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！迁移学习的核心价值：预训练模型已在大规模数据上学到了通用特征，你只需要少量标注数据进行微调，就能以极低代价适配到特定任务。这正好解决了标注数据少的问题。')"><span class="mc-opt-label">C</span>你的标注数据很少，但有一个相关领域的预训练模型。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','迁移学习减少了计算量，但通常仍需要 GPU。而且"没有 GPU"不是迁移学习的适用理由，而是硬件限制的独立问题。')"><span class="mc-opt-label">D</span>你没有 GPU，需要在 CPU 上训练。</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- S8: 小结 -->
+          <div class="content-section" id="ch4-s8">
+            <div class="sec-head"><div class="sec-ico">⑧</div><h3>本章小结</h3></div>
+            <div class="panel">
+              <div class="summary-box">
+                <div class="summary-title">第四章核心要点</div>
+                <ul class="summary-list">
+                  <li>神经元 = 加权求和 + 激活函数；激活函数引入非线性，让多层网络能拟合任意复杂函数；深度 = 多层隐藏层，每层学习越来越抽象的特征。</li>
+                  <li>PyTorch 核心：Tensor（支持 GPU 的数组）+ Autograd（自动计算梯度）+ 标准训练循环（zero_grad → forward → loss → backward → step）。</li>
+                  <li>CNN 通过局部连接 + 权重共享大幅减少参数，擅长提取图像的空间特征（边缘→形状→部件→物体），是图像任务的标准架构。</li>
+                  <li>Transformer 的自注意力机制让每个词直接关注序列中任意其他词，解决了 RNN 的长距离依赖问题，且支持并行计算——ChatGPT、BERT 都基于此架构。</li>
+                  <li>迁移学习：用预训练模型（ImageNet/GPT）的通用特征，在少量自有数据上微调，以极低成本适配特定任务。是实际项目的首选策略。</li>
+                  <li>训练深度学习模型的关键超参数：学习率、batch size、epoch 数、网络深度/宽度、Dropout 比例。调参是核心技能。</li>
+                  <li>ResNet 的残差连接解决了深层网络的梯度消失问题；Dropout 通过随机关闭神经元防止过拟合；BatchNorm 稳定训练过程。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- S9: 词汇表 -->
+          <div class="content-section" id="ch4-s9">
+            <div class="sec-head"><div class="sec-ico">⑨</div><h3>词汇表</h3></div>
+            <div class="panel">
+              <div class="glossary">
+                <div class="glossary-item"><div class="glossary-term">激活函数（Activation Function）</div><div class="glossary-def">神经元输出前经过的非线性变换。ReLU（max(0,x)）是最常用的；Sigmoid 用于二分类输出；Softmax 用于多分类输出。</div></div>
+                <div class="glossary-item"><div class="glossary-term">卷积核（Kernel / Filter）</div><div class="glossary-def">CNN 中在图像上滑动的小矩阵（如 3×3），提取局部特征。同一卷积核的权重在所有位置共享，大幅减少参数量。</div></div>
+                <div class="glossary-item"><div class="glossary-term">池化（Pooling）</div><div class="glossary-def">对特征图进行下采样（如取 2×2 区域的最大值），减少参数量，保留显著特征，增强位置不变性。</div></div>
+                <div class="glossary-item"><div class="glossary-term">自注意力（Self-Attention）</div><div class="glossary-def">Transformer 的核心机制。让每个词计算与序列中所有其他词的相关性，加权求和得到新表示。解决长距离依赖问题。</div></div>
+                <div class="glossary-item"><div class="glossary-term">Dropout</div><div class="glossary-def">训练时随机关闭一定比例的神经元，防止模型对特定神经元过度依赖。推理时恢复所有神经元，是常用正则化技术。</div></div>
+                <div class="glossary-item"><div class="glossary-term">迁移学习（Transfer Learning）</div><div class="glossary-def">把在大规模数据上预训练好的模型，迁移到新的相关任务上。通过微调少量层，以低成本适配特定任务。</div></div>
+                <div class="glossary-item"><div class="glossary-term">微调（Fine-tuning）</div><div class="glossary-def">在预训练模型的基础上，用任务特定的小数据集继续训练，让通用特征适配到特定任务。</div></div>
+                <div class="glossary-item"><div class="glossary-term">批大小（Batch Size）</div><div class="glossary-def">每次梯度更新使用的样本数量。大 batch 训练稳定但可能陷入局部最优；小 batch 噪声大但正则化效果好。</div></div>
+                <div class="glossary-item"><div class="glossary-term">残差连接（Residual Connection）</div><div class="glossary-def">ResNet 提出的技术：把输入直接加到某几层后的输出上（跨层连接）。解决了深层网络的梯度消失问题，让训练数百层的网络成为可能。</div></div>
+                <div class="glossary-item"><div class="glossary-term">特征图（Feature Map）</div><div class="glossary-def">卷积层的输出，每个卷积核产生一个特征图，表示图像在该卷积核捕捉的特征（如横线、竖线）的响应强度。</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>

@@ -1,332 +1,59 @@
       <!-- Chapter 3 -->
       <div class="ch-panel" id="ch-3">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big">03</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 03</div><div class="ch-name">机器学习入门</div></div></div>
-          <p class="ch-desc">理解监督学习、无监督学习、评估指标和经典建模流程。</p>
+          <div class="ch-badge"><div class="ch-big">03</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 03</div><div class="ch-name">提示词工程</div></div></div>
+          <p class="ch-desc">掌握与大模型对话的核心技能：系统性地设计提示词，控制模型的角色、输出格式与行为边界。</p>
         </div>
         <div class="content-body">
 
-          <!-- S0: 概览 -->
-          <div class="content-section" id="ch3-s0">
-            <div class="sec-head"><div class="sec-ico">◈</div><h3>本章概览</h3></div>
+          <!-- S1: 提示词工程 -->
+          <div class="content-section" id="ch5-s1">
+            <div class="sec-head"><div class="sec-ico">①</div><h3>提示词工程（Prompt Engineering）</h3></div>
             <div class="panel">
-              <div class="overview-grid">
-                <div class="overview-card"><div class="ov-num">5~8h</div><div class="ov-label">建议学习时间</div></div>
-                <div class="overview-card"><div class="ov-num">6</div><div class="ov-label">核心算法</div></div>
-                <div class="overview-card"><div class="ov-num">1</div><div class="ov-label">完整实战项目</div></div>
-                <div class="overview-card"><div class="ov-num">5</div><div class="ov-label">自测题</div></div>
-              </div>
-              <div class="key-point" style="margin-top:16px"><strong>本章目标：</strong>能独立完成一个完整的机器学习任务——加载数据、预处理、选择算法、训练模型、评估效果、解读指标、识别过拟合/欠拟合。</div>
-              <div style="margin-top:12px;padding:10px 14px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:6px;font-size:13px;color:#1e3a5f;line-height:1.7"><strong>学习路径：</strong>三大范式概览 → 监督学习算法（回归/分类/随机森林）→ 无监督学习（K-Means/PCA）→ 模型评估指标 → 特征工程 → 完整实战项目。</div>
-            </div>
-          </div>
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">提示词是和大模型交互的唯一接口。写好提示词不是"技巧"，而是系统性的工程思维。</p>
 
-          <!-- S1: 三大范式 -->
-          <div class="content-section" id="ch3-s1">
-            <div class="sec-head"><div class="sec-ico">①</div><h3>机器学习的三大范式</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">机器学习按"数据是否带标签"分为三大类，选哪条路取决于你手里有什么数据。</p>
+              <div class="flow-steps" style="margin-bottom:16px">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>角色 + 任务 + 约束 + 格式（RTCF 框架）</strong><p>好的提示词包含四个要素：你是谁（角色）、做什么（任务）、不能做什么（约束）、怎么输出（格式）。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code># 差的提示词
+"帮我写产品描述"
+
+# 好的提示词（RTCF）
+"""你是一位擅长转化率优化的电商文案专家（角色）。
+为一款无线蓝牙耳机写一段产品描述（任务）。
+不要夸大功能，不要使用专业术语（约束）。
+格式：3句话，第1句突出核心卖点，第2句场景化使用体验，
+第3句行动号召。（格式）"""</code></pre></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>少样本提示（Few-Shot Prompting）</strong><p>给模型几个例子，让它理解你想要的输出模式。对于格式固定的任务（数据提取、分类、格式转换）效果显著。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code>"""从客户评论中提取情感和关键问题。
+
+例1：
+评论：产品质量很好，但快递太慢了
+情感：正面
+问题：物流速度
+
+例2：
+评论：客服态度恶劣，退款困难
+情感：负面
+问题：客服、售后
+
+请处理：{用户评论}"""</code></pre></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>思维链（Chain-of-Thought, CoT）</strong><p>对于需要推理的问题，让模型一步步思考再给出答案。比直接要答案准确率高很多。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code>"请一步步分析这道题，列出推理过程，最后给出答案。"
+# 或者更简单：
+"Let's think step by step."  # 这一句话对复杂推理有显著提升</code></pre></div></div>
+              </div>
+
               <div class="compare-table">
                 <table>
-                  <thead><tr><th>范式</th><th>数据形式</th><th>目标</th><th>典型算法</th><th>典型应用</th></tr></thead>
+                  <thead><tr><th>技术</th><th>适用场景</th><th>核心作用</th></tr></thead>
                   <tbody>
-                    <tr><td><strong>监督学习</strong></td><td>有输入 X 和标签 Y</td><td>学习 X→Y 的映射函数</td><td>线性回归、决策树、随机森林</td><td>房价预测、邮件分类、疾病诊断</td></tr>
-                    <tr><td><strong>无监督学习</strong></td><td>只有输入 X，无标签</td><td>发现数据的内在结构</td><td>K-Means、PCA、自编码器</td><td>客户分群、降维、异常检测</td></tr>
-                    <tr><td><strong>强化学习</strong></td><td>环境交互的奖惩信号</td><td>学习使累计奖励最大的策略</td><td>Q-Learning、PPO</td><td>游戏 AI、机器人控制</td></tr>
+                    <tr><td>Zero-shot</td><td>简单明确的任务</td><td>直接描述任务，无需示例</td></tr>
+                    <tr><td>Few-shot</td><td>格式固定、模式重复的任务</td><td>给例子让模型理解输出格式</td></tr>
+                    <tr><td>Chain-of-Thought</td><td>数学推理、逻辑分析、多步骤问题</td><td>引导模型逐步推理，减少直觉性错误</td></tr>
+                    <tr><td>System Prompt</td><td>持续性对话场景</td><td>设定模型的身份、行为边界和约束</td></tr>
                   </tbody>
                 </table>
               </div>
-              <div class="key-point" style="margin-top:14px">本章重点：监督学习和无监督学习。强化学习需要更多基础，属于进阶方向。</div>
             </div>
           </div>
 
-          <!-- S2: 监督学习 -->
-          <div class="content-section" id="ch3-s2">
-            <div class="sec-head"><div class="sec-ico">②</div><h3>监督学习：回归与分类</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">监督学习分两大类：输出是<strong>连续数值</strong>叫"回归"，输出是<strong>类别</strong>叫"分类"。</p>
-              <div style="margin-bottom:20px">
-                <div style="font-size:14px;font-weight:800;color:#1e40af;margin-bottom:8px">◆ 线性回归（Linear Regression）</div>
-                <p style="font-size:13px;color:var(--light-muted);margin-bottom:10px">找一条直线（或超平面）拟合数据。本质：最小化预测值与真实值之差的平方和（MSE）。</p>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>from sklearn.linear_model import LinearRegression
-import numpy as np
-
-# 面积（平方米）预测房价（万元）
-X = np.array([[50],[70],[90],[110],[130]])
-y = np.array([100, 140, 180, 220, 260])
-
-model = LinearRegression()
-model.fit(X, y)
-
-pred = model.predict([[100]])
-print(f"预测房价: {pred[0]:.1f} 万元")         # 约 200 万元
-print(f"斜率: {model.coef_[0]:.1f} 万元/㎡")</code></pre>
-                <div style="padding:8px 12px;background:#eff6ff;border-left:3px solid #3b82f6;border-radius:4px;font-size:12.5px;color:#1e40af">局限：只能拟合线性关系。如果规律是非线性的，线性回归效果会很差。</div>
-              </div>
-              <div style="margin-bottom:20px">
-                <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:8px">◆ 决策树（Decision Tree）</div>
-                <div class="analogy-box" style="margin-bottom:10px">
-                  <div class="analogy-label">类比：医生的诊断思路</div>
-                  <div class="analogy-text">医生问："有发烧吗？" → 有 → "有咳嗽吗？" → 有 → "超过一周吗？" → 是 → "可能支气管炎"。决策树就是把这种逐层筛选的逻辑自动学出来。</div>
-                </div>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>from sklearn.tree import DecisionTreeClassifier
-from sklearn.datasets import load_iris
-
-iris = load_iris()
-X, y = iris.data, iris.target
-
-clf = DecisionTreeClassifier(max_depth=3)  # 限制深度防过拟合
-clf.fit(X, y)
-print(f"训练集准确率: {clf.score(X, y):.3f}")</code></pre>
-                <div style="padding:8px 12px;background:#f0fbf9;border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;color:#065f46">优点：可解释性强。局限：单棵树容易过拟合——解决方案是随机森林。</div>
-              </div>
-              <div>
-                <div style="font-size:14px;font-weight:800;color:#7c3aed;margin-bottom:8px">◆ 随机森林（Random Forest）</div>
-                <p style="font-size:13px;color:var(--light-muted);margin-bottom:10px">训练多棵决策树，每棵树用不同的随机数据子集，最终投票（分类）或取均值（回归）。</p>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-rf = RandomForestClassifier(n_estimators=100)
-rf.fit(X_train, y_train)
-print(f"测试集准确率: {rf.score(X_test, y_test):.3f}")</code></pre>
-                <div class="key-point">随机森林是"集成学习"的代表：多个弱模型组合成强模型。生产环境中，随机森林和 XGBoost 是结构化数据任务的首选。</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- S3: 无监督学习 -->
-          <div class="content-section" id="ch3-s3">
-            <div class="sec-head"><div class="sec-ico">③</div><h3>无监督学习：聚类与降维</h3></div>
-            <div class="panel">
-              <div style="margin-bottom:20px">
-                <div style="font-size:14px;font-weight:800;color:#b45309;margin-bottom:8px">◆ K-Means 聚类</div>
-                <p style="font-size:13px;color:var(--light-muted);margin-bottom:8px">把数据分成 K 个组，每组内的点尽量相似，组间尽量不同。K 是人为指定的。</p>
-                <div class="flow-steps" style="margin-bottom:10px">
-                  <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>随机初始化 K 个中心点</strong><p>从数据中随机选 K 个点作为初始聚类中心。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>分配每个点到最近的中心</strong><p>计算每个数据点到 K 个中心的距离，划入距离最近的那个组。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>更新中心点，重复直到收敛</strong><p>重新计算每组所有点的均值作为新中心点，重复步骤 2-3 直到中心不再移动。</p></div></div>
-                </div>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 8px"><code>from sklearn.cluster import KMeans
-
-# 应用场景：按购买行为把用户分群
-kmeans = KMeans(n_clusters=3, random_state=42)
-kmeans.fit(X)
-labels = kmeans.labels_           # 每个用户属于哪个群（0/1/2）
-centers = kmeans.cluster_centers_ # 3个群的中心点特征</code></pre>
-                <div style="padding:8px 12px;background:#fff7ed;border-left:3px solid #f97316;border-radius:4px;font-size:12.5px;color:#7c2d12">局限：K 必须预先指定，结果受初始随机点影响，且只能发现球形簇。</div>
-              </div>
-              <div>
-                <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:8px">◆ PCA 降维（主成分分析）</div>
-                <div class="analogy-box" style="margin-bottom:10px">
-                  <div class="analogy-label">类比：给 3D 物体拍照</div>
-                  <div class="analogy-text">PCA 就像从最好角度给 3D 物体拍照——选一个能看到最多细节的角度（方差最大的方向），把 3D 信息压缩成 2D 图片，同时损失最少信息。</div>
-                </div>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>from sklearn.decomposition import PCA
-
-pca = PCA(n_components=2)
-X_2d = pca.fit_transform(X)  # 把高维数据压缩到 2 维，方便可视化
-
-print(f"两个主成分解释了 {pca.explained_variance_ratio_.sum():.1%} 的方差")
-# 通常前几个主成分能解释 80-90% 的方差</code></pre>
-              </div>
-            </div>
-          </div>
-
-          <!-- S4: 模型评估 -->
-          <div class="content-section" id="ch3-s4">
-            <div class="sec-head"><div class="sec-ico">④</div><h3>模型评估：如何判断模型好不好？</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">准确率不是万能的。了解各指标的含义，才能选对评估标准。</p>
-              <div class="compare-table" style="margin-bottom:16px">
-                <table>
-                  <thead><tr><th>指标</th><th>公式</th><th>含义</th><th>什么时候最重要？</th></tr></thead>
-                  <tbody>
-                    <tr><td>准确率（Accuracy）</td><td>正确预测数 / 总数</td><td>总体预测对了多少</td><td>类别均衡时适用；极不均衡时会误导</td></tr>
-                    <tr><td>精确率（Precision）</td><td>真正例 / 预测正例</td><td>预测为"垃圾"中，真的是垃圾的比例</td><td>误报代价高时</td></tr>
-                    <tr><td>召回率（Recall）</td><td>真正例 / 实际正例</td><td>所有真垃圾中，被正确识别的比例</td><td>漏报代价高时（癌症漏诊、欺诈漏检）</td></tr>
-                    <tr><td>F1 分数</td><td>2×P×R/(P+R)</td><td>精确率和召回率的调和均值</td><td>两者都重要时的综合指标</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div style="margin-bottom:16px;padding:10px 14px;background:#fff7ed;border-left:3px solid #f97316;border-radius:6px;font-size:12.5px;color:#7c2d12;line-height:1.7">
-                <strong>经典陷阱：</strong>数据集中 99% 是正常邮件，1% 是垃圾。"永远预测正常"的模型准确率 99%——但召回率 0%，完全没用。在不均衡数据上，准确率会严重误导。
-              </div>
-              <div>
-                <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px">▸ 过拟合与欠拟合</div>
-                <div class="risk-grid" style="grid-template-columns:1fr 1fr 1fr;gap:12px">
-                  <div class="risk-card" style="border-color:#ef4444"><div class="risk-title" style="color:#b91c1c">过拟合（Overfitting）</div><div class="risk-body">训练集准确率极高，测试集差很多。模型记住了噪声，没有学到真实规律。</div><div class="risk-example"><strong>解决：</strong>增加数据；降低模型复杂度；正则化（L1/L2）；Dropout。</div></div>
-                  <div class="risk-card" style="border-color:#f97316"><div class="risk-title" style="color:#c2410c">欠拟合（Underfitting）</div><div class="risk-body">训练集和测试集准确率都很低。模型太简单，无法捕捉规律。</div><div class="risk-example"><strong>解决：</strong>增加模型复杂度；增加特征；训练更长；换更强大的模型。</div></div>
-                  <div class="risk-card" style="border-color:#22c55e"><div class="risk-title" style="color:#15803d">刚好（Good Fit）</div><div class="risk-body">训练集和测试集准确率都高且接近。模型学到了真实规律。</div><div class="risk-example"><strong>判断：</strong>训练误差-测试误差差距小，测试集误差也足够低。</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- S5: 特征工程 -->
-          <div class="content-section" id="ch3-s5">
-            <div class="sec-head"><div class="sec-ico">⑤</div><h3>特征工程：让数据更好地被模型理解</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">"垃圾进，垃圾出"——模型效果上限取决于特征质量。特征工程通常比换模型更有效。</p>
-              <div class="flow-steps">
-                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>归一化 / 标准化</strong><p>不同特征数值范围差异巨大时（年龄 18-60 vs 年收入 3万-50万），模型会被数值大的特征主导。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code>from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)  # 均值0，标准差1</code></pre></div></div>
-                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>类别编码</strong><p>模型只能处理数字，文字类别需要转换。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code># One-Hot 编码：北京/上海/广州 → [1,0,0]/[0,1,0]/[0,0,1]
-df_encoded = pd.get_dummies(df, columns=["city"])</code></pre></div></div>
-                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>交叉验证（K-Fold Cross-Validation）</strong><p>把数据分成 K 份轮流训练/验证，最终取均值。比单次划分更可靠，减少偶然性。</p><pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;font-size:12px;margin:8px 0 0"><code>from sklearn.model_selection import cross_val_score
-
-scores = cross_val_score(rf, X, y, cv=5)
-print(f"5折CV: {scores.mean():.3f} ± {scores.std():.3f}")</code></pre></div></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- S6: 实战 -->
-          <div class="content-section" id="ch3-s6">
-            <div class="sec-head"><div class="sec-ico">⑥</div><h3>实战：Titanic 生存预测（完整流程）</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">Titanic 是机器学习经典入门项目。给定乘客信息（年龄/性别/舱位等），预测是否生还。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:10px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 12px"><code>import pandas as pd
-import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import classification_report
-
-# ① 加载数据
-df = sns.load_dataset("titanic")
-
-# ② 特征选择 + 处理缺失值
-features = ["pclass", "sex", "age", "sibsp", "parch", "fare"]
-df = df[features + ["survived"]].dropna()
-
-# ③ 类别编码：sex → 0/1
-df["sex"] = LabelEncoder().fit_transform(df["sex"])
-
-# ④ 划分训练集/测试集
-X = df[features]
-y = df["survived"]
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-
-# ⑤ 训练模型
-model = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
-model.fit(X_train, y_train)
-
-# ⑥ 评估
-y_pred = model.predict(X_test)
-print(classification_report(y_test, y_pred, target_names=["未生还","生还"]))
-
-# ⑦ 特征重要性
-for name, imp in zip(features, model.feature_importances_):
-    print(f"{name:8s}: {'█' * int(imp * 50)} {imp:.3f}")</code></pre>
-              <div style="padding:10px 14px;background:#f0fdf4;border-left:3px solid #22c55e;border-radius:6px;font-size:12.5px;color:#166534"><strong>动手练习：</strong>① 尝试添加 fare 的对数特征，准确率有无提升？② 把 max_depth 从 5 改成 20，观察过拟合现象。③ 用 confusion_matrix 找出模型在哪类样本上出错最多。</div>
-            </div>
-          </div>
-
-          <!-- S7: 知识自测 -->
-          <div class="content-section" id="ch3-s7">
-            <div class="sec-head"><div class="sec-ico">⑦</div><h3>知识自测</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">点击选项查看解析。</p>
-              <div class="quiz-mc">
-
-                <div class="mc-item">
-                  <div class="mc-question">1. 你想把公司 10 万名客户按购买行为自动分成若干群体（没有预先定义的群体标签），应使用哪种学习范式？</div>
-                  <div class="mc-options">
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','监督学习需要有标签的训练数据（如"高价值/低价值"），题目中没有预先定义的标签。')"><span class="mc-opt-label">A</span>监督学习（分类任务）</div>
-                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！没有标签、目标是发现数据内在分组结构，是无监督学习的典型场景。K-Means 聚类是最常用方法。')"><span class="mc-opt-label">B</span>无监督学习（聚类任务）</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','强化学习用于智能体在环境中通过奖惩信号学习策略，不适用于客户分群。')"><span class="mc-opt-label">C</span>强化学习</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','监督学习做回归的目标是预测连续数值（如销售额），不是发现客户群体。')"><span class="mc-opt-label">D</span>监督学习（回归任务）</div>
-                  </div>
-                </div>
-
-                <div class="mc-item">
-                  <div class="mc-question">2. 一个癌症筛查 AI 的召回率（Recall）很低，这意味着什么？</div>
-                  <div class="mc-options">
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','精确率低才意味着误报多（把健康人判断为患者）。召回率低是漏报问题——不同的指标，不同的含义。')"><span class="mc-opt-label">A</span>模型误报率高（把很多健康人判断为患者）。</div>
-                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！召回率 = 真正例 / 实际正例总数。召回率低意味着大量真实癌症患者被漏检（假阴性多）。医疗诊断中漏报通常比误报危险得多。')"><span class="mc-opt-label">B</span>很多真实癌症患者被漏检（假阴性多）。</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','模型在训练集上表现差是欠拟合的症状，与召回率的定义无关。')"><span class="mc-opt-label">C</span>模型在训练集上的表现很差。</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','召回率和整体准确率是独立指标。召回率低时整体准确率可能仍然很高（如果健康人占多数）。')"><span class="mc-opt-label">D</span>模型的整体准确率很低。</div>
-                  </div>
-                </div>
-
-                <div class="mc-item">
-                  <div class="mc-question">3. 训练集准确率 98%，测试集准确率 72%，模型发生了什么？</div>
-                  <div class="mc-options">
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','欠拟合表现为训练集和测试集准确率都低。训练集 98% 说明模型在训练数据上拟合过好，不是欠拟合。')"><span class="mc-opt-label">A</span>欠拟合（模型太简单）</div>
-                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！训练集准确率远高于测试集，说明模型记住了训练数据的细节（包括噪声），泛化能力差——这是过拟合的典型特征。')"><span class="mc-opt-label">B</span>过拟合（模型记住了训练集噪声）</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','数据量不足是导致过拟合的原因之一，但症状描述本身就是过拟合（训练好、测试差）。')"><span class="mc-opt-label">C</span>训练数据量不足，模型完全没有学到规律</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','评估指标问题不会造成训练集和测试集结果之间的巨大差距。')"><span class="mc-opt-label">D</span>评估指标选择错误</div>
-                  </div>
-                </div>
-
-                <div class="mc-item">
-                  <div class="mc-question">4. 对有 [年龄(18-80), 年收入(30000-500000), 是否有车(0或1)] 三个特征的数据集，哪个预处理操作最重要？</div>
-                  <div class="mc-options">
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','PCA 用于降维，这个数据集只有 3 个特征，没有高维度问题，不需要降维。')"><span class="mc-opt-label">A</span>使用 PCA 降维到 2 个特征</div>
-                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！年龄范围约 62，年收入范围约 470000，差距悬殊。不归一化，模型会被年收入主导，年龄和有无车的影响几乎被淹没。')"><span class="mc-opt-label">B</span>对特征进行归一化/标准化，消除量纲差异</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','"是否有车"已经是 0/1 编码，不需要再做 One-Hot。One-Hot 适用于多类别的文字特征（如城市名）。')"><span class="mc-opt-label">C</span>对所有特征做 One-Hot 编码</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','如果数据没有缺失值，dropna() 不会改变任何内容。应先检查是否真的有缺失值。')"><span class="mc-opt-label">D</span>直接用 dropna() 删除所有行</div>
-                  </div>
-                </div>
-
-                <div class="mc-item">
-                  <div class="mc-question">5. 随机森林相比单棵决策树的核心优势是什么？</div>
-                  <div class="mc-options">
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','随机森林由多棵树组成，通常比单棵树慢很多，训练速度不是它的优势。')"><span class="mc-opt-label">A</span>训练速度更快，计算资源消耗更少</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','单棵决策树可解释性更强（可直接打印决策路径）。随机森林是黑盒，可解释性较差。')"><span class="mc-opt-label">B</span>模型结构更简单，可解释性更强</div>
-                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！单棵决策树容易过拟合（记住训练集噪声）。随机森林训练多棵树，每棵用随机数据子集，最终投票——多个弱模型的集成显著降低过拟合，泛化能力更强。')"><span class="mc-opt-label">C</span>通过多棵树投票降低过拟合，泛化能力更强</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','处理缺失值是数据预处理阶段的工作，与随机森林相对于决策树的核心优势无关。')"><span class="mc-opt-label">D</span>能自动处理缺失值，不需要预处理</div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- S8: 小结 -->
-          <div class="content-section" id="ch3-s8">
-            <div class="sec-head"><div class="sec-ico">⑧</div><h3>本章小结</h3></div>
-            <div class="panel">
-              <div class="summary-box">
-                <div class="summary-title">第三章核心要点</div>
-                <ul class="summary-list">
-                  <li>机器学习三大范式：监督学习（有标签）、无监督学习（无标签）、强化学习（奖惩信号）。选哪条路取决于手里有什么数据。</li>
-                  <li>监督学习分两类：输出连续数值叫"回归"（房价预测），输出类别叫"分类"（垃圾邮件过滤）。</li>
-                  <li>决策树可解释性强但容易过拟合；随机森林通过多棵树投票显著降低过拟合，是结构化数据的首选。</li>
-                  <li>K-Means：无标签数据按相似度分组；PCA：把高维数据压缩到低维，保留最大方差。</li>
-                  <li>准确率不是万能的——不均衡数据用精确率/召回率/F1；医疗等高风险场景优先保障召回率（宁可误报，不可漏报）。</li>
-                  <li>过拟合（训练好测试差）：模型太复杂，解决方法是正则化、降低复杂度、增加数据；欠拟合（都差）：模型太简单，换更强大的模型。</li>
-                  <li>特征工程（归一化/编码/选择）通常比换模型更能提升效果；交叉验证比单次划分更可靠。</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- S9: 词汇表 -->
-          <div class="content-section" id="ch3-s9">
-            <div class="sec-head"><div class="sec-ico">⑨</div><h3>词汇表</h3></div>
-            <div class="panel">
-              <div class="glossary">
-                <div class="glossary-item"><div class="glossary-term">监督学习（Supervised Learning）</div><div class="glossary-def">使用带标签的训练数据（输入 X + 正确答案 Y）训练模型，学习 X→Y 的映射函数。</div></div>
-                <div class="glossary-item"><div class="glossary-term">无监督学习（Unsupervised Learning）</div><div class="glossary-def">只有输入 X，没有标签，目标是发现数据内在结构（聚类/降维/异常检测）。</div></div>
-                <div class="glossary-item"><div class="glossary-term">过拟合（Overfitting）</div><div class="glossary-def">模型在训练集上表现极好，但在新数据上表现差。根源：模型记住了训练数据的噪声而非真实规律。</div></div>
-                <div class="glossary-item"><div class="glossary-term">欠拟合（Underfitting）</div><div class="glossary-def">模型在训练集和测试集上都表现差。根源：模型太简单，无法捕捉数据的规律。</div></div>
-                <div class="glossary-item"><div class="glossary-term">精确率（Precision）</div><div class="glossary-def">预测为正例的样本中，真正是正例的比例。误报代价高时优先优化。</div></div>
-                <div class="glossary-item"><div class="glossary-term">召回率（Recall）</div><div class="glossary-def">所有真实正例中，被模型正确识别的比例。漏报代价高时（如癌症漏诊）优先优化。</div></div>
-                <div class="glossary-item"><div class="glossary-term">交叉验证（Cross-Validation）</div><div class="glossary-def">把数据分成 K 份轮流训练/验证，取均值作为最终评估。比单次划分更可靠，减少偶然性。</div></div>
-                <div class="glossary-item"><div class="glossary-term">随机森林（Random Forest）</div><div class="glossary-def">训练多棵决策树，每棵用随机数据子集，最终投票/取均值。集成学习的代表，泛化能力强于单棵树。</div></div>
-                <div class="glossary-item"><div class="glossary-term">特征工程（Feature Engineering）</div><div class="glossary-def">对原始数据进行变换（归一化/编码/选择/创建新特征），提升模型输入质量。通常比换模型更有效。</div></div>
-                <div class="glossary-item"><div class="glossary-term">K-Means</div><div class="glossary-def">无监督聚类算法，把数据分成 K 个组，每组内部尽量相似，组间尽量不同。K 需要人为指定。</div></div>
-              </div>
-            </div>
-          </div>
 
         </div>
       </div>

@@ -314,6 +314,29 @@
       background: var(--accent-dim);
     }
 
+    /* group separator */
+    .card-group-label {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 14px;
+      font-size: 11px; font-weight: 800; letter-spacing: .14em;
+      color: var(--muted); text-transform: uppercase;
+      margin-top: 8px;
+    }
+    .card-group-label::before,
+    .card-group-label::after {
+      content: "";
+      flex: 1; height: 1px;
+      background: var(--line);
+    }
+    .card-group-label::before { flex: 0 0 0; }
+
+    /* elective cards — slightly dimmed accent */
+    .chapter-card.elective .card-num { color: #7dd3c0; }
+    .chapter-card.elective:hover {
+      border-color: rgba(0,212,170,.25);
+      box-shadow: 0 0 20px rgba(0,212,170,.07), 0 6px 18px rgba(0,0,0,.25);
+    }
+
     /* ══════════════════════════════
        CONTENT VIEW
     ══════════════════════════════ */
