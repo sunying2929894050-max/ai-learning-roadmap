@@ -1,0 +1,25 @@
+# systemd unit — copy to /etc/systemd/system/llm-proxy.service
+# then: sudo systemctl daemon-reload && sudo systemctl enable --now llm-proxy
+#
+# Adjust User, WorkingDirectory, and ExecStart paths to match your server.
+
+[Unit]
+Description=AI Learning Roadmap — LLM Proxy
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/llm-proxy
+EnvironmentFile=/opt/llm-proxy/.env
+ExecStart=/opt/llm-proxy/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8787 --workers 1
+Restart=on-failure
+RestartSec=5
+# Harden
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/llm-proxy
+
+[Install]
+WantedBy=multi-user.target
