@@ -194,7 +194,19 @@
   <div class="content-section" id="ch6-s5">
     <div class="sec-head"><div class="sec-ico">🧮</div><h3>语义运算实验室</h3></div>
     <div class="panel" style="display:grid;gap:20px">
-      <p style="font-size:13px;color:var(--light-muted)">以下演示使用内置的预计算词向量（8维，设计以使经典语义关系成立），全部纯客户端，无需网络。</p>
+      <p style="font-size:13px;color:var(--light-muted)">以下演示使用真实 GloVe 6B 50d 词向量（48个词，离线打包），全部纯客户端，无需网络。数字会落在真实区间（如 cat-dog ≈ 92%，king 类比 ≈ 86%）。</p>
+
+      <!-- 反直觉教学点 -->
+      <div style="padding:14px 16px;background:linear-gradient(135deg,#fef3c7,#fff7ed);border:1.5px solid rgba(245,158,11,.3);border-radius:10px">
+        <div style="font-size:11px;font-weight:800;color:#92400e;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">⚡ 反直觉发现：反义词在 embedding 里其实很接近</div>
+        <p style="font-size:13px;line-height:1.7;color:#78350f;margin:0">
+          试试把 <strong>good</strong> 和 <strong>bad</strong> 输入相似度计算——结果约 <strong>80%</strong>，不是负数。<br>
+          <em>为什么？</em>因为 embedding 是从大量文本的共现统计中学出来的，而不是从"语义对立性"学出来的。<strong>good</strong> 和 <strong>bad</strong> 出现在极其相似的上下文里：
+          "this movie is good/bad"、"it made me feel good/bad"、"the news is good/bad"……
+          同样的句式、同样的前后词，所以两者的向量方向非常接近。<br><br>
+          这是 embedding 的一个重要局限：<strong>它编码的是"分布相似性"（distributional similarity），不是"含义对立性"</strong>。要区分正负情感，需要专门设计带情感标注的 embedding，或者在训练任务里加入情感分类目标。
+        </p>
+      </div>
 
       <!-- 类比运算 -->
       <div>
