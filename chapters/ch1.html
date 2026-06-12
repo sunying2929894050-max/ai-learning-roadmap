@@ -1,0 +1,371 @@
+      <div class="ch-panel" id="ch-1">
+        <div class="ch-header">
+          <div class="ch-badge">
+            <div class="ch-big">01</div>
+            <div class="ch-vline"></div>
+            <div><div class="ch-label">Chapter 01</div><div class="ch-name">AI 基础概念</div></div>
+          </div>
+          <p class="ch-desc">建立对人工智能、数据、模型和应用场景的整体认知。读完本章，无需查阅其他资料，你就能独立解释 AI 是什么、如何工作、有哪些风险。</p>
+        </div>
+        <div class="content-body">
+
+          <!-- S0: 概览 -->
+          <div class="content-section" id="ch1-s0">
+            <div class="sec-head"><div class="sec-ico">▦</div><h3>本章概览</h3></div>
+            <div class="overview-grid">
+              <div class="overview-card"><div class="overview-num">2~3h</div><div class="overview-label">预计学习时间</div></div>
+              <div class="overview-card"><div class="overview-num">8</div><div class="overview-label">核心概念</div></div>
+              <div class="overview-card"><div class="overview-num">5</div><div class="overview-label">知识自测题</div></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="note-block">本章是整个 AI 学习路线的起点。<strong>不需要</strong>任何编程或数学基础。建议按顺序阅读，每读完一节思考一分钟：这个概念我能用自己的话解释吗？</div>
+            </div>
+          </div>
+
+          <!-- S1: AI 是什么 -->
+          <div class="content-section" id="ch1-s1">
+            <div class="sec-head"><div class="sec-ico">⬡</div><h3>AI 是什么：从生活开始</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <p style="font-size:14px;color:var(--light-muted);line-height:1.8">你每天都在使用 AI，只是可能没有意识到：</p>
+              <div class="lesson-grid">
+                <div class="lesson-card"><div class="l-ico">📱</div><strong>手机人脸解锁</strong><p>AI 学习了你的脸部特征，能在不同光线、角度下识别你，而不是用固定规则匹配像素点。</p></div>
+                <div class="lesson-card"><div class="l-ico">🎵</div><strong>音乐/视频推荐</strong><p>根据你的收听/观看历史，预测你下一首想听什么——每个人看到的推荐都不一样。</p></div>
+                <div class="lesson-card"><div class="l-ico">💬</div><strong>输入法联想词</strong><p>你打"明天"，输入法预测你接下来要输"天气"——它从你的打字习惯中学习了规律。</p></div>
+                <div class="lesson-card"><div class="l-ico">📧</div><strong>垃圾邮件过滤</strong><p>邮件客户端自动识别并过滤推销邮件。没有人写了规则告诉它什么是垃圾邮件——它是从大量邮件中学会的。</p></div>
+              </div>
+              <div class="analogy-box">
+                <div class="analogy-label">💡 类比理解：AI vs 传统软件</div>
+                <div class="analogy-text"><strong>传统软件</strong>就像一本食谱：程序员写好每一步规则（"如果邮件包含'优惠券'就标记为垃圾"），计算机照着执行，遇到没写过的情况就不会处理。<br><br><strong>AI</strong> 更像一个有经验的厨师：通过大量尝试和反馈，自己总结出怎么做菜更好，遇到新食材也能举一反三。</div>
+              </div>
+              <div class="concept-root"><strong>人工智能（AI，Artificial Intelligence）的定义</strong><p>让计算机系统能够完成通常需要人类智能才能完成的任务——包括理解语言、识别图像、做出判断、生成内容、预测结果。AI 不是一种单一技术，而是一组让机器"学会"处理复杂任务的方法的总称。</p></div>
+            </div>
+          </div>
+
+          <!-- S2: 四大核心概念 -->
+          <div class="content-section" id="ch1-s2">
+            <div class="sec-head"><div class="sec-ico">◈</div><h3>四大核心概念详解</h3></div>
+            <div class="panel" style="display:grid;gap:12px">
+              <p style="font-size:13px;color:var(--light-muted)">AI、机器学习、深度学习、生成式 AI 是<strong>嵌套关系</strong>，不是并列关系。理解这一点是本章最重要的任务。</p>
+
+              <div style="padding:14px 16px;border:1px solid rgba(37,99,235,.2);border-radius:10px;background:linear-gradient(135deg,#f0f5ff,#fff)">
+                <div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:8px">🔹 机器学习（Machine Learning，ML）</div>
+                <p style="font-size:13px;color:var(--light-muted);line-height:1.7;margin:0 0 10px">AI 的一个主要分支。让计算机通过分析大量数据，<strong>自动</strong>找规律，而不需要程序员手动写出每一条规则。</p>
+                <div class="analogy-box">
+                  <div class="analogy-label">类比：教孩子认猫</div>
+                  <div class="analogy-text">传统方式：告诉孩子"猫有4条腿、会发出喵声、有尾巴和胡须"——列规则。<br>机器学习方式：给孩子看10000张猫的照片，让他自己总结出猫长什么样——从数据学规律。</div>
+                </div>
+                <div class="key-point" style="margin-top:10px">关键词：数据 → 自动学习规律 → 判断 / 预测</div>
+              </div>
+
+              <div style="padding:14px 16px;border:1px solid rgba(124,58,237,.2);border-radius:10px;background:linear-gradient(135deg,#f5f3ff,#fff)">
+                <div style="font-size:14px;font-weight:800;color:#6d28d9;margin-bottom:8px">🔸 深度学习（Deep Learning，DL）</div>
+                <p style="font-size:13px;color:var(--light-muted);line-height:1.7;margin:0 0 10px">机器学习的一个子领域。使用多层"神经网络"来处理复杂的非结构化数据（图像、语音、文字）。"深度"指神经网络的层数很多（可达数百层）。</p>
+                <div class="analogy-box" style="background:linear-gradient(135deg,#faf5ff,#f3f4f6);border-color:rgba(124,58,237,.2)">
+                  <div class="analogy-label" style="color:#5b21b6">类比：大脑识别人脸</div>
+                  <div class="analogy-text" style="color:#4c1d95">你看到一张脸时，大脑先感知边缘轮廓，再识别五官形状，再判断整张脸的特征——是逐层、逐步深入处理信息的。深度学习就是模仿这种层层递进的方式。</div>
+                </div>
+                <div class="key-point" style="margin-top:10px;border-left-color:#7c3aed;background:#f5f3ff;color:#4c1d95">关键词：神经网络 → 多层处理 → 图像 / 语音 / 文字的复杂模式</div>
+              </div>
+
+              <div style="padding:14px 16px;border:1px solid rgba(0,212,170,.25);border-radius:10px;background:linear-gradient(135deg,#f0fbf9,#fff)">
+                <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:8px">⬩ 生成式 AI（Generative AI）</div>
+                <p style="font-size:13px;color:var(--light-muted);line-height:1.7;margin:0 0 10px">一种 AI 应用方向，能根据输入的提示词（prompt）<strong>生成全新的内容</strong>。ChatGPT 写文章、Midjourney 画图、GitHub Copilot 写代码都是生成式 AI。通常基于深度学习实现。</p>
+                <div class="analogy-box" style="background:linear-gradient(135deg,#f0fbf9,#ecfdf5);border-color:rgba(0,212,170,.3)">
+                  <div class="analogy-label" style="color:#065f46">类比：判断者 vs 创作者</div>
+                  <div class="analogy-text" style="color:#064e3b">以前的 AI 像"判断者"——看一张图，告诉你是不是猫。生成式 AI 像"创作者"——你说"画一只橘色的猫坐在月亮上"，它直接画出来。</div>
+                </div>
+                <div style="margin-top:12px;padding:12px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px">
+                  <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px">▸ 更深一层：它们在数学上做的事不同</div>
+                  <p style="font-size:12.5px;color:#78350f;line-height:1.75;margin:0">判别式模型（传统分类/预测 AI）学的是：<em>给定输入 X，输出结果 Y 的概率是多少？</em>（比如：这张图 → 是猫的概率 95%）<br>
+                  生成式模型学的是：<em>什么样的内容 X 在这个世界里是合理的？</em> 它建模的是内容本身的分布，所以才能"凭空"创作出看起来真实的文字、图片。<br>
+                  这就是为什么同一个"深度学习"技术，既能产生"判断者"也能产生"创作者"——两者的训练目标根本不同。</p>
+                </div>
+                <div class="key-point" style="margin-top:10px;border-left-color:var(--accent);background:#f0fbf9;color:#065f46">关键词：输入提示词 → 生成新内容（文字 / 图片 / 代码 / 音频 / 视频）</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: 对比表 -->
+          <div class="content-section" id="ch1-s3">
+            <div class="sec-head"><div class="sec-ico">⊞</div><h3>四大概念一览对比</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">用一张表看清它们的关系、区别和代表产品。</p>
+              <div style="overflow-x:auto">
+                <table class="compare-table">
+                  <thead><tr><th>概念</th><th>是什么</th><th>代表产品/技术</th><th>与其他的关系</th></tr></thead>
+                  <tbody>
+                    <tr><td>AI 人工智能</td><td>让机器完成智能任务的所有方法的总称</td><td>AlphaGo、自动驾驶、Siri</td><td>最大的圈，包含以下所有</td></tr>
+                    <tr><td>机器学习</td><td>让机器从数据中自动学习规律</td><td>决策树、随机森林、XGBoost</td><td>AI 的子集</td></tr>
+                    <tr><td>深度学习</td><td>用多层神经网络处理复杂模式</td><td>CNN（图像）、Transformer（文字）</td><td>机器学习的子集</td></tr>
+                    <tr><td>生成式 AI</td><td>根据提示生成全新内容</td><td>ChatGPT、Midjourney、Copilot</td><td>应用方向，通常基于深度学习</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="key-point" style="margin-top:14px"><strong>记忆公式：AI ⊃ 机器学习 ⊃ 深度学习。</strong>生成式 AI 是应用方向，不是独立的技术层级。</div>
+            </div>
+          </div>
+
+          <!-- S4: 训练与推理 -->
+          <div class="content-section" id="ch1-s4">
+            <div class="sec-head"><div class="sec-ico">⟳</div><h3>模型如何工作：训练与推理</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <div class="analogy-box">
+                <div class="analogy-label">💡 生活类比：学生备考与上考场</div>
+                <div class="analogy-text"><strong>训练阶段</strong> = 学生备考：看书做题、犯错纠正，反复练习，逐渐掌握规律。<br><strong>推理阶段</strong> = 上考场：用学到的知识处理从没见过的新题目，快速给出答案。<br>模型训练结束后，参数固定，就像毕业后不再上课，靠已有知识工作。</div>
+              </div>
+              <div style="border:1px solid var(--light-line);border-radius:10px;overflow:hidden">
+                <div style="padding:10px 16px;background:linear-gradient(135deg,#f0f5ff,#f0fbf9);font-size:11px;font-weight:800;color:#1d4ed8;letter-spacing:.08em;text-transform:uppercase">训练阶段的五个步骤</div>
+                <div style="padding:0 16px" class="flow-steps">
+                  <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>准备训练数据</strong><p>收集大量带标注的数据。例如训练猫狗分类器，需要数万张已标注"猫"或"狗"的图片。数据越多越高质量，模型通常越好。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>初始化模型</strong><p>创建一个空白模型，此时它的参数是随机的，预测结果完全随机，什么都不会。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>反复训练（核心步骤）</strong><p>模型对每张图片做预测 → 与正确答案对比，计算一个数字叫<strong>损失（loss）</strong>，代表"错了多少" → 用<strong>反向传播（backpropagation）</strong>算出每个参数对这次出错的"贡献度" → 沿着<strong>梯度下降（gradient descent）</strong>的方向微调每个参数，让下次预测误差更小。这个循环重复数百万次乃至数十亿次。</p>
+                  <div style="margin-top:8px;padding:8px 12px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:4px;font-size:12px;color:#1e40af;line-height:1.6">
+                    <strong>类比：</strong>你学骑自行车，摔一跤（误差），大脑复盘"是因为左手握太松了"（反向传播找到原因），下次专门纠正左手力度（梯度下降调整）。重复足够多次，平衡感就建立了。
+                  </div></div></div>
+                  <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>训练完成，参数固化</strong><p>损失降到可接受水平时停止训练。模型参数（即所有学到的"经验"）保存下来，不再改变——这就是我们通常说的"已训练好的模型"。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>推理（使用模型）</strong><p>用户输入新图片，模型用固定参数快速给出预测结果。你每次用 ChatGPT 提问，就是在触发推理过程。</p></div></div>
+                </div>
+              </div>
+              <div class="lesson-grid">
+                <div class="lesson-card"><div class="l-ico">🎓</div><strong>训练（Training）</strong><p>计算量大、耗时长、成本极高（大型模型训练成本可达数千万美元）。通常由 AI 公司或研究机构完成，普通用户不参与。</p></div>
+                <div class="lesson-card"><div class="l-ico">⚡</div><strong>推理（Inference）</strong><p>速度快（毫秒到秒级），成本相对低。你每次使用 AI 产品（提问、上传图片）都是在触发推理，背后是已训练好的模型在运算。</p></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: 数据 -->
+          <div class="content-section" id="ch1-s5">
+            <div class="sec-head"><div class="sec-ico">💾</div><h3>数据：AI 的燃料</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <div class="key-point">没有数据，AI 什么都学不会。数据的<strong>质量</strong>和<strong>数量</strong>直接决定模型的好坏。AI 行业有句话：<strong>"垃圾进，垃圾出"（Garbage in, garbage out）</strong>。</div>
+              <div class="lesson-grid">
+                <div class="lesson-card"><div class="l-ico">📊</div><strong>结构化数据</strong><p>有固定格式，如表格、数据库。例：用户年龄、购买记录、传感器读数。机器学习很擅长处理。</p></div>
+                <div class="lesson-card"><div class="l-ico">📝</div><strong>非结构化数据</strong><p>无固定格式，如文章、图片、音频、视频。深度学习特别擅长处理，是近年 AI 爆发的核心原因。</p></div>
+                <div class="lesson-card"><div class="l-ico">🏷️</div><strong>标注数据（有监督）</strong><p>每条数据都有人工标注的正确答案。例：图片+标签"猫"。训练监督学习模型必须有大量标注数据。</p></div>
+                <div class="lesson-card"><div class="l-ico">🔍</div><strong>无标注数据（无监督）</strong><p>只有数据，没有标签。模型自行发现数据中的规律和分组，适合聚类、异常检测等任务。</p></div>
+              </div>
+              <div style="background:#fff7ed;border:1px solid rgba(234,179,8,.25);border-radius:10px;padding:16px">
+                <div style="font-size:11px;font-weight:800;color:#92400e;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">⚠ 三类常见数据质量问题</div>
+                <div class="flow-steps">
+                  <div class="flow-step" style="padding:10px 0"><div class="flow-num" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">!</div><div class="flow-content"><strong>数据偏见（Bias）</strong><p>训练数据若只覆盖某类人群，模型会对其他人群表现更差。例：早期人脸识别系统因训练数据中白人面孔比例过高，识别深色皮肤人群的准确率明显偏低，曾引发多起误捕事件。</p></div></div>
+                  <div class="flow-step" style="padding:10px 0"><div class="flow-num" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">!</div><div class="flow-content"><strong>数据质量差</strong><p>错误标注、重复数据、缺失值都会损害模型质量。特别是标注错误，会让模型学到错误的规律，且很难被发现。</p></div></div>
+                  <div class="flow-step" style="padding:10px 0;border-bottom:none"><div class="flow-num" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">!</div><div class="flow-content"><strong>数据泄露风险</strong><p>训练数据中若包含隐私信息，模型可能在某些特殊输入下"回忆"并输出这些信息。大型语言模型有时能被引导重复训练数据中的内容。</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S6: 四类任务 -->
+          <div class="content-section" id="ch1-s6">
+            <div class="sec-head"><div class="sec-ico">◉</div><h3>AI 的四类核心任务</h3></div>
+            <div class="panel" style="display:grid;gap:12px">
+              <p style="font-size:13px;color:var(--light-muted)">几乎所有 AI 应用都属于以下四类任务之一。理解这个分类，你就能快速判断一个 AI 产品"在做什么事情"。</p>
+              <div class="risk-grid">
+                <div style="padding:15px 16px;border:1px solid rgba(37,99,235,.2);border-radius:10px;background:#f0f5ff">
+                  <div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:6px;display:flex;align-items:center;gap:8px">🔍 分类（Classification）<span style="font-size:11px;background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:999px;font-weight:700">输出：类别</span></div>
+                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">判断一个输入属于哪个类别。<strong>核心问题：这是什么？它属于 A 还是 B（还是 C、D……）？</strong></div>
+                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>垃圾邮件识别（垃圾/正常）、肿瘤良恶性诊断、图片分类（猫/狗/鸟）、评论情感分析（正面/负面/中性）、人脸识别（这是谁）</div>
+                </div>
+                <div style="padding:15px 16px;border:1px solid rgba(16,185,129,.2);border-radius:10px;background:#f0fdf4">
+                  <div style="font-size:14px;font-weight:800;color:#047857;margin-bottom:6px;display:flex;align-items:center;gap:8px">📈 预测（Prediction）<span style="font-size:11px;background:#d1fae5;color:#047857;padding:2px 8px;border-radius:999px;font-weight:700">输出：数值/概率</span></div>
+                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">根据历史数据预测未来的数值或结果。<strong>核心问题：接下来会怎样？这个值是多少？</strong></div>
+                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>房价预测、销售额预测、用户流失概率估计、天气预报、股票走势分析、信贷违约风险评分</div>
+                </div>
+                <div style="padding:15px 16px;border:1px solid rgba(0,212,170,.25);border-radius:10px;background:#f0fbf9">
+                  <div style="font-size:14px;font-weight:800;color:#0d7e6e;margin-bottom:6px;display:flex;align-items:center;gap:8px">✨ 生成（Generation）<span style="font-size:11px;background:#ccfbf1;color:#0d7e6e;padding:2px 8px;border-radius:999px;font-weight:700">输出：新内容</span></div>
+                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">根据输入提示，创作全新的内容。<strong>核心问题：能帮我创作/写/画/生成……吗？</strong></div>
+                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>ChatGPT 写文章摘要、Midjourney/DALL-E 画图、GitHub Copilot 写代码、ElevenLabs 合成语音、Sora 生成视频</div>
+                </div>
+                <div style="padding:15px 16px;border:1px solid rgba(168,85,247,.2);border-radius:10px;background:#faf5ff">
+                  <div style="font-size:14px;font-weight:800;color:#7c3aed;margin-bottom:6px;display:flex;align-items:center;gap:8px">🎯 推荐（Recommendation）<span style="font-size:11px;background:#ede9fe;color:#7c3aed;padding:2px 8px;border-radius:999px;font-weight:700">输出：排序列表</span></div>
+                  <div style="font-size:13px;color:var(--light-muted);line-height:1.7">在大量选项中，找出最匹配某个用户偏好的内容。<strong>核心问题：这个用户最可能喜欢什么？</strong></div>
+                  <div class="risk-example" style="margin-top:9px"><strong>生活例子：</strong>抖音/YouTube 视频推荐、淘宝/亚马逊商品推荐、Spotify 歌单、Netflix 影视推荐、微信好友可能认识的人</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S7: 风险 -->
+          <div class="content-section" id="ch1-s7">
+            <div class="sec-head"><div class="sec-ico">⚠</div><h3>AI 的边界与风险</h3></div>
+            <div class="panel" style="display:grid;gap:12px">
+              <div class="key-point">AI 很强大，但不是万能的。理解它的局限和风险，是负责任使用 AI 的前提，也是判断 AI 产品好坏的基础能力。</div>
+              <div class="risk-grid">
+                <div class="risk-card hi">
+                  <div class="risk-title">幻觉（Hallucination）<span class="risk-badge hi">高度警惕</span></div>
+                  <div class="risk-body">生成式 AI 会"编造"看起来合理但实际上是错误的信息。它不知道自己不知道什么，会非常自信地给出错误答案。这是当前大模型最严重的问题之一。</div>
+                  <div style="margin:8px 0;padding:10px 12px;background:#fff7ed;border-left:3px solid #f97316;border-radius:4px;font-size:12px;color:#7c2d12;line-height:1.7">
+                    <strong>为什么会幻觉？——根源在于它的工作方式：</strong><br>
+                    大语言模型本质上是在做"下一个词预测"——每次输出一个词（token），都是根据前面所有词，预测"接下来哪个词最可能出现"。它没有一个"事实数据库"去查，也没有"我不确定就不说"的内置机制。当它"不知道"某个事实时，它不会停下来，而是继续预测"这里应该有一个听起来合理的词"——于是造出了听起来真实的错误内容。这不是 bug，而是这类模型的结构性局限。
+                  </div>
+                  <div class="risk-example"><strong>真实案例：</strong>2023年，美国律师 Steven Schwartz 让 ChatGPT 帮忙查法律先例，AI 编造了多个根本不存在的案例编号、法官姓名和判决内容。律师引用后被法官发现，面临处分。<br><strong>应对方法：</strong>对事实性信息（日期、数据、引用、法律条文），务必查阅原始来源确认。</div>
+                </div>
+                <div class="risk-card hi">
+                  <div class="risk-title">偏见（Bias）<span class="risk-badge hi">高度警惕</span></div>
+                  <div class="risk-body">AI 模型从数据中学习，训练数据中存在的偏见会被模型继承，甚至放大。在招聘、贷款、司法等高影响力场景尤为危险。</div>
+                  <div class="risk-example"><strong>真实案例：</strong>亚马逊曾研发 AI 简历筛选系统，后来发现因训练数据中男性简历占多数，系统会自动给女性候选人打低分。该项目在2018年被迫叫停。<br><strong>应对方法：</strong>高风险决策（招聘、贷款、医疗）中，AI 结论只作参考，必须有人工审核环节。</div>
+                </div>
+                <div class="risk-card md">
+                  <div class="risk-title">隐私泄露<span class="risk-badge md">注意</span></div>
+                  <div class="risk-body">向 AI 输入的信息可能被服务提供商用于训练，或在数据安全事故中泄露。此外，模型可能在特定引导下输出训练数据中的隐私内容。</div>
+                  <div class="risk-example"><strong>注意事项：</strong>不要向公共 AI 服务输入身份证号、银行卡信息、未公开的商业数据、他人隐私。企业内部使用时需确认数据安全协议。</div>
+                </div>
+                <div class="risk-card md">
+                  <div class="risk-title">过度依赖<span class="risk-badge md">注意</span></div>
+                  <div class="risk-body">长期依赖 AI 完成思考任务，可能导致自身判断力退化，且在 AI 出错时无法识别错误——这种情况被称为"自动化偏见"（Automation Bias）。</div>
+                  <div class="risk-example"><strong>建议：</strong>用 AI 辅助工作，而不是替代思考。对 AI 输出始终保持批判性阅读，尤其是专业领域（医疗、法律、财务）的内容。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S8: 何时用AI -->
+          <div class="content-section" id="ch1-s8">
+            <div class="sec-head"><div class="sec-ico">🎯</div><h3>何时用 AI：场景判断框架</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <p style="font-size:14px;color:var(--light-muted);line-height:1.8">能用 AI 和值得用 AI 是两回事。在引入 AI 之前，先问自己这四个问题：</p>
+              <div style="display:grid;gap:9px">
+                <div class="key-point"><strong>① 有足够的数据吗？</strong>AI 从数据中学习。问题越罕见、数据越少，规则或人工判断往往更可靠。</div>
+                <div class="key-point"><strong>② 任务是否重复且有规律？</strong>AI 擅长处理有规律的重复性任务。一次性、高度个性化的判断任务未必适合。</div>
+                <div class="key-point"><strong>③ 出错的代价是什么？</strong>如果 AI 出错后果严重（医疗诊断、法律建议），需要人工复核机制。影响轻微则可接受一定错误率。</div>
+                <div class="key-point"><strong>④ 有没有更简单的方案？</strong>很多问题用公式、规则、或简单统计就能解决。不要为了用 AI 而用 AI——工具越简单越好维护。</div>
+              </div>
+              <div style="border:1px solid var(--light-line);border-radius:10px;overflow:hidden">
+                <div style="padding:10px 16px;background:linear-gradient(135deg,#f0f5ff,#f0fbf9);font-size:11px;font-weight:800;color:#1d4ed8;letter-spacing:.08em;text-transform:uppercase">适合 vs 不适合使用 AI 的场景</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;font-size:13px">
+                  <div style="padding:14px 16px;border-right:1px solid var(--light-line)">
+                    <div style="color:#16a34a;font-weight:800;margin-bottom:10px">✓ 适合使用 AI</div>
+                    <ul class="sl" style="color:#166534"><li>大量重复的文本/图像分类</li><li>从历史数据预测未来趋势</li><li>辅助内容创作（草稿、摘要、翻译）</li><li>个性化推荐系统</li><li>处理海量非结构化数据</li></ul>
+                  </div>
+                  <div style="padding:14px 16px">
+                    <div style="color:#dc2626;font-weight:800;margin-bottom:10px">✗ 慎用 AI 或不适合</div>
+                    <ul class="sl" style="color:#991b1b"><li>数据极少（&lt;100条）的预测</li><li>需要100%准确率的关键决策</li><li>用简单公式就能算出的结果</li><li>需要向监管机构解释决策逻辑</li><li>高度敏感的个人信息处理</li></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S9: 实践 -->
+          <div class="content-section" id="ch1-s9">
+            <div class="sec-head"><div class="sec-ico">✦</div><h3>实践：AI 场景判断卡</h3></div>
+            <div style="display:grid;gap:12px">
+              <div class="practice-card">
+                <div style="font-size:11px;font-weight:800;color:#1d4ed8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">📋 示范判断卡：用 AI 批改学生作文</div>
+                <div class="p-row"><strong>场景</strong><span>用 AI 自动批改初中生语文作文，给出评分和改进建议。</span></div>
+                <div class="p-row"><strong>输入</strong><span>学生作文文本（约500字）+ 教师事先制定的评分标准。</span></div>
+                <div class="p-row"><strong>输出</strong><span>总分（0-100）、各维度评分（内容/语言/结构）、具体改进建议。</span></div>
+                <div class="p-row"><strong>AI 类型</strong><span>生成式 AI（生成批改意见）+ 回归模型（数值评分）。</span></div>
+                <div class="p-row"><strong>验证方法</strong><span>让 3 位语文老师对 AI 批改结果独立打分，计算一致性；每学期抽查 5% 结果人工复核。</span></div>
+                <div class="p-row"><strong>风险</strong><span>AI 可能不理解地方语言特色；评分标准的细微差异可能导致偏差；学生可能针对 AI 偏好刷分而非真正提高写作。</span></div>
+                <div class="p-row"><strong>结论</strong><span style="color:#047857;font-weight:600">✓ 可以使用，但 AI 分数仅供参考，不直接入档案。须保留老师定期抽查机制。</span></div>
+              </div>
+              <div class="note-block">现在轮到你了：选择 2-3 个你熟悉的场景（工作/学习/生活），按照上面的模板各完成一张判断卡。这是本章最核心的练习。</div>
+            </div>
+          </div>
+
+          <!-- S10: 知识自测 -->
+          <div class="content-section" id="ch1-s10">
+            <div class="sec-head"><div class="sec-ico">□</div><h3>知识自测</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">点击选项查看解析。每道题只有一个最佳答案。</p>
+              <div class="quiz-mc">
+
+                <div class="mc-item">
+                  <div class="mc-question">1. 关于 AI、机器学习、深度学习三者的关系，以下哪个描述最准确？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','机器学习和深度学习并非不同路线，深度学习是机器学习的一个子集。')"><span class="mc-opt-label">A</span>机器学习和深度学习是不同的技术路线，互不包含。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！三者是嵌套关系：AI ⊃ 机器学习 ⊃ 深度学习。深度学习是机器学习的子集，机器学习是 AI 的子集。')"><span class="mc-opt-label">B</span>AI 包含机器学习，机器学习包含深度学习。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','三者不是并列关系，而是嵌套的层级关系。')"><span class="mc-opt-label">C</span>三者是并列关系，代表 AI 的三个不同发展方向。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','这个顺序是反的。应该是机器学习包含深度学习，不是深度学习包含机器学习。')"><span class="mc-opt-label">D</span>深度学习包含机器学习，机器学习包含 AI。</div>
+                  </div>
+                  <div class="mc-explain"></div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">2. 你的公司要用 AI 预测"哪些客户下个月可能取消订阅"，这属于哪类 AI 任务？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','分类任务输出的是类别（如"垃圾邮件"或"正常邮件"），虽然这里也可以输出"会流失"/"不会流失"，但本质是预测概率，更准确的归类是预测任务。')"><span class="mc-opt-label">A</span>分类</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！预测任务根据历史行为数据，预测未来发生某件事的可能性。预测客户流失概率是典型的预测任务。')"><span class="mc-opt-label">B</span>预测</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','生成任务是创作新内容（文字/图片/代码），与预测客户流失完全不同。')"><span class="mc-opt-label">C</span>生成</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','推荐任务是从大量选项中找出用户感兴趣的内容，与预测流失风险无关。')"><span class="mc-opt-label">D</span>推荐</div>
+                  </div>
+                  <div class="mc-explain"></div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">3. ChatGPT 告诉你某位历史人物出生于1856年，你应该怎么处理这条信息？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','生成式 AI 存在"幻觉"问题，可能自信地给出错误事实，直接信任是危险的做法。')"><span class="mc-opt-label">A</span>直接信任，AI 的知识库比人更全面准确。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','这太极端了。AI 在很多任务上很有用，完全不用 AI 不是解决方法；关键是对需要核实的内容进行核实。')"><span class="mc-opt-label">B</span>完全不信任，以后不再用 AI 查事实。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！对于重要的事实性信息（日期、数据、引用），应该通过可信来源（如维基百科、权威教材）核实后再使用。AI 可以辅助思考，但事实需要核实。')"><span class="mc-opt-label">C</span>将其作为参考起点，通过可信来源核实后再使用。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','AI 幻觉是模型本身的固有局限，即使换一种提问方式，也可能得到不同的错误答案，而不是正确答案。')"><span class="mc-opt-label">D</span>换一种方式再问一次，AI 就会给出正确答案。</div>
+                  </div>
+                  <div class="mc-explain"></div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">4. 训练（Training）和推理（Inference）最核心的区别是什么？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','推理也需要计算资源，只是通常比训练少很多。这不是两者最核心的区别。')"><span class="mc-opt-label">A</span>训练需要计算资源，推理不需要任何计算。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！训练是模型通过大量数据学习调整参数的过程；推理是使用训练好的固定参数，对新输入快速给出预测的过程。两者是时间上先后发生的两个阶段。')"><span class="mc-opt-label">B</span>训练是让模型从数据中学习调整参数；推理是用固定参数处理新输入。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','用户使用 AI 产品是在触发推理，而不是在训练模型（除非是专门设计的微调场景）。')"><span class="mc-opt-label">C</span>用户每次使用 AI 产品时都在参与训练过程。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','训练使用的是准备好的历史训练数据，推理使用的是用户新输入的数据——这个选项说反了。')"><span class="mc-opt-label">D</span>训练使用新数据，推理使用历史数据。</div>
+                  </div>
+                  <div class="mc-explain"></div>
+                </div>
+
+                <div class="mc-item">
+                  <div class="mc-question">5. 以下哪个场景最不适合让 AI 直接做决定（而不经过人工审核）？</div>
+                  <div class="mc-options">
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','垃圾邮件过滤出错的代价很低（最多漏掉一封正常邮件），非常适合 AI 自动处理。')"><span class="mc-opt-label">A</span>过滤收件箱中的垃圾邮件。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','推荐歌单出错顶多让人听到不喜欢的歌，代价极低，非常适合 AI 自动推荐。')"><span class="mc-opt-label">B</span>根据听歌历史向用户推荐音乐播放列表。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','电商商品描述生成是辅助创作任务，即使有错误，编辑人员可以很容易发现并修正。')"><span class="mc-opt-label">C</span>自动生成电商平台商品详情页的描述文案。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！癌症诊断是高风险医疗决策，AI 误判可能危及生命。此类高影响力场景，AI 只能作为辅助工具，最终诊断决定必须由有资质的医生做出，且需要多重核实。')"><span class="mc-opt-label">D</span>自动判断患者 CT 扫描结果，决定是否有癌变，不经医生复核。</div>
+                  </div>
+                  <div class="mc-explain"></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- S11: 本章小结 -->
+          <div class="content-section" id="ch1-s11">
+            <div class="sec-head"><div class="sec-ico">✓</div><h3>本章小结</h3></div>
+            <div class="summary-box">
+              <h4>Chapter 01 · 核心要点回顾</h4>
+              <ul class="summary-list">
+                <li>AI 是让计算机完成智能任务的技术总称，不依赖人工编写的固定规则，而是从数据中学习。</li>
+                <li>嵌套关系：AI ⊃ 机器学习 ⊃ 深度学习；生成式 AI 是应用方向，基于深度学习实现。</li>
+                <li>模型分两阶段：训练（从数据学习，调整参数）→ 推理（用固定参数处理新输入）。</li>
+                <li>数据是 AI 的燃料：质量和数量决定模型好坏，偏见数据 → 有偏见的模型。</li>
+                <li>四类核心任务：分类（这是什么）、预测（会怎样）、生成（创作内容）、推荐（你可能喜欢）。</li>
+                <li>主要风险：幻觉（编造事实）、偏见（歧视特定群体）、隐私泄露、过度依赖。</li>
+                <li>判断是否用 AI 的核心问题：数据够吗？任务有规律吗？出错代价多大？有更简单的方案吗？</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- S12: 词汇表 -->
+          <div class="content-section" id="ch1-s12">
+            <div class="sec-head"><div class="sec-ico">⊕</div><h3>本章词汇表</h3></div>
+            <div class="panel">
+              <div class="glossary">
+                <div class="glossary-item"><div class="glossary-term">人工智能（AI）</div><div class="glossary-def">让计算机完成需要人类智能才能完成任务的技术总称，不依赖固定规则，而是从数据中学习。</div></div>
+                <div class="glossary-item"><div class="glossary-term">机器学习（ML）</div><div class="glossary-def">AI 的子集，让计算机从数据中自动学习规律，而非由程序员手动编写每一条规则。</div></div>
+                <div class="glossary-item"><div class="glossary-term">深度学习（DL）</div><div class="glossary-def">机器学习的子集，使用多层神经网络处理复杂数据（图像、语音、文字），是近年 AI 爆发的核心驱动力。</div></div>
+                <div class="glossary-item"><div class="glossary-term">生成式 AI</div><div class="glossary-def">能根据输入提示生成全新内容（文字/图片/代码/音频）的 AI 系统，通常基于深度学习实现。</div></div>
+                <div class="glossary-item"><div class="glossary-term">训练（Training）</div><div class="glossary-def">让模型从大量数据中学习，通过反复调整内部参数来减少预测误差的过程，计算成本极高。</div></div>
+                <div class="glossary-item"><div class="glossary-term">推理（Inference）</div><div class="glossary-def">使用训练好的模型（参数固定）处理新输入、得到预测结果的过程，速度快、成本低。</div></div>
+                <div class="glossary-item"><div class="glossary-term">参数（Parameters）</div><div class="glossary-def">模型内部的数值，通过训练不断调整。GPT-4 约有1.8万亿个参数。参数决定了模型"学到了什么"。</div></div>
+                <div class="glossary-item"><div class="glossary-term">幻觉（Hallucination）</div><div class="glossary-def">生成式 AI 产生看起来合理但实际错误的信息。根源：大语言模型以"预测下一个词"为机制，没有事实核查能力，不知道自己不知道什么，是当前大模型的结构性局限。</div></div>
+                <div class="glossary-item"><div class="glossary-term">数据偏见（Bias）</div><div class="glossary-def">训练数据中存在的不平衡或偏颇，会导致模型对特定群体或场景表现不公平，亚马逊招聘 AI 是典型案例。</div></div>
+                <div class="glossary-item"><div class="glossary-term">提示词（Prompt）</div><div class="glossary-def">用户输入给生成式 AI 的指令或问题，是生成式 AI 应用的核心交互方式，提示词质量直接影响输出质量。</div></div>
+              </div>
+            </div>
+            <div class="tag-row"><span class="tag">AI 概念</span><span class="tag">训练与推理</span><span class="tag">四类任务</span><span class="tag">AI 风险</span><span class="tag">场景判断</span></div>
+          </div>
+
+        </div>
+      </div><!-- /ch-1 -->
