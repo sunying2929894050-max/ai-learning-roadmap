@@ -3,7 +3,8 @@ const TOC_DATA = {
   2:[{id:"ch2-s0",l:"本章概览"},{id:"ch2-s1",l:"为什么要学"},{id:"ch2-s2",l:"Python 基础语法"},{id:"ch2-s3",l:"数据科学三件套"},{id:"ch2-s4",l:"线性代数"},{id:"ch2-s5",l:"概率与统计"},{id:"ch2-s6",l:"导数与梯度"},{id:"ch2-s7",l:"实践：数据探索"},{id:"ch2-s8",l:"知识自测"},{id:"ch2-s9",l:"本章小结"},{id:"ch2-s10",l:"词汇表"}],
   3:[{id:"ch3-s0",l:"本章概览"},{id:"ch3-s1",l:"三大范式"},{id:"ch3-s2",l:"监督学习"},{id:"ch3-s3",l:"无监督学习"},{id:"ch3-s4",l:"模型评估"},{id:"ch3-s5",l:"特征工程"},{id:"ch3-s6",l:"实战：Titanic"},{id:"ch3-s7",l:"知识自测"},{id:"ch3-s8",l:"本章小结"},{id:"ch3-s9",l:"词汇表"}],
   4:[{id:"ch4-s0",l:"本章概览"},{id:"ch4-s1",l:"神经网络基础"},{id:"ch4-s2",l:"PyTorch 核心"},{id:"ch4-s3",l:"CNN：图像架构"},{id:"ch4-s4",l:"Transformer & NLP"},{id:"ch4-s5",l:"迁移学习"},{id:"ch4-s6",l:"实战：MNIST"},{id:"ch4-s7",l:"知识自测"},{id:"ch4-s8",l:"本章小结"},{id:"ch4-s9",l:"词汇表"}],
-  5:[{id:"ch5-s0",l:"本章概览"},{id:"ch5-s1",l:"提示词工程"},{id:"ch5-s2",l:"大模型 API 调用"},{id:"ch5-s3",l:"RAG 知识库系统"},{id:"ch5-s4",l:"模型部署"},{id:"ch5-s5",l:"AI 作品集规划"},{id:"ch5-s6",l:"AI Agent"},{id:"ch5-s7",l:"知识自测"},{id:"ch5-s8",l:"本章小结"},{id:"ch5-s9",l:"词汇表"}]
+  5:[{id:"ch5-s0",l:"本章概览"},{id:"ch5-s1",l:"提示词工程"},{id:"ch5-s2",l:"大模型 API 调用"},{id:"ch5-s3",l:"RAG 知识库系统"},{id:"ch5-s4",l:"模型部署"},{id:"ch5-s5",l:"AI 作品集规划"},{id:"ch5-s6",l:"AI Agent"},{id:"ch5-s7",l:"知识自测"},{id:"ch5-s8",l:"本章小结"},{id:"ch5-s9",l:"词汇表"}],
+  6:[{id:"ch6-s0",l:"本章概览"},{id:"ch6-s1",l:"AI 数 r 的实验"},{id:"ch6-s2",l:"Token：分词与切块"},{id:"ch6-s3",l:"分词可视化"},{id:"ch6-s4",l:"Embedding：语义坐标"},{id:"ch6-s5",l:"语义运算实验室"},{id:"ch6-s6",l:"知识自测"},{id:"ch6-s7",l:"本章小结"},{id:"ch6-s8",l:"词汇表"}]
 };
 
 const app         = document.getElementById("app");
@@ -90,6 +91,8 @@ function initChapterComponents(panelEl) {
   initDrawers(panelEl);
   initTermChips(panelEl);
   initAiDemos(panelEl);
+  if (typeof initTokenizerDemo === 'function') initTokenizerDemo(panelEl);
+  if (typeof initEmbeddingDemo === 'function') initEmbeddingDemo(panelEl);
 }
 
 // ── Back to map ──
