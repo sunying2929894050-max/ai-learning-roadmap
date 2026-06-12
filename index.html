@@ -680,6 +680,12 @@
                   <div class="analogy-label" style="color:#065f46">类比：判断者 vs 创作者</div>
                   <div class="analogy-text" style="color:#064e3b">以前的 AI 像"判断者"——看一张图，告诉你是不是猫。生成式 AI 像"创作者"——你说"画一只橘色的猫坐在月亮上"，它直接画出来。</div>
                 </div>
+                <div style="margin-top:12px;padding:12px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px">
+                  <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px">▸ 更深一层：它们在数学上做的事不同</div>
+                  <p style="font-size:12.5px;color:#78350f;line-height:1.75;margin:0">判别式模型（传统分类/预测 AI）学的是：<em>给定输入 X，输出结果 Y 的概率是多少？</em>（比如：这张图 → 是猫的概率 95%）<br>
+                  生成式模型学的是：<em>什么样的内容 X 在这个世界里是合理的？</em> 它建模的是内容本身的分布，所以才能"凭空"创作出看起来真实的文字、图片。<br>
+                  这就是为什么同一个"深度学习"技术，既能产生"判断者"也能产生"创作者"——两者的训练目标根本不同。</p>
+                </div>
                 <div class="key-point" style="margin-top:10px;border-left-color:var(--accent);background:#f0fbf9;color:#065f46">关键词：输入提示词 → 生成新内容（文字 / 图片 / 代码 / 音频 / 视频）</div>
               </div>
             </div>
@@ -718,8 +724,11 @@
                 <div style="padding:0 16px" class="flow-steps">
                   <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>准备训练数据</strong><p>收集大量带标注的数据。例如训练猫狗分类器，需要数万张已标注"猫"或"狗"的图片。数据越多越高质量，模型通常越好。</p></div></div>
                   <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>初始化模型</strong><p>创建一个空白模型，此时它的参数是随机的，预测结果完全随机，什么都不会。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>反复训练（核心步骤）</strong><p>模型对每张图片做预测 → 与正确答案对比计算误差 → 根据误差调整内部参数。这个过程重复数百万次，误差逐渐减小。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>训练完成，参数固化</strong><p>误差降到可接受水平时停止训练。模型参数保存下来，不再改变。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>反复训练（核心步骤）</strong><p>模型对每张图片做预测 → 与正确答案对比，计算一个数字叫<strong>损失（loss）</strong>，代表"错了多少" → 用<strong>反向传播（backpropagation）</strong>算出每个参数对这次出错的"贡献度" → 沿着<strong>梯度下降（gradient descent）</strong>的方向微调每个参数，让下次预测误差更小。这个循环重复数百万次乃至数十亿次。</p>
+                  <div style="margin-top:8px;padding:8px 12px;background:#f0f9ff;border-left:3px solid #3b82f6;border-radius:4px;font-size:12px;color:#1e40af;line-height:1.6">
+                    <strong>类比：</strong>你学骑自行车，摔一跤（误差），大脑复盘"是因为左手握太松了"（反向传播找到原因），下次专门纠正左手力度（梯度下降调整）。重复足够多次，平衡感就建立了。
+                  </div></div></div>
+                  <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>训练完成，参数固化</strong><p>损失降到可接受水平时停止训练。模型参数（即所有学到的"经验"）保存下来，不再改变——这就是我们通常说的"已训练好的模型"。</p></div></div>
                   <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>推理（使用模型）</strong><p>用户输入新图片，模型用固定参数快速给出预测结果。你每次用 ChatGPT 提问，就是在触发推理过程。</p></div></div>
                 </div>
               </div>
@@ -791,6 +800,10 @@
                 <div class="risk-card hi">
                   <div class="risk-title">幻觉（Hallucination）<span class="risk-badge hi">高度警惕</span></div>
                   <div class="risk-body">生成式 AI 会"编造"看起来合理但实际上是错误的信息。它不知道自己不知道什么，会非常自信地给出错误答案。这是当前大模型最严重的问题之一。</div>
+                  <div style="margin:8px 0;padding:10px 12px;background:#fff7ed;border-left:3px solid #f97316;border-radius:4px;font-size:12px;color:#7c2d12;line-height:1.7">
+                    <strong>为什么会幻觉？——根源在于它的工作方式：</strong><br>
+                    大语言模型本质上是在做"下一个词预测"——每次输出一个词（token），都是根据前面所有词，预测"接下来哪个词最可能出现"。它没有一个"事实数据库"去查，也没有"我不确定就不说"的内置机制。当它"不知道"某个事实时，它不会停下来，而是继续预测"这里应该有一个听起来合理的词"——于是造出了听起来真实的错误内容。这不是 bug，而是这类模型的结构性局限。
+                  </div>
                   <div class="risk-example"><strong>真实案例：</strong>2023年，美国律师 Steven Schwartz 让 ChatGPT 帮忙查法律先例，AI 编造了多个根本不存在的案例编号、法官姓名和判决内容。律师引用后被法官发现，面临处分。<br><strong>应对方法：</strong>对事实性信息（日期、数据、引用、法律条文），务必查阅原始来源确认。</div>
                 </div>
                 <div class="risk-card hi">
@@ -952,7 +965,7 @@
                 <div class="glossary-item"><div class="glossary-term">训练（Training）</div><div class="glossary-def">让模型从大量数据中学习，通过反复调整内部参数来减少预测误差的过程，计算成本极高。</div></div>
                 <div class="glossary-item"><div class="glossary-term">推理（Inference）</div><div class="glossary-def">使用训练好的模型（参数固定）处理新输入、得到预测结果的过程，速度快、成本低。</div></div>
                 <div class="glossary-item"><div class="glossary-term">参数（Parameters）</div><div class="glossary-def">模型内部的数值，通过训练不断调整。GPT-4 约有1.8万亿个参数。参数决定了模型"学到了什么"。</div></div>
-                <div class="glossary-item"><div class="glossary-term">幻觉（Hallucination）</div><div class="glossary-def">生成式 AI 产生看起来合理但实际错误的信息，是当前大模型的主要局限，对事实性内容尤为危险。</div></div>
+                <div class="glossary-item"><div class="glossary-term">幻觉（Hallucination）</div><div class="glossary-def">生成式 AI 产生看起来合理但实际错误的信息。根源：大语言模型以"预测下一个词"为机制，没有事实核查能力，不知道自己不知道什么，是当前大模型的结构性局限。</div></div>
                 <div class="glossary-item"><div class="glossary-term">数据偏见（Bias）</div><div class="glossary-def">训练数据中存在的不平衡或偏颇，会导致模型对特定群体或场景表现不公平，亚马逊招聘 AI 是典型案例。</div></div>
                 <div class="glossary-item"><div class="glossary-term">提示词（Prompt）</div><div class="glossary-def">用户输入给生成式 AI 的指令或问题，是生成式 AI 应用的核心交互方式，提示词质量直接影响输出质量。</div></div>
               </div>
