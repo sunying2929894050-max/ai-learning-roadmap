@@ -1,66 +1,452 @@
       <!-- Chapter 5 -->
       <div class="ch-panel" id="ch-5">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big">05</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 05</div><div class="ch-name">RAG：让模型用你的私有知识</div></div></div>
-          <p class="ch-desc">构建检索增强生成（RAG）系统，让大模型在本地知识库上回答问题，无需微调。</p>
+          <div class="ch-badge">
+            <div class="ch-big">05</div>
+            <div class="ch-vline"></div>
+            <div><div class="ch-label">Chapter 05</div><div class="ch-name">RAG：让模型用你的私有知识</div></div>
+          </div>
+          <p class="ch-desc">检索增强生成（RAG）让大模型在你自己的文档上回答问题，无需微调。本章把 ch1 的幻觉问题、ch2 的向量检索、ch3 的 prompt 设计串成一条可工作的管线。</p>
         </div>
         <div class="content-body">
 
-          <!-- S3: RAG -->
-          <div class="content-section" id="ch5-s3">
-            <div class="sec-head"><div class="sec-ico">③</div><h3>RAG：让大模型回答你的私有知识库</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">大模型只知道训练数据截止前的知识，不知道你公司的内部文档、最新数据、私有资料。RAG（检索增强生成）解决这个问题。</p>
+          <!-- S0: 概览 -->
+          <div class="content-section" id="ch5-s0">
+            <div class="sec-head"><div class="sec-ico">▦</div><h3>本章概览</h3></div>
+            <div class="overview-grid">
+              <div class="overview-card"><div class="overview-num">2~3h</div><div class="overview-label">预计学习时间</div></div>
+              <div class="overview-card"><div class="overview-num">4</div><div class="overview-label">核心概念</div></div>
+              <div class="overview-card"><div class="overview-num">5</div><div class="overview-label">知识自测题</div></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="note-block">本章是前几章的<strong>汇聚点</strong>：ch1 讲了幻觉问题，ch2 讲了向量和余弦相似度，ch3 讲了 prompt 设计，ch4 接通了 API。RAG 把这四件事拼成一条管线。如果前面的章节还有模糊的地方，本章会再次碰到它们。</div>
+            </div>
+          </div>
 
-              <div class="flow-steps" style="margin-bottom:16px">
-                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>建立向量数据库</strong><p>把你的文档（PDF、Word、网页）切分成小段（chunk），用"嵌入模型（Embedding Model）"把每段文字转换成向量，存入向量数据库（如 Chroma、Pinecone）。</p><div style="padding:8px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;color:#475569;margin-top:6px">嵌入向量：把文字的语义压缩成一串数字（如 1536维向量）。语义相近的文字，向量也相近——这是"语义搜索"的基础。</div></div></div>
-                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>用户提问时，语义检索相关文档</strong><p>把用户的问题也转成向量，在数据库中找最相似的几段文档（余弦相似度）。</p></div></div>
-                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>把检索到的文档塞入提示词，让大模型回答</strong><p>把检索到的相关文档片段作为上下文，连同用户问题一起发给大模型，让模型"参考这些资料"回答。</p></div></div>
+          <!-- S1: 钩子 -->
+          <div class="content-section" id="ch5-s1">
+            <div class="sec-head"><div class="sec-ico">⬡</div><h3>先问它一个它不可能知道的问题</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <div class="hook-story">
+                <div class="hook-label">📋 真实场景</div>
+                <p>你把公司内部手册（合同模板、报销规定、绩效标准）存在电脑上，打开 ChatGPT 问："我们公司的年假是多少天？"</p>
+                <p>模型回答：<em>"一般而言，中国劳动法规定……"</em>——它在背法规，完全没有回答你公司的具体政策。再问一遍，有时候它会直接给你一个听起来合理的数字，但那是它编的。</p>
+                <div class="hook-question">→ 这不是 bug，这是 ch1 讲过的结构性问题：<strong>模型的知识冻结在训练截止日期</strong>，对训练后产生的私有数据一无所知。你需要 RAG。</div>
               </div>
 
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 12px"><code>from langchain.vectorstores import Chroma
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-# ① 切分文档
-with open("company_handbook.txt") as f:
-    text = f.read()
-
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-chunks = splitter.split_text(text)
-
-# ② 建立向量数据库
-db = Chroma.from_texts(chunks, OpenAIEmbeddings())
-
-# ③ 检索 + 生成
-def rag_answer(question):
-    # 检索最相关的 3 段文档
-    relevant_docs = db.similarity_search(question, k=3)
-    context = "\n\n".join([doc.page_content for doc in relevant_docs])
-
-    prompt = f"""请根据以下公司手册内容回答问题。如果手册中没有相关信息，请明确说明。
-
-相关内容：
-{context}
-
-问题：{question}"""
-
-    # 调用大模型生成答案
-    response = client.messages.create(
-        model="claude-opus-4-8", max_tokens=1024,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.content[0].text
-
-print(rag_answer("公司的年假政策是什么？"))</code></pre>
-
               <div class="analogy-box">
-                <div class="analogy-label">类比：开卷考试</div>
-                <div class="analogy-text">RAG 就像把闭卷考试改成开卷——大模型考试前（推理时）可以翻阅你指定的资料书（知识库），然后综合作答。它的优势是能引用你的私有、最新的知识；局限是"资料书"里没有的内容它仍然不知道。</div>
+                <div class="analogy-label">回扣 ch1：RAG 是幻觉的"补丁"</div>
+                <div class="analogy-text">ch1 讲到幻觉时提到，模型没有实时查阅资料的能力，解法之一是在提问时把相关资料附上。RAG 正是这个机制的系统化实现——不是一次性手动附上，而是自动从知识库里检索最相关的片段，每次提问都自动附上。</div>
               </div>
             </div>
           </div>
 
+          <!-- S2: RAG 核心思想 -->
+          <div class="content-section" id="ch5-s2">
+            <div class="sec-head"><div class="sec-ico">◈</div><h3>RAG 核心思想</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)"><span class="term-chip" data-term="RAG">RAG</span>（检索增强生成）的逻辑极其简单：<strong>检索相关片段，塞进 prompt，让模型基于片段作答</strong>。不修改参数，不需要 GPU，只需要一个检索系统和一个 prompt 模板。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：RAG 做的事，用一句话说</strong><br>
+                  <em>把"闭卷考试"改成"开卷考试"——让模型考试前能翻到你指定的资料书，然后照着作答。</em>
+                  <div class="flow-steps" style="margin-top:14px;margin-bottom:0">
+                    <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>建库（离线）</strong><p>把文档切成小块 → 每块变成向量 → 存入向量库。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>检索（实时）</strong><p>用户问题变成向量 → 在库中找最相似的 k 个片段（<span class="term-chip" data-term="top-k">top-k</span> 检索）。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>生成（实时）</strong><p>检索到的片段 + 用户问题 → 塞进 prompt → 调 LLM → 得到基于片段的回答。</p></div></div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>为什么 RAG 能减轻幻觉——从参数记忆 vs 上下文记忆说起</strong><br><br>
+
+                  模型有两种"知道"某件事的方式：<br>
+                  <strong>① 参数记忆</strong>（Parametric Memory）：训练时学进权重里的知识，固定不变，存在截止日期和遗忘率。<br>
+                  <strong>② 上下文记忆</strong>（Contextual Memory）：当前 prompt 里的内容，模型续写时会直接引用。<br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch1-s7')" style="color:var(--accent)">ch1 幻觉</a>：幻觉的根源是模型在参数记忆里找不到答案却强行续写——它预测"最可能的下一个 token"，而不是"真实的答案"。<br><br>
+
+                  RAG 的解法：<strong>把正确答案直接放进上下文</strong>，让模型从"参数记忆续写"切换为"照着给定文本续写"。这对模型来说更容易——它只需要做信息抽取和改写，而不是凭空生成。<br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch3-s2')" style="color:var(--accent)">ch3 Prompt 是什么</a>：RAG 的"注入上下文"本质就是在 prompt 里加了一段 <code>&lt;context&gt;</code>。我们在 ch3 已经建好了这个 prompt 模板（<code>project/ch3-qa-prompt.txt</code>）——RAG 需要做的，只是<strong>自动填入</strong> <code>{document_content}</code>，而不是手动复制粘贴。<br><br>
+
+                  <strong>RAG 减轻幻觉，但不消除（诚实说明）：</strong><br>
+                  • 如果检索没命中（相关片段不在库里），<code>&lt;context&gt;</code> 里是无关内容，模型仍可能回到参数记忆幻觉<br>
+                  • 如果模型选择无视上下文，仍会产生幻觉<br>
+                  • 参数记忆的错误 + 检索的错误 = 可以叠加<br>
+                  回扣 ch1 的结论：<strong>RAG 是减轻，不是消除。</strong>
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">RAG 原始论文（Lewis et al., 2020）：提出 RAG 框架的 Facebook 论文</a>
+                  <a href="https://www.promptingguide.ai/techniques/rag" target="_blank" rel="noopener">Prompt Engineering Guide：RAG 技术综述</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: 检索：embedding + cosine -->
+          <div class="content-section" id="ch5-s3">
+            <div class="sec-head"><div class="sec-ico">🔍</div><h3>检索怎么做：向量 + 余弦相似度</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">RAG 的检索不是关键词搜索，而是<span class="term-chip" data-term="语义检索">语义检索</span>——这是本章最重要的技术概念，也是和 ch2 衔接最紧密的地方。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：ch2 的向量相似度，用在了 RAG 检索上</strong>
+                  <div class="analogy-box" style="margin-top:10px">
+                    <div class="analogy-label">直接回扣 ch2 Embedding</div>
+                    <div class="analogy-text">ch2 演示了：把"cat"和"dog"都转成向量后，余弦相似度高达 0.92——即使它们字面上没有任何共同字符。RAG 检索做的是完全一样的事，只是把"单词"换成了"文档段落"：用户的问题 → 向量，每个文档片段 → 向量，余弦相似度最高的片段 = 最可能包含答案的片段。</div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>语义检索为什么比关键词检索更好——从 ch2 的分布假设说起</strong><br><br>
+
+                  回到 <a href="javascript:void(0)" onclick="goTo('ch6-s4')" style="color:var(--accent)">ch2 Embedding：语义坐标</a> 的核心结论：<span class="term-chip" data-term="embedding">Embedding</span> 把词（或句子）映射到高维向量空间，语义相似的内容在向量空间里距离近。这个"相似"来自分布相似性——出现在类似上下文里的词，向量方向接近。<br><br>
+
+                  在 RAG 里，这个机制被直接复用到段落级别：<br>
+                  • 文档里有一段："员工每满一年享有5天带薪年假"<br>
+                  • 用户问题："公司年假政策是什么？"<br>
+                  • 关键词搜索：两者共享词"年假"，可以匹配<br>
+                  • 语义搜索：即使用户问"我能请几天年假"（没有"政策"二字），向量仍然相近，依然能检索到<br><br>
+
+                  <strong>具体流程（和 ch2 余弦相似度公式完全一致）：</strong><br><br>
+
+                  建库阶段（一次性）：<br>
+                  <code>E_chunk = embed_model(chunk_text)  # → 1536维向量（或 3072、768，取决于模型）</code><br>
+                  对每个片段都算一遍，把所有向量存起来。<br><br>
+
+                  查询阶段（每次提问）：<br>
+                  <code>E_query = embed_model(user_question)  # 同一个模型</code><br>
+                  <code>sim_i = cosine(E_query, E_chunk_i)  # = ch2 里的余弦相似度公式</code><br>
+                  <code>top_k = argsort(sim)[-k:]           # 取相似度最高的 k 个片段</code><br><br>
+
+                  <strong>为什么强调"同一个嵌入模型"？</strong><br>
+                  向量空间是由训练该嵌入模型的数据决定的。用 A 模型嵌入文档、用 B 模型嵌入问题——它们生活在不同的向量空间里，余弦相似度毫无意义。这是一个常见的工程错误。<br><br>
+
+                  <strong>嵌入模型 vs 生成模型：</strong><br>
+                  你在 ch4 调用的 deepseek-chat 是<em>生成</em>模型（输出文字）。嵌入阶段用的是<em>嵌入</em>模型（输出向量），如 <code>text-embedding-3-large</code>（OpenAI）或 <code>BAAI/bge-m3</code>（开源）。两者是不同的 API 调用，价格也不同（嵌入通常便宜很多）。
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://platform.openai.com/docs/guides/embeddings" target="_blank" rel="noopener">OpenAI Embeddings 文档（支持中文）</a>
+                  <a href="https://huggingface.co/BAAI/bge-m3" target="_blank" rel="noopener">BGE-M3：多语言开源嵌入模型（支持中文）</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S4: 切块与向量库 -->
+          <div class="content-section" id="ch5-s4">
+            <div class="sec-head"><div class="sec-ico">◇</div><h3>切块（Chunking）与向量库</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">原始文档不能整个喂给嵌入模型——它太长。也不该整个放进 prompt——放不下，而且会稀释相关信息。解法是先<span class="term-chip" data-term="切块">切块</span>，再检索精确片段。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：为什么要切块，怎么切</strong>
+                  <div class="compare-table" style="margin-top:10px">
+                    <table>
+                      <thead><tr><th>参数</th><th>太小</th><th>太大</th><th>经验推荐</th></tr></thead>
+                      <tbody>
+                        <tr><td>块大小</td><td>缺乏上下文，检索到片段不完整</td><td>检索精度低，无关内容多</td><td>300~500 token</td></tr>
+                        <tr><td>重叠量</td><td>0 重叠：跨块边界的信息丢失</td><td>冗余多，库膨胀</td><td>50~100 token</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>切块大小与重叠的核心权衡</strong><br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch4-s5')" style="color:var(--accent)">ch4 Context Window</a>：大模型能处理的最大 token 数是有限的（如 128K）。把整本文档放进一个 prompt 通常超出限制；即使不超，大量无关内容会干扰模型定位答案（"Lost in the Middle"现象，ch3 讲过）。所以必须切块，只传最相关的几块。<br><br>
+
+                  <strong>块大小的两端</strong><br>
+                  • <em>过小（如 50 token）</em>：每块只有两三句话，缺乏上下文。检索到"年假5天"这个片段，但没有主语，不知道是哪个岗位的政策。生成质量差。<br>
+                  • <em>过大（如 2000 token）</em>：每块包含多个主题，嵌入向量被"平均化"，无法精确捕捉其中一个主题的语义。检索精度大幅下降。<br><br>
+
+                  <strong>重叠（Overlap）的作用</strong><br>
+                  假设一句重要的话"A 类员工享有10天年假，B类5天"恰好跨越块 N 和块 N+1 的边界：没有重叠时，两块各拿到半句，都不完整；有重叠时，两块里至少有一块包含这整句话。<br>
+                  代价：会存两份重叠区域的向量，略微增加存储和建库时间，通常值得。<br><br>
+
+                  <strong>向量库（Vector Database）</strong><br>
+                  片段数量少时（几百块），可以直接把所有向量算一遍余弦相似度（暴力检索）。片段超过万级，每次查询都暴力检索太慢。<span class="term-chip" data-term="向量库">向量库</span>（FAISS / Chroma / pgvector）内部使用近似最近邻（ANN）算法——用少量精度损失换取数量级的速度提升。<br><br>
+
+                  <strong>三种常见向量库对比：</strong><br>
+                  • <em>FAISS</em>（Meta）：纯内存，不持久化，适合原型和离线批处理，C++ 核心速度极快<br>
+                  • <em>Chroma</em>：Python 原生，本地文件持久化，内置嵌入 API，适合快速原型和单机部署<br>
+                  • <em>pgvector</em>：PostgreSQL 插件，适合已有 PG 数据库的生产系统，SQL 查询语法，数据一致性有保障
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">FAISS GitHub（Meta 开源）</a>
+                  <a href="https://docs.trychroma.com/" target="_blank" rel="noopener">Chroma 文档（Python 友好的向量库）</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: 完整管线 + 失败模式 -->
+          <div class="content-section" id="ch5-s5">
+            <div class="sec-head"><div class="sec-ico">⚙</div><h3>完整管线与失败模式</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <!-- 两阶段管线 -->
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+                <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">完整 RAG 管线</div>
+                <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                  <div>
+                    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">入库阶段（一次性，离线）</div>
+                    <div class="flow-steps" style="margin:0">
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">1</div><div class="flow-content" style="font-size:12px"><strong>加载文档</strong><p style="font-size:11px">PDF、Word、txt、网页</p></div></div>
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">2</div><div class="flow-content" style="font-size:12px"><strong>切块</strong><p style="font-size:11px">chunk_size=400, overlap=80</p></div></div>
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">3</div><div class="flow-content" style="font-size:12px"><strong>嵌入</strong><p style="font-size:11px">每块 → 向量（嵌入模型）</p></div></div>
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">4</div><div class="flow-content" style="font-size:12px"><strong>存入向量库</strong><p style="font-size:11px">FAISS / Chroma / pgvector</p></div></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">查询阶段（每次提问，实时）</div>
+                    <div class="flow-steps" style="margin:0">
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">A</div><div class="flow-content" style="font-size:12px"><strong>问题嵌入</strong><p style="font-size:11px">user_q → 向量（同一模型）</p></div></div>
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">B</div><div class="flow-content" style="font-size:12px"><strong>top-k 检索</strong><p style="font-size:11px">余弦相似度取最近 k 块</p></div></div>
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">C</div><div class="flow-content" style="font-size:12px"><strong>上下文注入</strong><p style="font-size:11px">拼进 prompt 的 &lt;context&gt;</p></div></div>
+                      <div class="flow-step"><div class="flow-num" style="min-width:20px;width:20px;height:20px;font-size:10px">D</div><div class="flow-content" style="font-size:12px"><strong>LLM 生成</strong><p style="font-size:11px">基于上下文作答</p></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 失败模式 -->
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>四种常见失败模式（诚实版）</strong>
+                  <div class="flow-steps" style="margin-top:10px;margin-bottom:0">
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>检索未命中</strong><p>问题的答案不在库里，或答案所在的片段被切块时被破坏。检索到的 top-k 全是无关内容 → 模型仍会幻觉。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>模型无视上下文</strong><p>模型的参数记忆和上下文矛盾时，有时会选择参数记忆。越"确信"的知识越容易压制 context。<br>缓解：prompt 里明确"只使用以下内容回答，如没有则说不知道"（就是 ch3 模板的设计）。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>块边界截断</strong><p>关键信息横跨两个块，两个块各自检索到都只有半句话。加重叠（overlap）是主要缓解手段。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>嵌入模型不匹配</strong><p>用 A 模型嵌入文档、用 B 模型嵌入查询——向量空间不同，余弦相似度无意义，检索完全失效。</p></div></div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>检索未命中是最常见也最难发现的失败</strong><br><br>
+
+                  RAG 系统的整体质量上限由检索质量决定——LLM 再强，拿到错误的 context 也无能为力。但检索失败通常<strong>不会报错</strong>：向量库总会返回"最相似"的 k 个片段，哪怕那 k 个片段和问题毫无关系。从外部看，系统正常运行；从输出看，模型给出了一个听起来合理的错误答案。<br><br>
+
+                  这就是为什么 ch7（评估）必须存在：需要系统性地测量"检索命中率"（Recall@k：正确答案出现在 top-k 里的比例）和"答案准确率"，而不是人工抽查几个例子就认为 RAG 工作正常了。<br><br>
+
+                  <strong>检索质量的几个提升方向：</strong><br>
+                  • <em>HyDE（Hypothetical Document Embedding）</em>：先让 LLM 根据问题"假装"生成一段答案，用这段假答案的向量去检索（因为假答案的向量比问题的向量更接近真实文档）<br>
+                  • <em>查询重写（Query Rewriting）</em>：用 LLM 把用户的口语化问题改写成更像文档语言的形式，再检索<br>
+                  • <em>混合检索</em>：语义检索 + 关键词检索（BM25）结果融合，互补覆盖
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S6: 互动演示 -->
+          <div class="content-section" id="ch5-s6">
+            <div class="sec-head"><div class="sec-ico">▷</div><h3>互动演示：迷你 RAG</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">下面是一个虚构的"TechCorp 员工手册"知识库（6个片段）。输入问题，演示会先检索最相关的片段，再基于它向模型提问——对比有无 RAG 的差异。</p>
+
+              <div style="border:1px solid rgba(251,191,36,.25);border-radius:8px;padding:10px 14px;background:rgba(251,191,36,.04);font-size:12px;color:#d97706;line-height:1.6">
+                ⚠️ <strong>演示说明：</strong>本演示使用<strong>关键词重叠评分</strong>做检索（统计问题词和片段词的交集）。这比真实 RAG 的向量语义检索简单得多——真实系统用 ch2 讲过的 embedding + 余弦相似度，能匹配语义相近但字面不同的内容。
+              </div>
+
+              <!-- 知识库展示 -->
+              <div id="rag-kb" style="display:grid;gap:6px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);margin-bottom:2px">📚 知识库（6个片段）</div>
+              </div>
+
+              <!-- 查询区 -->
+              <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:6px">输入问题（试试：年假、报销、绩效、远程办公、入职）</div>
+                <div style="display:flex;gap:8px">
+                  <input type="text" id="rag-query" placeholder="年假有多少天？" style="flex:1;background:#0f172a;border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit" />
+                  <button id="rag-run" style="background:var(--accent);color:#0a0f1e;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap">▶ 检索 + 回答</button>
+                </div>
+              </div>
+
+              <!-- 输出区 -->
+              <div id="rag-output" style="display:none;display:grid;gap:10px"></div>
+            </div>
+          </div>
+
+          <!-- S7: 贯穿项目 -->
+          <div class="content-section" id="ch5-s7">
+            <div class="sec-head"><div class="sec-ico">🗂</div><h3>本章给项目加了什么</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <div class="note-block">
+                <strong>文档助手进度：</strong><br>
+                ch3 → prompt 模板 ✅<br>
+                ch4 → API 接通 ✅<br>
+                ch5 → 加入向量检索，助手现在能基于真实文档回答了 ✅
+              </div>
+
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+                <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
+                  📄 project/ch5-rag-pipeline.py
+                </div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.8;margin:0;overflow-x:auto"><code>"""
+文档助手 — ch5 产物：RAG 管线
+依赖：pip install openai chromadb
+嵌入模型用 OpenAI text-embedding-3-small（DeepSeek 暂无嵌入 API）
+"""
+import os
+from openai import OpenAI
+import chromadb
+
+embed_client = OpenAI()          # 用 OPENAI_API_KEY
+chroma = chromadb.Client()
+collection = chroma.get_or_create_collection("docs")
+
+# ── 切块函数 ──
+def chunk_text(text: str, size: int = 400, overlap: int = 80) -> list[str]:
+    chunks, start = [], 0
+    while start < len(text):
+        end = start + size
+        chunks.append(text[start:end])
+        start += size - overlap
+    return chunks
+
+# ── 入库 ──
+def index_document(doc_id: str, text: str) -> None:
+    chunks = chunk_text(text)
+    embeddings = embed_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=chunks,
+    ).data
+    collection.add(
+        ids=[f"{doc_id}_{i}" for i in range(len(chunks))],
+        embeddings=[e.embedding for e in embeddings],
+        documents=chunks,
+    )
+    print(f"已入库 {len(chunks)} 个片段")
+
+# ── 检索 + 生成 ──
+def rag_answer(question: str, k: int = 3) -> str:
+    q_vec = embed_client.embeddings.create(
+        model="text-embedding-3-small", input=[question]
+    ).data[0].embedding
+
+    results = collection.query(query_embeddings=[q_vec], n_results=k)
+    context = "\n\n".join(results["documents"][0])
+
+    # 直接复用 ch3 的 prompt 模板
+    with open("ch3-qa-prompt.txt") as f:
+        template = f.read()
+    prompt = template.replace("{document_content}", context)
+    prompt = prompt.replace("{user_question}", question)
+
+    from openai import OpenAI as DSClient
+    ds = DSClient(
+        api_key=os.environ["DEEPSEEK_API_KEY"],
+        base_url="https://api.deepseek.com",
+    )
+    resp = ds.chat.completions.create(
+        model="deepseek-chat",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=512,
+    )
+    return resp.choices[0].message.content
+
+if __name__ == "__main__":
+    # 示例：入库并查询
+    with open("my_document.txt") as f:
+        doc = f.read()
+    index_document("my_doc", doc)
+    print(rag_answer("文档里提到的主要结论是什么？"))</code></pre>
+              </div>
+
+              <div class="key-point">注意 ch3 的 prompt 模板被直接复用了（<code>ch3-qa-prompt.txt</code>），这正是当初设计"只使用 context 里的信息回答"约束的原因——RAG 系统天然需要这个约束来防止模型绕开检索结果凭空作答。</div>
+            </div>
+          </div>
+
+          <!-- S8: 知识自测 -->
+          <div class="content-section" id="ch5-s8">
+            <div class="sec-head"><div class="sec-ico">✦</div><h3>知识自测</h3></div>
+            <div class="panel" style="display:grid;gap:20px">
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q1. RAG 检索用的是什么算法来衡量"哪个文档片段最相关"？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 语义检索用的是向量余弦相似度（cosine similarity）——ch2 演示过的那个算法，只是从词级别升级到了段落级别。BM25 是关键词检索算法，不是 RAG 的默认方案。')">A. BM25（词频-逆文档频率）</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','RAG 语义检索用的是向量余弦相似度（cosine similarity）——ch2 演示过的那个算法，只是从词级别升级到了段落级别。BM25 是关键词检索算法，不是 RAG 的默认方案。')">B. 向量余弦相似度（同 ch2 embedding 那节讲的）</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 语义检索用的是向量余弦相似度（cosine similarity）——ch2 演示过的那个算法，只是从词级别升级到了段落级别。BM25 是关键词检索算法，不是 RAG 的默认方案。')">C. 精确字符串匹配</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 语义检索用的是向量余弦相似度（cosine similarity）——ch2 演示过的那个算法，只是从词级别升级到了段落级别。BM25 是关键词检索算法，不是 RAG 的默认方案。')">D. 随机抽样</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q2. 为什么文档入库和查询必须用同一个嵌入模型？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','不同嵌入模型产生的向量空间不同，用 A 模型嵌入文档、B 模型嵌入查询，两个向量处于不同空间，余弦相似度没有意义。就像用摄氏温度和华氏温度直接比较大小。')">A. 不同模型的向量维度不同，拼接时会报错</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','不同嵌入模型产生的向量空间不同，用 A 模型嵌入文档、B 模型嵌入查询，两个向量处于不同空间，余弦相似度没有意义。就像用摄氏温度和华氏温度直接比较大小。')">B. 一次只能同时运行一个嵌入模型</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','不同嵌入模型产生的向量空间不同，用 A 模型嵌入文档、B 模型嵌入查询，两个向量处于不同空间，余弦相似度没有意义。就像用摄氏温度和华氏温度直接比较大小。')">C. 不同模型的向量空间不同，跨空间的余弦相似度没有意义</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','不同嵌入模型产生的向量空间不同，用 A 模型嵌入文档、B 模型嵌入查询，两个向量处于不同空间，余弦相似度没有意义。就像用摄氏温度和华氏温度直接比较大小。')">D. 不同模型收费标准不同，混用会导致计费错误</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q3. 切块时设置 overlap（重叠）的主要目的是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','overlap 的目的是防止跨块边界的关键信息被截断为两半，确保至少有一个块包含完整的信息段。不是用来提高速度或减少成本的。')">A. 减少 API 调用次数，降低成本</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','overlap 的目的是防止跨块边界的关键信息被截断为两半，确保至少有一个块包含完整的信息段。不是用来提高速度或减少成本的。')">B. 让块的嵌入向量更准确</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','overlap 的目的是防止跨块边界的关键信息被截断为两半，确保至少有一个块包含完整的信息段。不是用来提高速度或减少成本的。')">C. 防止重要信息恰好落在两块边界之间被截断</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','overlap 的目的是防止跨块边界的关键信息被截断为两半，确保至少有一个块包含完整的信息段。不是用来提高速度或减少成本的。')">D. 增加向量库的索引速度</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q4. RAG 能"消除"大模型的幻觉问题吗？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 减轻但不能消除幻觉。检索未命中时，context 里是无关内容，模型仍会幻觉；检索命中但模型选择无视 context 也会幻觉。RAG 只是把"靠参数记忆"改为"靠检索结果"，无法修复参数记忆本身的不可靠性。')">A. 能，有了真实文档上下文，模型不会再编造信息</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','RAG 减轻但不能消除幻觉。检索未命中时，context 里是无关内容，模型仍会幻觉；检索命中但模型选择无视 context 也会幻觉。RAG 只是把"靠参数记忆"改为"靠检索结果"，无法修复参数记忆本身的不可靠性。')">B. 不能，检索未命中或模型无视 context 时仍会幻觉</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 减轻但不能消除幻觉。检索未命中时，context 里是无关内容，模型仍会幻觉；检索命中但模型选择无视 context 也会幻觉。RAG 只是把"靠参数记忆"改为"靠检索结果"，无法修复参数记忆本身的不可靠性。')">C. 取决于向量库的品牌和价格</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 减轻但不能消除幻觉。检索未命中时，context 里是无关内容，模型仍会幻觉；检索命中但模型选择无视 context 也会幻觉。RAG 只是把"靠参数记忆"改为"靠检索结果"，无法修复参数记忆本身的不可靠性。')">D. 能，只要 top-k 设置足够大</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q5. RAG 和模型微调（Fine-tuning）的根本区别是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 不改变模型参数，通过检索在推理时动态注入上下文；Fine-tuning 通过继续训练永久改变模型参数，把知识"烧"进权重里。两者在成本、更新频率、适用场景上截然不同。')">A. RAG 速度更快，Fine-tuning 质量更高</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 不改变模型参数，通过检索在推理时动态注入上下文；Fine-tuning 通过继续训练永久改变模型参数，把知识"烧"进权重里。两者在成本、更新频率、适用场景上截然不同。')">B. RAG 只能用于中文，Fine-tuning 支持多语言</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','RAG 不改变模型参数，通过检索在推理时动态注入上下文；Fine-tuning 通过继续训练永久改变模型参数，把知识"烧"进权重里。两者在成本、更新频率、适用场景上截然不同。')">C. RAG 不改模型参数（推理时注入），Fine-tuning 永久改变模型权重</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','RAG 不改变模型参数，通过检索在推理时动态注入上下文；Fine-tuning 通过继续训练永久改变模型参数，把知识"烧"进权重里。两者在成本、更新频率、适用场景上截然不同。')">D. RAG 需要 GPU，Fine-tuning 可以在 CPU 上运行</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- S9: 本章小结 -->
+          <div class="content-section" id="ch5-s9">
+            <div class="sec-head"><div class="sec-ico">◉</div><h3>本章小结</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>RAG = 检索 + 上下文注入 + 生成</strong><p>不改模型参数，只改 prompt 内容。把 ch1 的幻觉补丁、ch2 的向量检索、ch3 的 prompt 模板拼成一条管线。</p></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>检索质量是上限</strong><p>检索未命中，LLM 再强也无能为力。用 ch2 的余弦相似度做语义检索，比关键词匹配更鲁棒；同一嵌入模型入库和查询。</p></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>切块是精度和覆盖的权衡</strong><p>块太小缺上下文，块太大检索精度低。overlap 防止边界截断。向量库（FAISS/Chroma）解决大规模高速检索问题。</p></div></div>
+                <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>RAG 减轻幻觉，不消除</strong><p>这一点回扣 ch1 的结论。需要系统性评估（ch7）才能知道 RAG 系统到底工作得多好，不能靠主观感受。</p></div></div>
+              </div>
+              <div class="note-block">🗂 本章给文档助手加入了 RAG 核心管线（<code>project/ch5-rag-pipeline.py</code>）。ch6 将为它加上工具调用能力，让它不只能查文档，还能执行多步骤任务。</div>
+            </div>
+          </div>
+
+          <!-- S10: 词汇表 -->
+          <div class="content-section" id="ch5-s10">
+            <div class="sec-head"><div class="sec-ico">📖</div><h3>本章词汇表</h3></div>
+            <div class="panel">
+              <div class="glossary-grid">
+                <div class="gloss-item"><div class="gloss-term">RAG</div><div class="gloss-def">检索增强生成（Retrieval-Augmented Generation）。在推理时从外部知识库检索相关片段，注入 prompt 上下文，让模型基于检索到的内容作答。不改变模型参数，不需要 GPU。</div></div>
+                <div class="gloss-item"><div class="gloss-term">语义检索</div><div class="gloss-def">基于向量余弦相似度的检索方式。把查询和文档片段都嵌入到同一向量空间，找语义上最近的片段，能匹配字面不同但含义相近的内容。区别于关键词检索（BM25）。</div></div>
+                <div class="gloss-item"><div class="gloss-term">切块（Chunking）</div><div class="gloss-def">把长文档切成固定大小的小段（chunk）以便嵌入和检索。关键参数：块大小（通常 300-500 token）和重叠量（通常 50-100 token）。</div></div>
+                <div class="gloss-item"><div class="gloss-term">向量库</div><div class="gloss-def">专门存储和检索向量的数据库（FAISS、Chroma、pgvector 等），使用近似最近邻（ANN）算法高效返回 top-k 相似向量。比暴力余弦检索快数量级。</div></div>
+                <div class="gloss-item"><div class="gloss-term">top-k 检索</div><div class="gloss-def">从向量库返回与查询最相似的 k 个文档片段。k 通常取 3-5，太小可能漏掉答案，太大会引入噪声、增加 token 成本。</div></div>
+                <div class="gloss-item"><div class="gloss-term">上下文注入</div><div class="gloss-def">把检索到的片段拼接进 prompt 的 &lt;context&gt; 区域，让模型基于这段文本作答而非靠参数记忆。是 RAG 查询阶段的核心步骤，直接复用 ch3 的 QA prompt 模板。</div></div>
+                <div class="gloss-item"><div class="gloss-term">嵌入模型</div><div class="gloss-def">将文本转换为向量的专用模型（如 text-embedding-3-small、BGE-M3），不同于生成模型（如 deepseek-chat）。输出是固定维度的浮点向量，不产生文字。</div></div>
+                <div class="gloss-item"><div class="gloss-term">参数记忆</div><div class="gloss-def">模型权重里固化的知识，来自预训练语料，有截止日期。与"上下文记忆"（当前 prompt 里的内容）相对。RAG 把私有知识从参数记忆转移到可更新的上下文记忆。</div></div>
+              </div>
+            </div>
+          </div>
 
         </div>
       </div>
