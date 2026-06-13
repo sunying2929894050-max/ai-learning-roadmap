@@ -1,380 +1,199 @@
-      <!-- Chapter 0: Python 速通 -->
+      <!-- Chapter 0: 前置知识导图 -->
       <div class="ch-panel" id="ch-0">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big" style="font-size:22px;letter-spacing:0">⚡</div><div class="ch-vline"></div><div><div class="ch-label">前置速通</div><div class="ch-name">应用层 Python 速通</div></div></div>
-          <p class="ch-desc">只含项目真正用到的 Python——不含线性代数、NumPy、微积分。读完即可跑 ch4 的代码。</p>
+          <div class="ch-badge"><div class="ch-big" style="font-size:22px;letter-spacing:0">🗺</div><div class="ch-vline"></div><div><div class="ch-label">前置导图</div><div class="ch-name">前置知识导图</div></div></div>
+          <p class="ch-desc">精确标出每个前置只需哪个子集，并指向好评外链。走应用主轴只需左侧一组；想深入 AI 训练再看右侧。</p>
         </div>
         <div class="content-body">
-
-          <!-- S0: 这份速通帮你做什么 -->
           <div class="content-section" id="ch0-s0">
-            <div class="sec-head"><div class="sec-ico">⓪</div><h3>这份速通帮你做什么</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:18px">主轴 ch3 之前，项目都是"点一点"的互动演示——不需要写代码。从 ch4 开始，你需要自己跑 Python 脚本。这份速通覆盖 ch4→ch8 项目里真正用到的所有 Python 知识。</p>
+            <div class="panel" style="padding:0;background:none;border:none;box-shadow:none">
 
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
-                <div style="padding:14px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:10px">
-                  <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px">✓ 这里包含</div>
-                  <ul style="font-size:12.5px;color:var(--light-muted);line-height:1.9;margin:0;padding-left:16px">
-                    <li>变量、字符串、f-string</li>
-                    <li>函数（def / return）</li>
-                    <li>列表 + for 循环</li>
-                    <li>字典 + JSON 读写</li>
-                    <li>文件读写（open / read / write）</li>
-                    <li>环境变量（os.environ）</li>
-                    <li>pip 安装 + import 库</li>
-                  </ul>
+              <!-- Root node -->
+              <div style="text-align:center;margin-bottom:28px">
+                <div style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,rgba(0,212,170,.15),rgba(59,130,246,.1));border:1.5px solid rgba(0,212,170,.4);border-radius:14px">
+                  <div style="font-size:15px;font-weight:800;color:var(--light)">前置知识导图</div>
+                  <div style="font-size:12px;color:var(--light-muted);margin-top:3px">选你要走的路线，从指向的子集开始</div>
                 </div>
-                <div style="padding:14px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px">
-                  <div style="font-size:13px;font-weight:700;color:#ef4444;margin-bottom:8px">✗ 不在这里（训练 track 才需要）</div>
-                  <ul style="font-size:12.5px;color:var(--light-muted);line-height:1.9;margin:0;padding-left:16px">
-                    <li>NumPy / Pandas</li>
-                    <li>线性代数、矩阵运算</li>
-                    <li>微积分、梯度</li>
-                    <li>PyTorch / TensorFlow</li>
-                    <li>数据可视化（matplotlib）</li>
-                    <li>机器学习算法实现</li>
-                  </ul>
+                <!-- trunk line -->
+                <div style="width:2px;height:20px;background:rgba(255,255,255,.15);margin:0 auto"></div>
+                <!-- branch bar -->
+                <div style="display:flex;justify-content:center;gap:0">
+                  <div style="width:calc(50% - 1px);height:2px;background:rgba(0,212,170,.4);border-radius:2px 0 0 0"></div>
+                  <div style="width:2px;height:2px;background:rgba(255,255,255,.2)"></div>
+                  <div style="width:calc(50% - 1px);height:2px;background:rgba(100,116,139,.4);border-radius:0 2px 0 0"></div>
                 </div>
               </div>
 
-              <div style="padding:12px 16px;background:rgba(59,130,246,.08);border-left:3px solid #3b82f6;border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                预计阅读时间：30~45 分钟。读完即可开始跑 ch4 的代码，不需要读完选修 21。
-              </div>
-            </div>
-          </div>
+              <!-- Two-column layout -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
 
-
-          <!-- S1: 安装与运行 -->
-          <div class="content-section" id="ch0-s1">
-            <div class="sec-head"><div class="sec-ico">①</div><h3>安装 Python + 运行第一行代码</h3></div>
-            <div class="panel">
-              <div style="margin-bottom:18px">
-                <div style="font-size:13px;font-weight:700;color:var(--light);margin-bottom:10px">▸ 安装</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                  <div style="padding:12px;background:rgba(0,0,0,.15);border-radius:8px">
-                    <div style="font-size:12.5px;font-weight:700;color:#3b82f6;margin-bottom:6px">Windows / Mac（推荐）</div>
-                    <div style="font-size:12.5px;color:var(--light-muted);line-height:1.7">去 <code>python.org</code> 下载 Python 3.11+，安装时勾选"Add to PATH"。</div>
+                <!-- ══ LEFT: Application track ══ -->
+                <div>
+                  <!-- Branch header -->
+                  <div style="text-align:center;margin-bottom:16px">
+                    <div style="display:inline-block;padding:9px 20px;background:rgba(0,212,170,.12);border:1.5px solid rgba(0,212,170,.45);border-radius:10px">
+                      <div style="font-size:13px;font-weight:800;color:var(--accent)">🟢 AI 应用路线前置</div>
+                      <div style="font-size:11.5px;color:var(--light-muted);margin-top:2px">走主轴 ch1→ch8 只需这一组</div>
+                    </div>
+                    <div style="width:2px;height:14px;background:rgba(0,212,170,.3);margin:0 auto"></div>
                   </div>
-                  <div style="padding:12px;background:rgba(0,0,0,.15);border-radius:8px">
-                    <div style="font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:6px">不想本地安装？</div>
-                    <div style="font-size:12.5px;color:var(--light-muted);line-height:1.7">用 <code>colab.research.google.com</code>——Google Colab 浏览器里直接跑 Python，免安装。</div>
+
+                  <!-- Node cards -->
+                  <div style="display:flex;flex-direction:column;gap:12px">
+
+                    <!-- Python -->
+                    <div class="prereq-node prereq-node--app">
+                      <div class="prereq-node-title">🐍 Python（应用层子集）</div>
+                      <div class="prereq-node-when">首次需要：ch4 开始自己跑代码</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need">只需</span>
+                        变量 · 字符串 · f-string · 函数 · 列表 · 字典 · JSON · 文件读写 · 环境变量 · pip install
+                      </div>
+                      <div class="prereq-node-skip">
+                        <span class="prereq-skip">不需要</span>
+                        NumPy · 矩阵运算 · 线性代数 · PyTorch
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link" href="https://www.liaoxuefeng.com/wiki/1016959663602400/" target="_blank" rel="noopener">廖雪峰 Python 教程 ↗</a>
+                        <a class="prereq-link" href="https://www.bilibili.com/video/BV1os411o7cD/" target="_blank" rel="noopener">小甲鱼 Python（B站）↗</a>
+                        <a class="prereq-link" href="https://book.douban.com/subject/35196328/" target="_blank" rel="noopener">《Python编程：从入门到实践》↗</a>
+                      </div>
+                    </div>
+
+                    <!-- 命令行 -->
+                    <div class="prereq-node prereq-node--app">
+                      <div class="prereq-node-title">🖥 命令行基础</div>
+                      <div class="prereq-node-when">首次需要：ch4 运行 python3 脚本、设置环境变量</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need">只需</span>
+                        <code>cd</code> · <code>ls / dir</code> · <code>python3 file.py</code> · <code>export KEY=val</code> · <code>pip install</code>
+                      </div>
+                      <div class="prereq-node-skip">
+                        <span class="prereq-skip">不需要</span>
+                        shell 脚本 · awk · sed · 进程管理
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link" href="https://www.runoob.com/linux/linux-tutorial.html" target="_blank" rel="noopener">菜鸟教程 Linux 命令行 ↗</a>
+                        <a class="prereq-link" href="https://missing.csail.mit.edu/" target="_blank" rel="noopener">MIT The Missing Semester ↗</a>
+                      </div>
+                    </div>
+
+                    <!-- Git -->
+                    <div class="prereq-node prereq-node--app">
+                      <div class="prereq-node-title">🌿 Git &amp; GitHub</div>
+                      <div class="prereq-node-when">首次需要：ch8 发布作品集仓库</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need">只需</span>
+                        <code>git init / add / commit / push</code> · GitHub 建仓库 · README · <code>.gitignore</code>（防止 key 泄露）
+                      </div>
+                      <div class="prereq-node-skip">
+                        <span class="prereq-skip">不需要</span>
+                        rebase · cherry-pick · CI/CD 配置（进阶再看）
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link" href="https://www.liaoxuefeng.com/wiki/896043488029600/" target="_blank" rel="noopener">廖雪峰 Git 教程 ↗</a>
+                      </div>
+                    </div>
+
+                    <!-- HTTP / API / JSON -->
+                    <div class="prereq-node prereq-node--app">
+                      <div class="prereq-node-title">🔌 HTTP · API · JSON 概念</div>
+                      <div class="prereq-node-when">首次需要：ch4 理解"调用 API"是什么</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need">只需</span>
+                        POST 请求 · 请求头/响应体 · JSON 格式 · 状态码 · Bearer token 鉴权
+                      </div>
+                      <div class="prereq-node-skip">
+                        <span class="prereq-skip">不需要</span>
+                        自己实现 HTTP 服务器（ch8 用 FastAPI 封装好了）
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link" href="https://www.ruanyifeng.com/blog/2011/09/restful.html" target="_blank" rel="noopener">阮一峰《理解 RESTful 架构》↗</a>
+                        <a class="prereq-link" href="https://www.runoob.com/w3cnote/restful-architecture.html" target="_blank" rel="noopener">菜鸟教程 RESTful ↗</a>
+                      </div>
+                    </div>
+
                   </div>
-                </div>
+                </div><!-- /left -->
+
+                <!-- ══ RIGHT: Training track ══ -->
+                <div>
+                  <!-- Branch header -->
+                  <div style="text-align:center;margin-bottom:16px">
+                    <div style="display:inline-block;padding:9px 20px;background:rgba(100,116,139,.12);border:1.5px solid rgba(100,116,139,.35);border-radius:10px">
+                      <div style="font-size:13px;font-weight:800;color:#94a3b8">🔵 AI 训练路线前置（选修）</div>
+                      <div style="font-size:11.5px;color:var(--light-muted);margin-top:2px">走主轴不需要；想深入 AI 训练再看</div>
+                    </div>
+                    <div style="width:2px;height:14px;background:rgba(100,116,139,.3);margin:0 auto"></div>
+                  </div>
+
+                  <!-- Node cards -->
+                  <div style="display:flex;flex-direction:column;gap:12px">
+
+                    <!-- 线性代数 -->
+                    <div class="prereq-node prereq-node--train">
+                      <div class="prereq-node-title">📐 线性代数</div>
+                      <div class="prereq-node-when">需要时机：选修 23 深度学习 / 自己实现神经网络</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need" style="background:rgba(100,116,139,.2);color:#94a3b8">重点</span>
+                        向量 · 矩阵乘法 · 转置 · 特征值/特征向量（理解 Transformer 用到）
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link prereq-link--train" href="https://www.bilibili.com/video/BV1ys411472E/" target="_blank" rel="noopener">3Blue1Brown《线性代数的本质》B站 ↗</a>
+                      </div>
+                    </div>
+
+                    <!-- 微积分 -->
+                    <div class="prereq-node prereq-node--train">
+                      <div class="prereq-node-title">∂ 微积分</div>
+                      <div class="prereq-node-when">需要时机：理解反向传播、梯度下降</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need" style="background:rgba(100,116,139,.2);color:#94a3b8">重点</span>
+                        导数 · 偏导数 · 链式法则（反向传播的数学本质）
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link prereq-link--train" href="https://www.bilibili.com/video/BV1qW411N7FU/" target="_blank" rel="noopener">3Blue1Brown《微积分的本质》B站 ↗</a>
+                      </div>
+                    </div>
+
+                    <!-- 概率统计 -->
+                    <div class="prereq-node prereq-node--train">
+                      <div class="prereq-node-title">📊 概率统计</div>
+                      <div class="prereq-node-when">需要时机：理解模型评估指标、贝叶斯方法</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need" style="background:rgba(100,116,139,.2);color:#94a3b8">重点</span>
+                        概率分布 · 条件概率 · 期望与方差 · 假设检验基础
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link prereq-link--train" href="https://zh.khanacademy.org/math/statistics-probability" target="_blank" rel="noopener">Khan Academy 概率统计（中文）↗</a>
+                      </div>
+                    </div>
+
+                    <!-- NumPy / Pandas -->
+                    <div class="prereq-node prereq-node--train">
+                      <div class="prereq-node-title">🔢 NumPy · Pandas</div>
+                      <div class="prereq-node-when">需要时机：选修 22 机器学习 / 数据预处理</div>
+                      <div class="prereq-node-subset">
+                        <span class="prereq-need" style="background:rgba(100,116,139,.2);color:#94a3b8">重点</span>
+                        ndarray 运算 · 广播 · DataFrame 基础 · 数据清洗
+                      </div>
+                      <div class="prereq-node-links">
+                        <a class="prereq-link prereq-link--train" href="https://numpy.org/doc/stable/user/quickstart.html" target="_blank" rel="noopener">NumPy 官方 Quickstart ↗</a>
+                        <a class="prereq-link prereq-link--train" href="https://www.runoob.com/numpy/numpy-tutorial.html" target="_blank" rel="noopener">菜鸟教程 NumPy ↗</a>
+                      </div>
+                    </div>
+
+                  </div>
+                </div><!-- /right -->
+
+              </div><!-- /two-column -->
+
+              <!-- Bottom callout -->
+              <div style="margin-top:28px;padding:14px 20px;background:rgba(0,0,0,.2);border-radius:10px;text-align:center;font-size:12.5px;color:var(--light-muted)">
+                走 <strong style="color:var(--accent)">主轴 ch1→ch8</strong>，左侧四项按需查阅即可。选修 21-23（造 AI 路线）才需要右侧全部内容。
               </div>
 
-              <div style="margin-bottom:14px">
-                <div style="font-size:13px;font-weight:700;color:var(--light);margin-bottom:10px">▸ 验证安装 + 第一行代码</div>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code># 终端里运行
-python3 --version          # 应该看到 Python 3.11.x 之类
-
-# 创建 hello.py，内容只有一行
-print("Hello, AI builder!")</code></pre>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0"><code># 终端运行
-python3 hello.py
-# 输出：Hello, AI builder!</code></pre>
-              </div>
-
-              <div style="padding:10px 14px;background:#f0fdf4;border-left:3px solid #22c55e;border-radius:4px;font-size:12.5px;color:#166534">
-                <strong>终端在哪：</strong>Mac → 搜索"Terminal"；Windows → 搜索"cmd"或"PowerShell"；Colab → 单元格前加 <code>!</code> 前缀。
-              </div>
             </div>
           </div>
-
-
-          <!-- S2: 变量与字符串 -->
-          <div class="content-section" id="ch0-s2">
-            <div class="sec-head"><div class="sec-ico">②</div><h3>变量、字符串、f-string</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">在 ch4 的 API 客户端里，你需要存储问题文本、prompt、API 响应——都是字符串操作。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code># 变量：直接赋值，不用声明类型
-question = "公司年假政策是什么？"
-model_name = "deepseek-chat"
-max_tokens = 512
-is_streaming = True
-
-# 字符串拼接（不推荐，容易出错）
-greeting = "你好，" + question
-
-# f-string（推荐，清晰直观）——项目里大量使用
-prompt = f"请回答以下问题：{question}"
-print(prompt)
-# 输出：请回答以下问题：公司年假政策是什么？
-
-# 多行字符串（三引号）——写 prompt 模板时用
-system_prompt = """
-你是一个文档助手。
-只根据给定的上下文回答问题。
-"""
-
-# 字符串方法（项目里用到的几个）
-text = "  多余的空格  "
-text.strip()          # "多余的空格"    去掉首尾空白
-text.replace("{name}", "张三")           # 替换占位符（ch3 prompt 模板）
-text.startswith("总分")                  # 判断开头（ch7 评估脚本里用到）
-len(text)             # 字符串长度</code></pre>
-              <div style="padding:10px 14px;background:rgba(0,212,170,.08);border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:var(--accent)">项目用法：</strong>ch4 里 <code>template.replace("{document_content}", context)</code> 就是字符串的 <code>.replace()</code> 方法。
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S3: 函数 -->
-          <div class="content-section" id="ch0-s3">
-            <div class="sec-head"><div class="sec-ico">③</div><h3>函数：def / return</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">ch4 的 <code>answer_question()</code>、ch5 的 <code>chunk_text()</code>、ch7 的 <code>judge_answer()</code>——项目全程用函数组织代码。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code># 定义函数：def 函数名(参数):
-def greet(name):
-    message = f"你好，{name}！"
-    return message              # return 把结果"返回"给调用者
-
-result = greet("小明")
-print(result)   # 你好，小明！
-
-# 带默认参数（ch5 chunk_text 用到）
-def chunk_text(text, size=400, overlap=80):
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = start + size
-        chunks.append(text[start:end])
-        start += size - overlap
-    return chunks
-
-# 返回多个值（用括号包起来是元组）
-def get_info():
-    return "张三", 25   # 返回两个值
-
-name, age = get_info()  # 解包接收</code></pre>
-              <div style="padding:10px 14px;background:rgba(0,212,170,.08);border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:var(--accent)">项目用法：</strong>ch7 里 <code>answer, context = rag_answer_with_context(question)</code> 就是接收函数返回的两个值。
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S4: 列表与循环 -->
-          <div class="content-section" id="ch0-s4">
-            <div class="sec-head"><div class="sec-ico">④</div><h3>列表 + for 循环</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">ch5 的文档片段是列表；ch7 的评估集是列表；ch6 的 Agent 消息历史也是列表。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code># 列表：用方括号，可以放任何东西
-chunks = ["片段一内容", "片段二内容", "片段三内容"]
-questions = ["年假多少天？", "报销截止时间？"]
-
-# 访问元素（从 0 开始）
-print(chunks[0])      # "片段一内容"
-print(chunks[-1])     # "片段三内容"（最后一个）
-
-# 常用操作
-chunks.append("新片段")     # 末尾加一个
-len(chunks)                 # 长度
-chunks[0:2]                 # 切片，取前两个
-
-# for 循环（遍历列表）
-for item in EVAL_SET:       # ch7 里这样循环评估集
-    print(item["question"])
-
-# 列表推导式（常见的简洁写法）
-scores = [r["score"] for r in results]        # 从每个结果里取 score
-found = [kw for kw in keywords if kw in text] # ch7 关键词检查就是这个
-
-# join：把列表合成一个字符串（ch5 里把检索片段拼成 context）
-context = "\n\n".join(chunks)   # 用两个换行分隔，合成一段长文本</code></pre>
-              <div style="padding:10px 14px;background:rgba(0,212,170,.08);border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:var(--accent)">项目用法：</strong>ch7 里 <code>context = "\n\n".join(results["documents"][0])</code> 就是把检索到的片段列表合并成一段 context。
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S5: 字典与 JSON -->
-          <div class="content-section" id="ch0-s5">
-            <div class="sec-head"><div class="sec-ico">⑤</div><h3>字典 + JSON</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">API 请求和响应都是 JSON；ch6 的 Agent 工具调用结果也是 JSON；ch7 的评估报告用 JSON 保存。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code>import json   # 内置库，不需要 pip install
-
-# 字典：键值对，用花括号
-eval_item = {
-    "id": "e1",
-    "question": "年假多少天？",
-    "expected_keywords": ["10天", "15天"],
-}
-
-# 访问和修改
-print(eval_item["question"])        # "年假多少天？"
-eval_item["answer"] = "满一年10天"  # 新增字段
-
-# 字典 → JSON 字符串（写入文件前）
-json_str = json.dumps(eval_item, ensure_ascii=False, indent=2)
-print(json_str)
-# {
-#   "id": "e1",
-#   "question": "年假多少天？",
-#   ...
-# }
-
-# JSON 字符串 → 字典（API 返回的响应解析）
-parsed = json.loads(json_str)
-print(parsed["id"])   # "e1"
-
-# 遍历字典
-for key, value in eval_item.items():
-    print(f"{key}: {value}")</code></pre>
-              <div style="padding:10px 14px;background:rgba(0,212,170,.08);border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:var(--accent)">项目用法：</strong>ch6 Agent 里，模型输出 <code>{"thought":"...","action":"calculator","input":"3*12"}</code>，你用 <code>json.loads()</code> 解析后取 <code>parsed["action"]</code> 决定调哪个工具。
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S6: 文件读写 -->
-          <div class="content-section" id="ch0-s6">
-            <div class="sec-head"><div class="sec-ico">⑥</div><h3>文件读写</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">ch4 要读取 ch3 的 prompt 模板文件；ch5 要读取公司文档；ch7 要把评估报告写成 JSON 文件。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code>import json
-
-# 读取文本文件（ch4 读 prompt 模板）
-with open("ch3-qa-prompt.txt") as f:
-    template = f.read()          # 整个文件内容作为一个字符串
-print(template[:50])             # 看前 50 个字符
-
-# 写入文本文件
-with open("output.txt", "w", encoding="utf-8") as f:
-    f.write("写入的内容")
-
-# 读取 JSON 文件
-with open("data.json", encoding="utf-8") as f:
-    data = json.load(f)          # 直接解析成 Python 字典/列表
-
-# 写入 JSON 文件（ch7 保存评估报告）
-results = [{"id": "e1", "score": 8}, {"id": "e2", "score": 9}]
-with open("eval_report.json", "w", encoding="utf-8") as f:
-    json.dump(results, f, ensure_ascii=False, indent=2)
-# 写完后可以用任何文本编辑器打开 eval_report.json 查看</code></pre>
-              <div style="padding:10px 14px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:#f59e0b">with open 是什么：</strong>这是 Python 的上下文管理器，自动处理文件打开和关闭——你只需要写 with 块里的逻辑，不用手动 close()。
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S7: 环境变量 -->
-          <div class="content-section" id="ch0-s7">
-            <div class="sec-head"><div class="sec-ico">⑦</div><h3>环境变量：安全存 API key</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">ch4 开始每个项目文件都要读取 API key——正确做法是用环境变量，绝对不要把 key 写进代码。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code>import os
-
-# 在终端里设置（每次新开终端都需要重设）
-# Mac / Linux：
-# export DEEPSEEK_API_KEY="sk-你的key"
-# Windows（cmd）：
-# set DEEPSEEK_API_KEY=sk-你的key
-
-# Python 代码里读取
-api_key = os.environ["DEEPSEEK_API_KEY"]     # 如果变量不存在会报错
-api_key = os.environ.get("DEEPSEEK_API_KEY") # 不存在时返回 None，不报错
-
-# 实战：ch4 的正确写法
-from openai import OpenAI
-client = OpenAI(
-    api_key=os.environ["DEEPSEEK_API_KEY"],  # ✓ 从环境变量读
-    # api_key="sk-xxx",                      # ✗ 绝对不要这样写！
-)</code></pre>
-
-              <div style="padding:12px 16px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:8px;font-size:12.5px;color:var(--light-muted);margin-bottom:10px">
-                <strong style="color:#ef4444">永久保存环境变量的方法：</strong>每次关终端就失效的问题，可以把 <code>export DEEPSEEK_API_KEY="sk-..."</code> 加进 <code>~/.zshrc</code>（Mac）或 <code>~/.bashrc</code>（Linux）的末尾，然后 <code>source ~/.zshrc</code> 重新加载。
-              </div>
-
-              <div style="padding:10px 14px;background:rgba(0,212,170,.08);border-left:3px solid var(--accent);border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:var(--accent)">更方便：</strong>创建项目目录下的 <code>.env</code> 文件写入 <code>DEEPSEEK_API_KEY=sk-xxx</code>，用 <code>pip install python-dotenv</code> 后在代码最开头加 <code>from dotenv import load_dotenv; load_dotenv()</code>。记住把 <code>.env</code> 加进 <code>.gitignore</code>！
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S8: pip 安装与 import -->
-          <div class="content-section" id="ch0-s8">
-            <div class="sec-head"><div class="sec-ico">⑧</div><h3>pip 安装第三方库 + import</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">项目每个阶段都会用到第三方库（openai、chromadb、fastapi……）。</p>
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code># 在终端安装（不是在 Python 文件里）
-pip install openai              # ch4 用
-pip install openai chromadb     # ch5 用
-pip install fastapi uvicorn     # ch8 用
-
-# Python 文件里导入
-import os                   # 内置库（不需要 pip）
-import json                 # 内置库
-from openai import OpenAI   # 安装后才能用
-
-# 从自己写的文件导入（ch6 复用 ch5 的代码）
-from ch5_rag_pipeline import collection, embed_client
-# 上面这行的意思：从 ch5_rag_pipeline.py 文件里，导入 collection 和 embed_client 这两个变量
-
-# 给长名字起别名
-import os as _os   # 用 _os 代替 os（项目里有时这样写避免命名冲突）</code></pre>
-
-              <div style="padding:10px 14px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:4px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:#f59e0b">虚拟环境（可选但推荐）：</strong>防止不同项目的库互相干扰。<code>python3 -m venv venv</code> 创建，<code>source venv/bin/activate</code>（Mac/Linux）或 <code>venv\Scripts\activate</code>（Windows）激活，然后 pip install 就只装在这个项目里。
-              </div>
-            </div>
-          </div>
-
-
-          <!-- S9: 综合实战 -->
-          <div class="content-section" id="ch0-s9">
-            <div class="sec-head"><div class="sec-ico">⑨</div><h3>综合实战：能跑 ch4 的代码了</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">学完上面 8 节，你已经能读懂并跑通 ch4 的项目代码。来对照一下：</p>
-
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.8;overflow-x:auto;margin:0 0 14px"><code>import os               # ← S7：环境变量
-from openai import OpenAI  # ← S8：pip install openai 后导入
-
-client = OpenAI(
-    api_key=os.environ["DEEPSEEK_API_KEY"],  # ← S7：读环境变量
-    base_url="https://api.deepseek.com",
-)
-
-with open("ch3-qa-prompt.txt") as f:  # ← S6：文件读写
-    template = f.read()
-
-def answer_question(document_content, user_question):  # ← S3：函数
-    prompt = template.replace("{document_content}", document_content)  # ← S2：字符串 replace
-    prompt = prompt.replace("{user_question}", user_question)
-
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{"role": "user", "content": prompt}],  # ← S5：字典
-        max_tokens=512,
-    )
-    return response.choices[0].message.content  # ← S3：return
-
-# 调用函数
-doc = "TechCorp 年假政策：满一年10天，满三年15天。"
-answer = answer_question(doc, "年假多少天？")
-print(answer)  # ← S1：print</code></pre>
-
-              <div style="padding:14px 18px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:10px;font-size:13px;line-height:1.75;color:var(--light-muted)">
-                <strong style="color:var(--accent)">每一行你都看懂了。</strong>现在回去 ch4，把 API key 设好，跑 <code>python3 project/ch4-api-client.py</code>。<br>
-                遇到不懂的 Python 语法，随时回来翻对应章节。
-              </div>
-
-              <div style="margin-top:16px;padding:12px 16px;background:rgba(0,0,0,.2);border-radius:8px;font-size:12.5px;color:var(--light-muted)">
-                <strong style="color:var(--light)">后续章节新概念速查：</strong><br>
-                ch5 新增 → <code>while</code> 循环、<code>list.append()</code>、<code>str.join()</code>（都在 S4）<br>
-                ch6 新增 → <code>json.loads()</code>（S5）、<code>from 文件 import 变量</code>（S8）<br>
-                ch7 新增 → <code>json.dump()</code> 写文件（S6）<br>
-                ch8 新增 → FastAPI 装饰器 <code>@app.post()</code>（只是语法糖，和函数定义一样，看文档即懂）
-              </div>
-            </div>
-          </div>
-
-
         </div>
       </div>
