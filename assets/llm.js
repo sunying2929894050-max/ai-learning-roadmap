@@ -8,7 +8,7 @@
 //   deepseek-chat 将于 2026-07-24 废弃，届时改为 deepseek-v4-flash
 //   只需修改下方 MODEL 常量即可，所有调用点不受影响
 
-const WORKER_URL = '';  // ← 部署 Worker 后填入，如 'https://ai-roadmap.xxx.workers.dev'
+const WORKER_URL = 'https://damp-shape-22bb.sunying2929894050.workers.dev';
 const MODEL      = 'deepseek-chat';  // 2026-07-24 后改为 'deepseek-v4-flash'
 
 /**
