@@ -385,6 +385,15 @@
     }
     .agent-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+    .eval-preset-btn {
+      display: block; width: 100%; text-align: left;
+      background: transparent; border: 1px solid var(--line);
+      border-radius: 8px; padding: 8px 14px;
+      color: var(--light-muted); font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: border-color 160ms, color 160ms, background 160ms;
+    }
+    .eval-preset-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(0,212,170,.04); }
+
     /* ══════════════════════════════
        CONTENT VIEW
     ══════════════════════════════ */

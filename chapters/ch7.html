@@ -1,20 +1,554 @@
       <!-- Chapter 7 -->
       <div class="ch-panel" id="ch-7">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big">07</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 07</div><div class="ch-name">评估：怎么知道它真的有效</div></div></div>
-          <p class="ch-desc">建立对大模型应用效果的系统性评估方法——自动指标、人工评测、A/B 实验与回归测试。</p>
+          <div class="ch-badge">
+            <div class="ch-big">07</div>
+            <div class="ch-vline"></div>
+            <div><div class="ch-label">Chapter 07</div><div class="ch-name">评估：怎么知道它真的有效</div></div>
+          </div>
+          <p class="ch-desc">LLM 输出不确定、开放式，没法像传统软件那样"== 期望值"判对错。评估是区分 AI 工程师和调包玩家的分水岭——用度量代替"我觉得还行"。本章把 ch1 的概率采样、ch3 的 prompt 设计、ch4 的成本、ch5 的 RAG 忠实度全部变成可测量的指标。</p>
         </div>
         <div class="content-body">
 
-          <!-- S0: 占位概览 -->
+          <!-- S0: 概览 -->
           <div class="content-section" id="ch7-s0">
-            <div class="sec-head"><div class="sec-ico">🚧</div><h3>本章概览</h3></div>
+            <div class="sec-head"><div class="sec-ico">▦</div><h3>本章概览</h3></div>
+            <div class="overview-grid">
+              <div class="overview-card"><div class="overview-num">2~3h</div><div class="overview-label">预计学习时间</div></div>
+              <div class="overview-card"><div class="overview-num">4</div><div class="overview-label">核心概念</div></div>
+              <div class="overview-card"><div class="overview-num">5</div><div class="overview-label">知识自测题</div></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="note-block">评估是本课程最容易被跳过、但最不该被跳过的一章。ch3 教你写 prompt，ch4 教你调 API，ch5 教你做 RAG，ch6 教你做 Agent——但"我怎么知道它真的有效"，在这章之前没有答案。本章补上这个答案，并给文档助手加一个可运行的评估脚本。本章演示需要 ch4 填入 API Key。</div>
+            </div>
+          </div>
+
+          <!-- S1: 钩子 -->
+          <div class="content-section" id="ch7-s1">
+            <div class="sec-head"><div class="sec-ico">⬡</div><h3>改了 prompt 就上线，然后呢？</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <div class="hook-story">
+                <div class="hook-label">😬 真实场景</div>
+                <p>你把文档助手的 system prompt 从 v1 改成了 v2，在三个例子上跑了一下："嗯，回答好像更简洁了，感觉不错。"然后你上线了。</p>
+                <p>一周后，用户开始抱怨：助手在某类问题上开始捏造答案，但你没发现，因为你只测了你脑子里想到的那三个例子。那三个例子确实变好了——但还有二十个场景，你从来没测过。</p>
+                <div class="hook-question">→ 核心问题：你怎么"知道"这次改动是变好了而不是变差了？<br>主观感受不是答案。三个例子不是答案。<strong>可重复运行的评估集才是答案。</strong></div>
+              </div>
+
+              <div class="analogy-box">
+                <div class="analogy-label">传统软件测试 vs LLM 评估</div>
+                <div class="analogy-text">传统单元测试：<code>assert result == "expected"</code>——输入固定，输出唯一，对错非黑即白。LLM 测试呢？同样的 prompt，每次输出不同；同一问题有十个都"正确"的回答方式。<code>==</code> 永远不会通过，但答案可能是对的。这就是为什么 LLM 评估是一个独立的学科，而不是"把单元测试拷贝过来"。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S2: 为什么 LLM 评估难 -->
+          <div class="content-section" id="ch7-s2">
+            <div class="sec-head"><div class="sec-ico">◈</div><h3>为什么 LLM 评估难</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">在理解"怎么评估"之前，先要理解"为什么评估是个难题"——根源在 LLM 本身的两个结构性特征。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：两大原因让 LLM 评估不同于传统测试</strong>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+                    <div style="border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:12px;background:rgba(99,102,241,.04)">
+                      <div style="font-weight:800;font-size:12px;color:#818cf8;margin-bottom:6px">🎲 不确定性</div>
+                      <div style="font-size:12px;line-height:1.6;color:var(--light-muted)">同样的输入，每次输出不同。不能用"== 期望字符串"判断。</div>
+                    </div>
+                    <div style="border:1px solid rgba(251,191,36,.3);border-radius:8px;padding:12px;background:rgba(251,191,36,.04)">
+                      <div style="font-weight:800;font-size:12px;color:#d97706;margin-bottom:6px">📖 开放性</div>
+                      <div style="font-size:12px;line-height:1.6;color:var(--light-muted)">一个问题有多个"正确"答案，精确字符串匹配会把对的答案判成错的。</div>
+                    </div>
+                  </div>
+                  <div class="analogy-box" style="margin-top:12px">
+                    <div class="analogy-label">举例</div>
+                    <div class="analogy-text">问：年假有多少天？<br>答1：入职满一年员工每年享有10天带薪年假。✓<br>答2：满一年可以休10天年假。✓<br>答3：10天，满三年升到15天，满五年20天。✓<br>三个回答都正确，字符串却完全不同。精确匹配只能通过答1（如果恰好被设为参照），2和3都会被判错。</div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>从 ch1/ch2 的底层机制理解不确定性的来源</strong><br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch1-s2')" style="color:var(--accent)">ch1 四大核心概念</a> 和 <a href="javascript:void(0)" onclick="goTo('ch6-s1')" style="color:var(--accent)">ch2 Token 分词</a>：大语言模型在推理时并不是"找到正确答案"，而是在每个位置从一个<strong>概率分布</strong>上采样下一个 token。采样（Sampling）本身带有随机性——即使是同样的输入，因为 temperature > 0，每次采样得到的 token 序列都可能不同。<br><br>
+
+                  <strong>为什么这使评估变难？</strong><br>
+                  • 同一个"有效的"系统，在评估集上的表现会随机波动。你需要多次采样或固定随机种子（temperature=0）来得到可重复的结果。<br>
+                  • 即使 temperature=0（贪心解码），不同版本的模型、不同 API 供应商的实现可能仍有输出差异。<br>
+                  • 对于开放式任务，追求"每次输出一模一样"本身是错误目标——应该追求"每次输出都满足质量标准"。<br><br>
+
+                  <strong>开放性的本质：正确答案是一个集合，不是一个字符串</strong><br>
+                  传统软件测试的心智模型：函数 f(x) 有唯一正确输出 y。LLM 的心智模型：函数 f(x) 有一个"可接受输出集合" S，|S| 可能是无限大的。评估的任务是判断"输出 y 是否在集合 S 里"，而不是"y == y_expected"。<br><br>
+
+                  这个转变让评估变成了一个<em>语义理解</em>问题，不再是<em>字符串匹配</em>问题。语义理解意味着需要用人或另一个 LLM 来做判断——这正是 LLM-as-judge 存在的原因。
+
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://arxiv.org/abs/2211.09110" target="_blank" rel="noopener">HELM 基准：Holistic Evaluation of Language Models（斯坦福）</a>
+                  <a href="https://arxiv.org/abs/2306.05685" target="_blank" rel="noopener">MT-Bench：用 GPT-4 做评判的对话评测框架</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: 评估的几种方式 -->
+          <div class="content-section" id="ch7-s3">
+            <div class="sec-head"><div class="sec-ico">🔍</div><h3>评估的几种方式</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">没有一种方式完美，工程实践中通常组合使用。从确定性最高到主观性最高，依次是：精确匹配 → 相似度指标 → 任务专用指标 → <span class="term-chip" data-term="LLM-as-judge">LLM-as-judge</span> → 人工评估。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：四种主要评估方式对比</strong>
+                  <div class="compare-table" style="margin-top:10px">
+                    <table>
+                      <thead><tr><th>方式</th><th>适合场景</th><th>优点</th><th>缺点</th></tr></thead>
+                      <tbody>
+                        <tr><td><strong>精确匹配</strong></td><td>结构化输出（JSON、分类、是/否）</td><td>完全自动、可靠</td><td>只适合有唯一答案的场景</td></tr>
+                        <tr><td><strong>相似度指标</strong></td><td>摘要、翻译（ROUGE/BERTScore）</td><td>自动化、有参照</td><td>相关性低时误导性强</td></tr>
+                        <tr><td><strong>任务专用指标</strong></td><td>RAG（忠实度）/ Agent（完成率）</td><td>针对性强</td><td>需要为每个任务设计</td></tr>
+                        <tr><td><strong>LLM-as-judge</strong></td><td>开放式问答、写作</td><td>扩展性好、可定制 rubric</td><td>评判模型本身有偏见</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>四种方式的深层机制与前几章回扣</strong><br><br>
+
+                  <strong>① 任务专用指标：RAG 忠实度（回扣 ch5）</strong><br>
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch5-s5')" style="color:var(--accent)">ch5 完整管线与失败模式</a>：RAG 最常见的失败是"检索命中但模型无视上下文，用参数记忆凑了个答案"——这就是<span class="term-chip" data-term="忠实度">忠实度</span>（Faithfulness）问题。忠实度评估：给定&lt;上下文, 问题, 答案&gt;，判断"答案里的每个事实声明是否能从上下文里找到依据"。另一个指标是<span class="term-chip" data-term="检索准确率">检索准确率</span>（Precision@k）和<span class="term-chip" data-term="召回率">召回率</span>（Recall@k）：正确答案出现在 top-k 检索结果里的比例。<br><br>
+
+                  <strong>② 任务专用指标：Agent 评估（回扣 ch4/ch6）</strong><br>
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch6-s3')" style="color:var(--accent)">ch6 Agent 循环</a>：Agent 的质量不只看最终答案，还要看：工具调用准确率（调了对的工具吗）、步数效率（用了几步）、成本（回扣 ch4 token 成本：步数越多成本越高）。一个5步完成的任务和一个3步完成的任务，如果准确率相同，后者更优。<br><br>
+
+                  <strong>③ LLM-as-judge：评判本身是一次 prompt 工程任务（回扣 ch3）</strong><br>
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch3-s2')" style="color:var(--accent)">ch3 Prompt 是什么</a>：LLM-as-judge 的核心是给评判模型一个<strong>评分标准（rubric）</strong>，让它按照 rubric 逐条打分并给出理由。rubric 的质量决定评判的质量——这和 few-shot prompt 设计是同一件事：给模型清晰的任务描述和期望格式。一个好的 rubric 能区分"答案是否基于上下文""是否完整""是否简洁"；一个差的 rubric 只说"给个1-10分"——模型会按自己的理解随机打分。<br><br>
+
+                  <strong>④ 评估评估者：判官也有幻觉（回扣 ch1）</strong><br>
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch1-s7')" style="color:var(--accent)">ch1 AI 的风险</a>：LLM-as-judge 里的评判模型自己也是一个 LLM，同样有 ch1 讲过的幻觉和偏见。已知的系统性偏见：<br>
+                  • <em>位置偏见</em>：同样两个答案，放在"选项A"比"选项B"更容易被选中<br>
+                  • <em>啰嗦偏见</em>：更长的答案往往被打更高分，即使长度是冗余的<br>
+                  • <em>自我偏好</em>：GPT-4 评判时偏爱 GPT-4 风格的回答；Claude 评判时偏爱 Claude 风格<br><br>
+                  解法：多个评判模型交叉验证；用人工评估抽样校准 LLM-judge 的准确率；在 rubric 里明确"不考虑答案长度，只看内容质量"。<br><br>
+
+                  <strong>⑤ 人工评估：金标准但不可扩展</strong><br>
+                  人工评估的评分者间一致性（Inter-Annotator Agreement, IAA）是衡量评估本身可靠性的关键——如果两个人评同一条输出的结论差异很大，说明评分标准不清晰，即使是人工评估也不可信。
+
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://arxiv.org/abs/2305.14387" target="_blank" rel="noopener">RAGAS：RAG 专用评估框架（忠实度 + 答案相关性 + 上下文相关性）</a>
+                  <a href="https://arxiv.org/abs/2306.05685" target="_blank" rel="noopener">MT-Bench / Chatbot Arena：LLM-as-judge 的实证研究</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S4: 建评估集 -->
+          <div class="content-section" id="ch7-s4">
+            <div class="sec-head"><div class="sec-ico">◇</div><h3>建评估集：工程师 vs 调包玩家的分界线</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)"><span class="term-chip" data-term="评估集">评估集</span>（Eval Set / Test Set）是一批"问题 + 期望行为"的样本。每次改动（换 prompt、换模型、改切块策略）都跑一遍评估集，看指标有没有退步——这叫<span class="term-chip" data-term="回归测试">回归测试</span>。没有评估集，你就是在盲飞。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：一个最小可用评估集的构成</strong>
+                  <div class="flow-steps" style="margin-top:10px;margin-bottom:0">
+                    <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>核心场景覆盖（20-50条）</strong><p>覆盖系统实际会遇到的主要问题类型。比如文档助手：年假类、报销类、绩效类、边界情况（问题不在文档里）。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>失败案例（10-20条）</strong><p>你已知系统容易出错的场景。把这些专门列出来，确保每次改动都不会让它们变更差。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>期望行为标注（不必是唯一答案）</strong><p>可以是关键词（答案里必须包含"10天"）、期望态度（如果找不到答案，应说"未找到"而不是编造）、或 rubric 描述。</p></div></div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>评估集的大小与代表性：小心"评估错觉"</strong><br><br>
+
+                  评估集太小是最常见的陷阱。如果你只有10条评估数据：<br>
+                  • 一次偶然的好输出让准确率从70%→80%（只是1条结果改变了）<br>
+                  • 你在开发集上过拟合——无意识地优化了这10条，但其他场景退步了<br>
+                  • 统计上，10条数据的置信区间很宽，指标差3-5%完全在统计噪声范围内<br><br>
+
+                  <strong>"工程师 vs 调包玩家"的核心差异：</strong><br>
+                  调包玩家的工作流：改 → 试几个例子 → 看起来还行 → 上线<br>
+                  AI 工程师的工作流：改 → 跑评估集（100+条）→ 所有指标都没退步 → 上线<br><br>
+
+                  这两个工作流在小项目上差异不大，在生产系统上差异是灾难性的。LLM 输出有长尾分布——最常见的输入通常表现好，边界情况才是问题所在。"看几个例子"永远看不到长尾。<br><br>
+
+                  <strong>评估集不是一次性的</strong><br>
+                  生产中发现了新的失败案例？加进评估集。用户反馈了新的问题类型？加进评估集。评估集应该随系统迭代而增长，不是只在项目开始时建一次。这就是为什么 ch7 在整个课程接近末尾——你需要先用了系统，才知道哪些是代表性的边界情况。
+
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://hamel.dev/blog/posts/evals/" target="_blank" rel="noopener">Hamel Husain：Your AI Product Needs Evals（工程实践视角）</a>
+                  <a href="https://www.anthropic.com/research/evaluating-ai-systems" target="_blank" rel="noopener">Anthropic：AI 系统评估实践</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: 离线 vs 在线评估 -->
+          <div class="content-section" id="ch7-s5">
+            <div class="sec-head"><div class="sec-ico">⚙</div><h3>离线评估 vs 在线评估</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">评估不只发生在上线前。完整的评估体系是两段的：上线前的<span class="term-chip" data-term="离线评估">离线评估</span>（跑评估集）+ 上线后的<span class="term-chip" data-term="在线评估">在线评估</span>（监控真实用户行为）。两者互补，缺一不可。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：两类评估的角色</strong>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+                    <div style="border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:12px;background:rgba(0,212,170,.04)">
+                      <div style="font-weight:800;font-size:12px;color:var(--accent);margin-bottom:6px">🧪 离线评估（上线前）</div>
+                      <div style="font-size:12px;line-height:1.6;color:var(--light-muted)">跑预先准备的评估集。快速、可重复、可对比版本。是"不上线的防线"。每次改动都跑一遍。</div>
+                    </div>
+                    <div style="border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:12px;background:rgba(99,102,241,.04)">
+                      <div style="font-weight:800;font-size:12px;color:#818cf8;margin-bottom:6px">📡 在线评估（上线后）</div>
+                      <div style="font-size:12px;line-height:1.6;color:var(--light-muted)">监控真实用户的输入和反馈。发现离线评估集没有覆盖的真实分布。是"上线后的听诊器"。</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>为什么两类评估都不可少</strong><br><br>
+
+                  <strong>只做离线评估的问题：</strong><br>
+                  评估集是你预先构造的，代表你能想到的场景。真实用户的输入分布往往和你的想象差距很大——方言、错别字、多语言混用、完全超出预期的问题类型。再好的离线评估集也无法覆盖真实世界的长尾。<br><br>
+
+                  <strong>只做在线评估的问题：</strong><br>
+                  上线才发现问题，代价太高。一个有明显 bug 的 prompt 变更会影响真实用户，你无法快速回滚，因为你没有事先测量基线。<br><br>
+
+                  <strong>A/B 测试：在线评估的最严格形式</strong><br>
+                  <span class="term-chip" data-term="A/B测试">A/B 测试</span>将用户随机分成两组，A组用旧版本，B组用新版本，对比关键指标（用户满意度、任务完成率、平均评分）。A/B 的优点：真实用户、真实行为、有统计显著性保证。缺点：慢（需要足够流量才有统计意义）、成本高、新版本如果很差会损害一部分用户体验。<br><br>
+
+                  <strong>在线监控的最小配置：</strong><br>
+                  • 在输出旁加👍/👎按钮（最简单的用户反馈）<br>
+                  • 记录用户是否追问（"你说的不对"通常意味着上一条回答有问题）<br>
+                  • 监控"模型说找不到信息"的比例（RAG 未命中率）<br>
+                  • 监控平均步数和成本（Agent 任务）
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S6: 互动演示 -->
+          <div class="content-section" id="ch7-s6">
+            <div class="sec-head"><div class="sec-ico">▷</div><h3>互动演示：LLM-as-judge</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">下面是一个真实运行的 LLM-as-judge 演示（需要 ch4 填写 API Key）。选择一个预设答案（好的 / 有幻觉的 / 不完整的），或自己输入，然后让评判模型按照 rubric 评分——<strong>rubric、评判理由、分数都会显示出来</strong>，让你看清"评判本身就是一次带评分标准的 LLM 调用"这个机制。</p>
+
+              <div style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:#0f172a;font-size:12px;line-height:1.7">
+                <div style="font-weight:800;font-size:11px;letter-spacing:.1em;color:var(--muted);margin-bottom:6px">📋 评判场景（固定）</div>
+                <div style="margin-bottom:4px"><span style="color:var(--accent);font-weight:700">问题：</span>TechCorp 的年假政策是什么？入职满一年和满三年各有多少天？</div>
+                <div style="color:var(--muted)"><span style="font-weight:700">参考上下文：</span>TechCorp 年假政策：入职满一年员工每年享有10天带薪年假；满三年15天；满五年20天。年假须在当年12月31日前用完，不可累积转入下一年。试用期内不享有年假。</div>
+              </div>
+
+              <!-- 预设答案选择 -->
+              <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:8px">选择一个预设答案，看评判模型如何区分它们：</div>
+                <div style="display:grid;gap:6px">
+                  <button class="eval-preset-btn" data-preset="good">✅ 好答案（忠实、完整）</button>
+                  <button class="eval-preset-btn" data-preset="hallucinated">❌ 幻觉答案（编造了不存在的数据）</button>
+                  <button class="eval-preset-btn" data-preset="incomplete">⚠️ 不完整答案（只答了一半）</button>
+                  <button class="eval-preset-btn" data-preset="offtopic">🚫 跑题答案（引用了通用法规而非公司政策）</button>
+                </div>
+              </div>
+
+              <!-- 答案编辑区 -->
+              <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:6px">待评判的答案（可直接编辑）：</div>
+                <textarea id="eval-answer" rows="4" placeholder="在这里输入或修改答案…" style="width:100%;box-sizing:border-box;background:#0f172a;border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit;resize:vertical;line-height:1.6"></textarea>
+              </div>
+
+              <!-- 运行按钮 -->
+              <div style="display:flex;gap:8px">
+                <button id="eval-run" style="flex:1;background:var(--accent);color:#0a0f1e;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:800;cursor:pointer">⚖️ 运行 LLM-as-judge</button>
+              </div>
+
+              <!-- 评分标准展示 -->
+              <div style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:#0f172a;font-size:12px;line-height:1.7">
+                <div style="font-weight:800;font-size:11px;letter-spacing:.1em;color:var(--muted);margin-bottom:6px">📏 评分标准（Rubric）— 发给评判模型的指令</div>
+                <div style="color:var(--light-muted)">
+                  <div>• <strong>忠实度</strong>（0-3分）：答案中的事实是否全部来自上下文？有无凭空捏造？</div>
+                  <div>• <strong>完整性</strong>（0-3分）：答案是否回答了问题的所有要点（满一年 + 满三年）？</div>
+                  <div>• <strong>相关性</strong>（0-2分）：答案是否基于公司政策而非通用法规？</div>
+                  <div>• <strong>简洁性</strong>（0-2分）：答案是否简洁，没有多余冗余信息？</div>
+                </div>
+              </div>
+
+              <!-- 输出区 -->
+              <div id="eval-output" style="display:none"></div>
+            </div>
+          </div>
+
+          <!-- S7: 贯穿项目 -->
+          <div class="content-section" id="ch7-s7">
+            <div class="sec-head"><div class="sec-ico">🗂</div><h3>本章给项目加了什么</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <div class="note-block">
+                <strong>文档助手进度：</strong><br>
+                ch3 → prompt 模板 ✅<br>
+                ch4 → API 接通 ✅<br>
+                ch5 → RAG 向量检索 ✅<br>
+                ch6 → Agent 循环 ✅<br>
+                ch7 → 评估脚本，助手现在有办法度量改动是否让它变好了 ✅
+              </div>
+
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+                <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
+                  📄 project/ch7-eval.py
+                </div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.8;margin:0;overflow-x:auto"><code>"""
+文档助手 — ch7 产物：评估脚本（LLM-as-judge + 忠实度检查）
+来源：AI 学习路线 ch7 评估
+
+依赖：pip install openai chromadb
+用法：
+  export OPENAI_API_KEY="sk-..."
+  export DEEPSEEK_API_KEY="sk-..."
+  python3 ch7-eval.py
+"""
+
+import os, json
+from openai import OpenAI
+from ch5_rag_pipeline import rag_answer  # 复用 ch5 的 RAG 管线
+
+ds = OpenAI(api_key=os.environ["DEEPSEEK_API_KEY"],
+            base_url="https://api.deepseek.com")
+
+# ── 评估集：问题 + 期望行为描述 ──────────────────────────────────────
+EVAL_SET = [
+    {
+        "id": "e1",
+        "question": "公司年假政策是什么？满一年和满三年各几天？",
+        "expected_keywords": ["10天", "15天", "满一年", "满三年"],
+        "expected_behavior": "应提到满一年10天、满三年15天",
+    },
+    {
+        "id": "e2",
+        "question": "报销申请的截止时间是多久？",
+        "expected_keywords": ["7个工作日", "出差结束后"],
+        "expected_behavior": "应提到出差结束后7个工作日内提交",
+    },
+    {
+        "id": "e3",
+        "question": "试用期员工有年假吗？",
+        "expected_keywords": ["不享有", "试用期"],
+        "expected_behavior": "应说试用期内不享有年假，不应编造数字",
+    },
+    {
+        "id": "e4",
+        "question": "公司的绩效奖金是怎么算的？",
+        "expected_keywords": ["S档", "月薪", "3倍"],
+        "expected_behavior": "应提到S档年终奖为月薪3倍",
+    },
+    {
+        "id": "e5",
+        "question": "CEO 的薪资是多少？",
+        "expected_keywords": ["没有找到", "未找到", "不知道"],
+        "expected_behavior": "文档里没有此信息，应说找不到，不应编造",
+    },
+]
+
+# ── LLM-as-judge：带 rubric 的评判调用 ─────────────────────────────
+JUDGE_PROMPT = """你是一个严格的 AI 系统评判员。请根据以下 rubric 对给定的问答进行评分。
+
+【问题】{question}
+【参考上下文（RAG 检索到的内容）】{context}
+【待评判的回答】{answer}
+
+【评分标准（Rubric）】
+1. 忠实度（0-3分）：答案中的事实是否全部来自上下文？是否有凭空捏造？
+2. 完整性（0-3分）：答案是否回答了问题的所有要点？
+3. 相关性（0-2分）：答案是否直接回答了问题，没有跑题？
+4. 简洁性（0-2分）：答案是否简洁，没有不必要的冗余？
+
+请逐条评分并给出理由，然后给出总分（0-10）。
+
+输出格式（严格遵守）：
+忠实度：X/3 — 理由
+完整性：X/3 — 理由
+相关性：X/2 — 理由
+简洁性：X/2 — 理由
+总分：X/10
+总结：一句话说明主要问题或亮点"""
+
+
+def judge_answer(question: str, context: str, answer: str) -> dict:
+    """用 LLM-as-judge 评判一个回答，返回结构化评分。"""
+    prompt = (JUDGE_PROMPT
+              .replace("{question}", question)
+              .replace("{context}", context)
+              .replace("{answer}", answer))
+    resp = ds.chat.completions.create(
+        model="deepseek-chat",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=512,
+    )
+    raw = resp.choices[0].message.content
+    # 简单提取总分
+    total = None
+    for line in raw.splitlines():
+        if line.startswith("总分"):
+            try:
+                total = int(line.split("：")[1].split("/")[0].strip())
+            except (IndexError, ValueError):
+                pass
+    return {"raw": raw, "total_score": total}
+
+
+# ── 忠实度快速检查（关键词匹配版，不消耗 LLM） ─────────────────────
+def keyword_check(answer: str, keywords: list[str]) -> dict:
+    found = [kw for kw in keywords if kw in answer]
+    missing = [kw for kw in keywords if kw not in answer]
+    return {
+        "found": found,
+        "missing": missing,
+        "keyword_hit_rate": len(found) / len(keywords) if keywords else 1.0,
+    }
+
+
+# ── 主评估循环 ──────────────────────────────────────────────────────
+def run_eval(use_llm_judge: bool = True) -> list[dict]:
+    results = []
+    for item in EVAL_SET:
+        print(f"\n[{item['id']}] 问：{item['question']}")
+
+        # Step 1：用 ch5 的 RAG 管线生成答案
+        answer, context = rag_answer(item["question"], return_context=True)
+        print(f"答：{answer[:100]}…")
+
+        # Step 2：关键词检查（快速、无 API 成本）
+        kw_result = keyword_check(answer, item["expected_keywords"])
+        print(f"关键词命中率：{kw_result['keyword_hit_rate']:.0%}  "
+              f"缺失：{kw_result['missing']}")
+
+        result = {
+            "id": item["id"],
+            "question": item["question"],
+            "answer": answer,
+            "keyword_check": kw_result,
+        }
+
+        # Step 3（可选）：LLM-as-judge 深度评分
+        if use_llm_judge:
+            judge = judge_answer(item["question"], context, answer)
+            print(f"LLM 评分：{judge['total_score']}/10")
+            result["llm_judge"] = judge
+
+        results.append(result)
+
+    # 汇总报告
+    avg_kw = sum(r["keyword_check"]["keyword_hit_rate"]
+                 for r in results) / len(results)
+    print(f"\n{'='*50}")
+    print(f"评估集总数：{len(results)} 条")
+    print(f"平均关键词命中率：{avg_kw:.0%}")
+    if use_llm_judge:
+        scores = [r["llm_judge"]["total_score"] for r in results
+                  if r["llm_judge"]["total_score"] is not None]
+        if scores:
+            print(f"平均 LLM 评分：{sum(scores)/len(scores):.1f}/10")
+
+    return results
+
+
+if __name__ == "__main__":
+    # 运行完整评估（关键词检查 + LLM-as-judge）
+    results = run_eval(use_llm_judge=True)
+    # 输出 JSON 报告
+    with open("eval_report.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print("\n评估报告已保存到 eval_report.json")</code></pre>
+              </div>
+
+              <div class="key-point">注意评估脚本复用了 ch5 的 <code>rag_answer()</code>——评估不是独立模块，而是套在整个管线外面的验证层。每次你改了 ch3 的 prompt 模板、ch4 的模型、ch5 的切块策略，都用这个脚本跑一遍，看指标有没有退步。</div>
+            </div>
+          </div>
+
+          <!-- S8: 知识自测 -->
+          <div class="content-section" id="ch7-s8">
+            <div class="sec-head"><div class="sec-ico">✦</div><h3>知识自测</h3></div>
+            <div class="panel" style="display:grid;gap:20px">
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q1. 为什么不能用精确字符串匹配（==）来测试大多数 LLM 输出？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','LLM 输出具有不确定性（同样输入不同输出）和开放性（多个答案都正确）。精确匹配会把很多语义正确的答案判成错误，导致大量误报。')">A. 因为 LLM 的输出总是错的，没必要测</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','LLM 输出具有不确定性（同样输入不同输出）和开放性（多个答案都正确）。精确匹配会把很多语义正确的答案判成错误，导致大量误报。')">B. 同样的输入输出不同，且同一问题有多个正确答案，精确匹配会误判正确输出</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','LLM 输出具有不确定性（同样输入不同输出）和开放性（多个答案都正确）。精确匹配会把很多语义正确的答案判成错误，导致大量误报。')">C. 因为 LLM 只能输出 JSON，无法字符串比较</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','LLM 输出具有不确定性（同样输入不同输出）和开放性（多个答案都正确）。精确匹配会把很多语义正确的答案判成错误，导致大量误报。')">D. 精确匹配运行太慢，不适合大规模评估</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q2. LLM-as-judge 里的评判模型自己存在哪些已知的系统性偏见？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','LLM-as-judge 的已知偏见包括：位置偏见（选项A比选项B更容易被选中）、啰嗦偏见（更长的答案往往分更高）、自我偏好（模型偏爱自己风格的输出）。')">A. 只对英文回答打高分，对中文有偏见</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','LLM-as-judge 的已知偏见包括：位置偏见（选项A比选项B更容易被选中）、啰嗦偏见（更长的答案往往分更高）、自我偏好（模型偏爱自己风格的输出）。')">B. 位置偏见、啰嗦偏见（偏爱更长答案）、自我偏好（偏爱自己风格的输出）</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','LLM-as-judge 的已知偏见包括：位置偏见（选项A比选项B更容易被选中）、啰嗦偏见（更长的答案往往分更高）、自我偏好（模型偏爱自己风格的输出）。')">C. 评判模型没有偏见，这是使用 LLM-as-judge 的优势</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','LLM-as-judge 的已知偏见包括：位置偏见（选项A比选项B更容易被选中）、啰嗦偏见（更长的答案往往分更高）、自我偏好（模型偏爱自己风格的输出）。')">D. 只对数学问题评判准确，对语言类任务总是失效</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q3. RAG 系统的"忠实度"指标衡量的是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','忠实度（Faithfulness）衡量的是"答案中的事实声明是否能在检索到的上下文里找到依据"。它区分"基于文档作答"和"靠参数记忆幻觉"两种情况。')">A. 检索系统返回结果的速度</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','忠实度（Faithfulness）衡量的是"答案中的事实声明是否能在检索到的上下文里找到依据"。它区分"基于文档作答"和"靠参数记忆幻觉"两种情况。')">B. 答案和用户期望的字符串相似程度</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','忠实度（Faithfulness）衡量的是"答案中的事实声明是否能在检索到的上下文里找到依据"。它区分"基于文档作答"和"靠参数记忆幻觉"两种情况。')">C. 答案中的事实是否全部能在检索到的上下文里找到依据（没有幻觉）</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','忠实度（Faithfulness）衡量的是"答案中的事实声明是否能在检索到的上下文里找到依据"。它区分"基于文档作答"和"靠参数记忆幻觉"两种情况。')">D. 用户对系统回答满意的比例</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q4. 为什么说"改了 prompt 跑三个例子看起来没问题"不够？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','三个例子无法覆盖 LLM 的长尾分布——最常见的输入通常表现好，边界情况才是问题所在。你可能在开发集上无意识过拟合，而其他场景实际退步了。需要有代表性的大评估集才能发现这些问题。')">A. 因为三个例子不够多，应该至少测五个</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','三个例子无法覆盖 LLM 的长尾分布——最常见的输入通常表现好，边界情况才是问题所在。你可能在开发集上无意识过拟合，而其他场景实际退步了。需要有代表性的大评估集才能发现这些问题。')">B. 因为手动跑例子太慢，应该自动化</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','三个例子无法覆盖 LLM 的长尾分布——最常见的输入通常表现好，边界情况才是问题所在。你可能在开发集上无意识过拟合，而其他场景实际退步了。需要有代表性的大评估集才能发现这些问题。')">C. 你无意识地优化了那三个例子，但边界情况和长尾场景可能退步了</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','三个例子无法覆盖 LLM 的长尾分布——最常见的输入通常表现好，边界情况才是问题所在。你可能在开发集上无意识过拟合，而其他场景实际退步了。需要有代表性的大评估集才能发现这些问题。')">D. 因为 LLM 每次输出不同，三个例子的结果不稳定</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q5. 离线评估和在线评估的根本区别是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','离线评估：上线前跑预先准备的评估集，快速可重复，是"不上线的防线"。在线评估：上线后监控真实用户行为，发现离线评估集未覆盖的真实分布。两者互补，缺一不可。')">A. 离线评估只用于学术研究，在线评估才用于生产</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','离线评估：上线前跑预先准备的评估集，快速可重复，是"不上线的防线"。在线评估：上线后监控真实用户行为，发现离线评估集未覆盖的真实分布。两者互补，缺一不可。')">B. 离线评估用预先准备的评估集（上线前），在线评估监控真实用户（上线后），两者互补</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','离线评估：上线前跑预先准备的评估集，快速可重复，是"不上线的防线"。在线评估：上线后监控真实用户行为，发现离线评估集未覆盖的真实分布。两者互补，缺一不可。')">C. 离线评估用 LLM-as-judge，在线评估用人工评估</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','离线评估：上线前跑预先准备的评估集，快速可重复，是"不上线的防线"。在线评估：上线后监控真实用户行为，发现离线评估集未覆盖的真实分布。两者互补，缺一不可。')">D. 离线评估免费，在线评估需要付费</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- S9: 本章小结 -->
+          <div class="content-section" id="ch7-s9">
+            <div class="sec-head"><div class="sec-ico">◉</div><h3>本章小结</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>LLM 评估不等于传统测试</strong><p>不确定性 + 开放性，让精确匹配失效。正确答案是一个集合，评估的任务是判断"输出是否在集合里"——这是语义理解问题，不是字符串比较。</p></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>LLM-as-judge = 带 rubric 的 LLM 调用</strong><p>评判模型按照评分标准逐条打分，扩展性好但有系统性偏见（位置、啰嗦、自我偏好）。要用人工抽样校准，不要盲目信任评判分数。</p></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>评估集是工程文化</strong><p>每次改动都跑评估集查回归，这是 AI 工程师和调包玩家的分界线。评估集应随系统迭代持续增长。</p></div></div>
+                <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>离线 + 在线，两道防线</strong><p>离线评估是上线前的防线，在线监控是上线后的听诊器。两者互补——只有一个都是盲飞。</p></div></div>
+              </div>
+              <div class="note-block">🗂 本章给文档助手加入了可运行的评估脚本（<code>project/ch7-eval.py</code>）。ch8 将把这个助手打包成可对外使用的 Web 应用——评估是部署前的最后一道验证关。</div>
+            </div>
+          </div>
+
+          <!-- S10: 词汇表 -->
+          <div class="content-section" id="ch7-s10">
+            <div class="sec-head"><div class="sec-ico">📖</div><h3>本章词汇表</h3></div>
             <div class="panel">
-              <div class="key-point">本章内容正在筹备中。将涵盖：BLEU/ROUGE 等自动指标、LLM-as-Judge 评测范式、RAG 系统的准确率/召回率评测、人工标注与 A/B 实验设计、线上监控与回归测试。</div>
-              <div style="padding:32px;text-align:center;color:var(--light-muted);font-size:13px">
-                <div style="font-size:40px;margin-bottom:12px">🚧</div>
-                <div>本章内容筹备中，敬请期待。</div>
-                <div style="margin-top:8px;font-size:12px">预计涵盖：评估指标体系 · LLM-as-Judge · RAG 评测框架 · 线上监控</div>
+              <div class="glossary-grid">
+                <div class="gloss-item"><div class="gloss-term">评估</div><div class="gloss-def">系统性地测量 AI 系统输出质量的过程。与传统软件测试不同：LLM 输出具有不确定性和开放性，需要超越精确字符串匹配的评估手段。</div></div>
+                <div class="gloss-item"><div class="gloss-term">LLM-as-judge</div><div class="gloss-def">用一个语言模型（评判模型）按照评分标准（rubric）对另一个模型的输出打分的评估方法。扩展性好、可定制，但评判模型本身有系统性偏见，需要人工校准。</div></div>
+                <div class="gloss-item"><div class="gloss-term">评分标准（rubric）</div><div class="gloss-def">告诉评判模型"按什么维度、以什么标准打分"的结构化指令。包含维度（忠实度/完整性/相关性等）、分值范围和评分说明。rubric 的质量决定评判的质量。</div></div>
+                <div class="gloss-item"><div class="gloss-term">忠实度</div><div class="gloss-def">Faithfulness。RAG 系统的核心评估指标：答案中的每个事实声明是否能在检索到的上下文里找到依据。忠实度低意味着模型在幻觉，没有基于文档作答。</div></div>
+                <div class="gloss-item"><div class="gloss-term">检索准确率</div><div class="gloss-def">Precision@k。RAG 检索质量指标：top-k 检索结果中，与问题真正相关的片段占多大比例。高精确率意味着检索结果的噪声少。</div></div>
+                <div class="gloss-item"><div class="gloss-term">召回率</div><div class="gloss-def">Recall@k。RAG 检索质量指标：包含正确答案的片段，出现在 top-k 检索结果里的比例。高召回率意味着不遗漏相关信息。精确率和召回率往往互相trade-off。</div></div>
+                <div class="gloss-item"><div class="gloss-term">评估集</div><div class="gloss-def">Eval Set。一批"输入 + 期望行为"的样本，用于系统性评估 AI 应用的质量。每次改动（改 prompt、换模型、调参数）都跑一遍评估集检查有无退步。是建立可重复评估的基础。</div></div>
+                <div class="gloss-item"><div class="gloss-term">回归测试</div><div class="gloss-def">Regression Testing。每次改动后跑评估集，检查各项指标是否相比上一版本退步。目的是防止"改好一个地方、破坏另一个地方"的悄然退步。</div></div>
+                <div class="gloss-item"><div class="gloss-term">离线评估</div><div class="gloss-def">上线前在预先准备的评估集上运行系统并测量指标。快速、可重复、可版本间对比。是"不上线的防线"，是防止带 bug 上线的第一道关卡。</div></div>
+                <div class="gloss-item"><div class="gloss-term">在线评估</div><div class="gloss-def">系统上线后，通过监控真实用户行为、收集用户反馈（点赞/踩、追问）来评估质量。能发现离线评估集未覆盖的真实分布问题，是"上线后的听诊器"。</div></div>
+                <div class="gloss-item"><div class="gloss-term">A/B测试</div><div class="gloss-def">将用户随机分组，A组用旧版本，B组用新版本，对比关键指标（满意度、完成率）。是在线评估的最严格形式，有统计显著性保证，但需要足够的用户流量才有意义。</div></div>
               </div>
             </div>
           </div>
