@@ -1,0 +1,6 @@
+name            = "ai-roadmap-proxy"
+main            = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 无需任何 KV / D1 / R2 绑定 — Worker 是纯无状态透传
+# 无需任何 Secrets — key 由每次请求的 X-User-Key 头携带，Worker 本身不持有任何凭证

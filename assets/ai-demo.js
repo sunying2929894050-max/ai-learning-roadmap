@@ -1,14 +1,15 @@
-// ai-demo — interactive LLM demo placeholder
+// ai-demo — interactive LLM demo component
+//
 // HTML shape:
-//   <div class="ai-demo">
+//   <div class="ai-demo" [data-system="optional system prompt"]>
 //     <div class="demo-label">…title…</div>          <!-- optional -->
-//     <div class="demo-prompt">…prompt text…</div>   <!-- plain text, no escaping needed -->
+//     <div class="demo-prompt">…prompt text…</div>   <!-- plain text -->
 //     <button class="demo-run">运行</button>
 //     <div class="demo-output" hidden></div>
 //   </div>
 //
-// When window.callLLM is a function (Component 3), clicking Run calls it.
-// Otherwise shows a friendly "not yet connected" placeholder.
+// Calls window.callLLM(prompt, { system }) which is defined in llm.js.
+// Handles all error states (no key, worker not deployed, upstream errors) gracefully.
 // Idempotent via data-bound="1".
 
 function initAiDemos(panelEl) {
@@ -20,30 +21,41 @@ function initAiDemos(panelEl) {
     const outputEl = card.querySelector('.demo-output');
     if (!runBtn || !outputEl) return;
 
-    runBtn.addEventListener('click', () => {
-      if (typeof window.callLLM === 'function') {
-        window.callLLM({
-          prompt:    promptEl ? promptEl.textContent.trim() : '',
-          outputEl,
-          runBtn,
-        });
-      } else {
-        outputEl.hidden = false;
-        const hasKey = !!(sessionStorage.getItem('byok_key') || '').trim();
-        if (hasKey) {
-          outputEl.innerHTML =
-            '<div class="demo-pending">' +
-            '✅ Key 已就绪。<br>' +
-            '<span style="opacity:.7;font-size:12px">AI 直连接口将在下一步开通，届时此演示将自动变为可运行状态。</span>' +
-            '</div>';
-        } else {
-          outputEl.innerHTML =
-            '<div class="demo-pending">' +
-            '🔑 请先在 <strong>ch4 第七节</strong>填入你的 DeepSeek API Key，再来运行演示。<br>' +
-            '<span style="opacity:.7;font-size:12px">Key 只存在浏览器 sessionStorage，关闭标签页自动清除。</span>' +
-            '</div>';
+    runBtn.addEventListener('click', async () => {
+      const prompt = promptEl ? promptEl.textContent.trim() : '';
+      const system = card.dataset.system || undefined;
+
+      outputEl.hidden = false;
+      outputEl.innerHTML = '<div class="demo-pending">⏳ 生成中…</div>';
+      runBtn.disabled = true;
+
+      try {
+        if (typeof window.callLLM !== 'function') {
+          throw Object.assign(new Error('NO_WORKER'), {
+            friendly: 'llm.js 未加载，请检查 index.html 的脚本引用。',
+          });
         }
+
+        const result = await window.callLLM(prompt, { system });
+        outputEl.innerHTML =
+          '<div class="demo-result">' +
+          result.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/\n/g,'<br>') +
+          '</div>';
+
+      } catch (err) {
+        const msg = err.friendly || err.message || '';
+        outputEl.innerHTML = `<div class="demo-pending">${_icon(err)} ${msg}</div>`;
+      } finally {
+        runBtn.disabled = false;
       }
     });
   });
+}
+
+function _icon(err) {
+  const m = err.message || '';
+  if (m === 'NO_KEY')    return '🔑';
+  if (m === 'NO_WORKER') return '✅';
+  return '❌';
 }
