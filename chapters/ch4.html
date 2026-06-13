@@ -330,6 +330,17 @@ Authorization: Bearer sk-a1b2c3d4e5f6...
           <div class="content-section" id="ch4-s8">
             <div class="sec-head"><div class="sec-ico">🗂</div><h3>本章给项目加了什么</h3></div>
             <div class="panel" style="display:grid;gap:16px">
+
+              <!-- Python prereq notice — one-time alert before first real code -->
+              <div style="padding:12px 16px;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.3);border-radius:10px;font-size:13px;color:var(--light-muted);display:flex;gap:12px;align-items:flex-start">
+                <span style="font-size:18px;flex-shrink:0">⚡</span>
+                <div>
+                  <strong style="color:var(--accent)">项目动手部分需要基础 Python。</strong><br>
+                  没接触过的，先看<strong style="color:var(--light)">《应用层 Python 速通》</strong>——从主页右上角入口进去，30 分钟读完变量、函数、字典、文件读写、环境变量，再回来跑这里的代码。<br>
+                  <span style="font-size:12px;color:var(--light-muted)">速通只含项目用到的 Python，不含线性代数和 NumPy——那些是训练 track 才需要的。</span>
+                </div>
+              </div>
+
               <div class="note-block">
                 <strong>文档助手进度：</strong>ch3 有了 prompt 模板，本章把 API 连通了。<br>
                 如果你已经填入了 key，下面的代码现在就能跑：把 ch3 模板里的 <code>{document_content}</code> 换成你的文档内容，<code>{user_question}</code> 换成问题，粘进去运行。
