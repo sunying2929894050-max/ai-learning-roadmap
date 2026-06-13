@@ -181,7 +181,7 @@ async function _runAgentLoop(question, outEl) {
       : '（无参数）';
     outEl.appendChild(_stepEl('action',
       `调用工具 <strong style="color:var(--accent)">${toolName}</strong>` +
-      (tool ? `（${tool.label}）` : '（未知工具）`) +
+      (tool ? `（${tool.label}）` : `（未知工具）`) +
       `&nbsp;— 参数：${inputStr}`
     ));
 
