@@ -377,6 +377,14 @@
     }
     .byok-clear-btn:hover { border-color: #ef4444; color: #ef4444; }
 
+    .agent-preset-btn {
+      background: transparent; border: 1px solid var(--line);
+      border-radius: 8px; padding: 6px 12px;
+      color: var(--muted); font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: border-color 160ms, color 160ms;
+    }
+    .agent-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
     /* ══════════════════════════════
        CONTENT VIEW
     ══════════════════════════════ */

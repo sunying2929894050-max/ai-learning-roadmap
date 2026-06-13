@@ -5,7 +5,7 @@ const TOC_DATA = {
   3: [{id:"ch3-s0",l:"本章概览"},{id:"ch3-s1",l:"同一任务，两种结果"},{id:"ch3-s2",l:"Prompt 到底是什么"},{id:"ch3-s3",l:"Few-Shot 为什么有效"},{id:"ch3-s4",l:"思维链（CoT）"},{id:"ch3-s5",l:"常见失败与注入攻击"},{id:"ch3-s6",l:"互动演示"},{id:"ch3-s7",l:"本章给项目加了什么"},{id:"ch3-s8",l:"知识自测"},{id:"ch3-s9",l:"本章小结"},{id:"ch3-s10",l:"词汇表"}],
   4: [{id:"ch4-s0",l:"本章概览"},{id:"ch4-s1",l:"点发送底层发生了什么"},{id:"ch4-s2",l:"API 调用是什么"},{id:"ch4-s3",l:"API Key 与鉴权"},{id:"ch4-s4",l:"流式输出 SSE"},{id:"ch4-s5",l:"Token 与成本"},{id:"ch4-s6",l:"BYOK：用你的 Key"},{id:"ch4-s7",l:"填入 API Key"},{id:"ch4-s8",l:"本章给项目加了什么"},{id:"ch4-s9",l:"知识自测"},{id:"ch4-s10",l:"本章小结"},{id:"ch4-s11",l:"词汇表"}],
   5: [{id:"ch5-s0",l:"本章概览"},{id:"ch5-s1",l:"先问它一个私有问题"},{id:"ch5-s2",l:"RAG 核心思想"},{id:"ch5-s3",l:"检索：向量＋余弦"},{id:"ch5-s4",l:"切块与向量库"},{id:"ch5-s5",l:"完整管线与失败模式"},{id:"ch5-s6",l:"互动演示"},{id:"ch5-s7",l:"本章给项目加了什么"},{id:"ch5-s8",l:"知识自测"},{id:"ch5-s9",l:"本章小结"},{id:"ch5-s10",l:"词汇表"}],
-  6: [{id:"ch5-s6",l:"工具调用与 Agent"}],
+  6: [{id:"ch6-s0",l:"本章概览"},{id:"ch6-s1",l:"先问它做不到的事"},{id:"ch6-s2",l:"工具调用的本质"},{id:"ch6-s3",l:"Agent 循环：ReAct"},{id:"ch6-s4",l:"工具描述与选择"},{id:"ch6-s5",l:"失败模式"},{id:"ch6-s6",l:"互动演示"},{id:"ch6-s7",l:"本章给项目加了什么"},{id:"ch6-s8",l:"知识自测"},{id:"ch6-s9",l:"本章小结"},{id:"ch6-s10",l:"词汇表"}],
   7: [{id:"ch7-s0",l:"本章概览（筹备中）"}],
   8: [{id:"ch5-s4",l:"模型部署"},{id:"ch5-s5",l:"AI 作品集规划"},{id:"ch5-s7",l:"知识自测"},{id:"ch5-s8",l:"本章小结"},{id:"ch5-s9",l:"词汇表"}],
   // ── 选修翼：造 AI 路线 ──
@@ -102,6 +102,7 @@ function initChapterComponents(panelEl) {
   if (typeof initEmbeddingDemo === 'function') initEmbeddingDemo(panelEl);
   if (typeof initByokPanel === 'function') initByokPanel(panelEl);
   if (typeof initRagDemo === 'function') initRagDemo(panelEl);
+  if (typeof initAgentDemo === 'function') initAgentDemo(panelEl);
 }
 
 // ── Back to map ──

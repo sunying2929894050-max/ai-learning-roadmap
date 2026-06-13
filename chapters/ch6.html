@@ -1,76 +1,513 @@
       <!-- Chapter 6 -->
       <div class="ch-panel" id="ch-6">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big">06</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 06</div><div class="ch-name">工具调用与 Agent</div></div></div>
-          <p class="ch-desc">让大模型使用工具（搜索、代码执行、API 调用），理解 Agent 的规划-执行-观测循环。</p>
+          <div class="ch-badge">
+            <div class="ch-big">06</div>
+            <div class="ch-vline"></div>
+            <div><div class="ch-label">Chapter 06</div><div class="ch-name">工具调用与 Agent</div></div>
+          </div>
+          <p class="ch-desc">给大模型配上工具，让它自己决定调什么、按什么顺序——这就是 Agent。本章把 ch1 的 token 生成、ch3 的格式续写、ch4 的 API 调用成本、ch5 的上下文回灌全部串起来，组成一条可运转的 Agent 管线。</p>
         </div>
         <div class="content-body">
 
-          <!-- S6: AI Agent -->
-          <div class="content-section" id="ch5-s6">
-            <div class="sec-head"><div class="sec-ico">⑥</div><h3>AI Agent：让大模型自主完成多步骤任务</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">传统 AI：输入 → 模型 → 输出（一次性）。Agent：给模型一套工具，让它自己决定调用哪些工具、按什么顺序，完成复杂任务。</p>
-
-              <div class="analogy-box" style="margin-bottom:16px">
-                <div class="analogy-label">类比：AI 助理 vs AI 员工</div>
-                <div class="analogy-text">传统 RAG/聊天机器人像"AI 助理"——你每次说一件事，它做一件事。Agent 像"AI 员工"——你说"帮我调研竞品并写报告"，它自己去搜索网页、整理信息、分析对比、最后写出报告。中间所有步骤它自己决定。</div>
-              </div>
-
-              <div class="flow-steps" style="margin-bottom:16px">
-                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>工具（Tools）</strong><p>给 Agent 配备可调用的工具：搜索引擎、代码执行器、数据库查询、发送邮件、文件读写...每个工具有明确的输入输出定义。</p></div></div>
-                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>规划（Planning）</strong><p>Agent 收到任务后，先分解步骤，判断需要用哪些工具、按什么顺序。</p></div></div>
-                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>执行 + 观察 + 调整（Act-Observe-Adjust 循环）</strong><p>调用工具 → 观察结果 → 根据结果决定下一步 → 直到任务完成。</p></div></div>
-              </div>
-
-              <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 12px"><code>import anthropic
-
-client = anthropic.Anthropic()
-
-# 定义工具
-tools = [
-    {
-        "name": "search_web",
-        "description": "在互联网上搜索信息",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "搜索关键词"}
-            },
-            "required": ["query"]
-        }
-    },
-    {
-        "name": "calculate",
-        "description": "执行数学计算",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "expression": {"type": "string", "description": "数学表达式，如 '2 + 3 * 4'"}
-            },
-            "required": ["expression"]
-        }
-    }
-]
-
-# Agent 会自动决定调用哪个工具
-response = client.messages.create(
-    model="claude-opus-4-8",
-    max_tokens=1024,
-    tools=tools,
-    messages=[{"role": "user", "content": "2024年中国 GDP 是多少？换算成美元大约是多少？"}]
-)
-
-# 检查是否调用了工具
-if response.stop_reason == "tool_use":
-    tool_call = response.content[-1]
-    print(f"Agent 决定调用工具: {tool_call.name}")
-    print(f"工具参数: {tool_call.input}")</code></pre>
-
-              <div class="key-point">Agent 的边界：Agent 越强大，风险越高。在生产环境中，工具调用权限要严格控制（Agent 不应该有删除数据库的权限），敏感操作需要人工审批，避免失控。</div>
+          <!-- S0: 概览 -->
+          <div class="content-section" id="ch6-s0">
+            <div class="sec-head"><div class="sec-ico">▦</div><h3>本章概览</h3></div>
+            <div class="overview-grid">
+              <div class="overview-card"><div class="overview-num">2~3h</div><div class="overview-label">预计学习时间</div></div>
+              <div class="overview-card"><div class="overview-num">4</div><div class="overview-label">核心概念</div></div>
+              <div class="overview-card"><div class="overview-num">5</div><div class="overview-label">知识自测题</div></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="note-block">本章是主线课程的<strong>整合点</strong>：ch1 讲了模型只生成 token，ch3 讲了格式化续写，ch4 接通了 API，ch5 把检索结果注入上下文。<span class="term-chip" data-term="Agent">Agent</span> 把这些能力<em>编排</em>成一个循环——模型思考→调工具→看结果→再思考……直到任务完成。本章演示是真实运行的，需要先在 ch4 填入 API Key。</div>
             </div>
           </div>
 
+          <!-- S1: 钩子 -->
+          <div class="content-section" id="ch6-s1">
+            <div class="sec-head"><div class="sec-ico">⬡</div><h3>先问它一件它做不到的事</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <div class="hook-story">
+                <div class="hook-label">🧪 三个实验</div>
+                <p><strong>实验一：问它现在几点</strong><br>"现在是几点？"——模型的回答通常是"我没有访问实时数据的能力"，或者给你一个截止日期附近的随机猜测。<em>它真的不知道</em>，因为推理时没有时钟输入。</p>
+                <p><strong>实验二：让它做精确计算</strong><br>"31 × 97 × 43 等于多少？"——语言模型不是计算器，它在 token 空间预测下一个字符，多位乘法经常出错。你信任这个数字吗？</p>
+                <p><strong>实验三：问它私有信息</strong><br>"我们公司的年假政策？"——和 ch5 的场景完全一样，它不知道你的私有数据，会给出通用回答或幻觉内容。</p>
+                <div class="hook-question">→ 这三件事都有解法：<strong>给模型配工具</strong>。配上时钟工具、计算器工具、文档检索工具——让<em>工具</em>去做工具该做的事，让<em>模型</em>做模型该做的事（理解意图、选择工具、整合结果）。这就是工具调用与 Agent。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S2: 工具调用的本质 -->
+          <div class="content-section" id="ch6-s2">
+            <div class="sec-head"><div class="sec-ico">◈</div><h3>工具调用的本质</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)"><span class="term-chip" data-term="工具调用">工具调用</span>（Tool Use / <span class="term-chip" data-term="函数调用">函数调用</span>）听起来像"模型去执行函数"——这个直觉是错的。理解它的真相，才能理解为什么 Agent 的行为有时不可预测。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：工具调用的真实流程</strong>
+                  <div class="flow-steps" style="margin-top:12px;margin-bottom:0">
+                    <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>你告诉模型有哪些工具</strong><p>在 prompt 或 API 参数里描述工具名称、功能、参数格式。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>模型输出一段 JSON 请求</strong><p>模型不执行任何代码——它只是生成一段结构化文本，内容是"我想调用工具 X，参数是 Y"。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>你的代码执行工具</strong><p>解析模型输出的 JSON → 真正调用函数/API → 得到结果。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>把结果塞回上下文</strong><p>工具结果作为新的消息附到对话里，模型接着续写，给出最终回答或下一步工具调用。</p></div></div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>工具调用的本质：模型只输出请求，执行在你的代码里</strong><br><br>
+
+                  这是本章最核心的认知颠覆。把它拆到最底层：<br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch1-s4')" style="color:var(--accent)">ch1 训练与推理</a>：模型在推理时做的事情<em>只有一件</em>——根据当前所有 token，预测下一个最可能的 token，然后循环。它没有系统调用权限，没有网络连接，没有 Python 解释器。所谓"模型调用工具"是一个方便的说法，真相是：<strong>模型生成了一段看起来像工具调用的文本</strong>，你的编排代码读取这段文本、执行真实的函数、再把结果放回去。<br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch3-s2')" style="color:var(--accent)">ch3 Prompt 是什么</a>：工具调用的格式（JSON schema、字段名、参数类型）之所以能工作，是因为训练数据里有海量类似格式的文本，模型学会了"在这种语境下，下一段内容应该长这样"。这仍然是 token 续写，只是续写的内容恰好是合法的 JSON。<br><br>
+
+                  <strong>用代码展示这个流程：</strong><br>
+                  <code>
+# 模型收到 prompt，输出这样一段 token 序列：<br>
+# {"action":"calculator","input":{"expression":"31*97"}}<br><br>
+# ↑ 这不是函数调用——这只是一段字符串<br>
+# 你的代码负责：<br>
+action = json.loads(model_output)          # 解析 JSON<br>
+result = run_tool(action["action"],        # 真正执行工具<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; action["input"])<br>
+messages.append({"role":"tool",            # 把结果塞回上下文<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "content":str(result)})<br>
+next_response = call_llm(messages)         # 再次调 LLM<br>
+                  </code><br>
+
+                  <strong>为什么这个区分重要？</strong><br>
+                  • 模型输出的 JSON 可能畸形（缺括号、错字段名）——你的解析器要处理异常<br>
+                  • 模型可能"瞎编"一个不存在的工具名——你的路由要防御性检查<br>
+                  • 模型可能生成参数值看起来合理但实际有害——工具执行前要验证<br><br>
+                  所有这些问题的根源是同一个：<strong>模型只是在续写，不保证续写的内容可执行或安全。</strong>
+
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://platform.openai.com/docs/guides/function-calling" target="_blank" rel="noopener">OpenAI Function Calling 官方指南</a>
+                  <a href="https://docs.anthropic.com/en/docs/build-with-claude/tool-use" target="_blank" rel="noopener">Anthropic Tool Use 文档</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: Agent 循环：ReAct -->
+          <div class="content-section" id="ch6-s3">
+            <div class="sec-head"><div class="sec-ico">🔄</div><h3>Agent 循环：ReAct 模式</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">Agent 和单次工具调用的区别在于<strong>循环</strong>——模型可以多步使用工具，每步看到上一步的结果再决定下一步。最常见的实现是 <span class="term-chip" data-term="ReAct">ReAct</span> 模式（Reasoning + Acting）。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：ReAct 循环的三个节拍</strong>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;text-align:center">
+                    <div style="border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:12px 8px;background:rgba(0,212,170,.04)">
+                      <div style="font-size:22px;margin-bottom:6px">💭</div>
+                      <div style="font-weight:800;font-size:13px;color:var(--accent)">Reasoning</div>
+                      <div style="font-size:11px;color:var(--muted);margin-top:4px">分析任务，决定<br>调哪个工具</div>
+                    </div>
+                    <div style="border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:12px 8px;background:rgba(99,102,241,.04)">
+                      <div style="font-size:22px;margin-bottom:6px">🔧</div>
+                      <div style="font-weight:800;font-size:13px;color:#818cf8">Acting</div>
+                      <div style="font-size:11px;color:var(--muted);margin-top:4px">输出工具调用 JSON<br>（你的代码执行它）</div>
+                    </div>
+                    <div style="border:1px solid rgba(251,191,36,.3);border-radius:8px;padding:12px 8px;background:rgba(251,191,36,.04)">
+                      <div style="font-size:22px;margin-bottom:6px">📊</div>
+                      <div style="font-weight:800;font-size:13px;color:#d97706">Observing</div>
+                      <div style="font-size:11px;color:var(--muted);margin-top:4px">工具结果注入上下文<br>模型看到后再推理</div>
+                    </div>
+                  </div>
+                  <p style="font-size:12px;color:var(--muted);margin:12px 0 0">循环直到：模型输出"最终答案"，或达到最大步数 MAX_STEPS 限制。</p>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>Agent 循环的底层：每一步都是一次 ch4 的 API 调用</strong><br><br>
+
+                  把 ReAct 循环拆开看，它就是一个 while 循环 + 不断增长的 messages 数组：<br><br>
+
+                  <code>
+messages = [{"role":"user","content":question}]<br>
+for step in range(MAX_STEPS):<br>
+&nbsp;&nbsp;response = call_llm(messages)         # ch4 的 API 调用<br>
+&nbsp;&nbsp;action = parse_json(response)         # 解析模型输出<br>
+&nbsp;&nbsp;if action["type"] == "final_answer":<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return action["content"]<br>
+&nbsp;&nbsp;result = run_tool(action)             # 执行工具<br>
+&nbsp;&nbsp;messages.append(assistant=response)   # 把模型输出存入历史<br>
+&nbsp;&nbsp;messages.append(user=result)          # 把工具结果回灌<br>
+                  </code><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch4-s5')" style="color:var(--accent)">ch4 Token 与成本</a>：注意每次循环 messages 数组都在增长——思考+行动+观察+思考+行动+观察……每一步都要带着完整历史发给 API。一个5步的 Agent 任务，发送的 token 总量 ≈ 5步 × 平均上下文长度（且后几步更长）。成本随步数<em>超线性</em>增长，这是 Agent 在生产中的主要费用来源。<br><br>
+
+                  回扣 <a href="javascript:void(0)" onclick="goTo('ch5-s2')" style="color:var(--accent)">ch5 RAG 核心思想</a>：把工具结果"回灌"进 messages，本质上和 RAG 的"上下文注入"是同一个操作——都是把外部获取的信息放进 prompt 的上下文区域，让模型能"看到"它并续写。Agent 可以看作是动态的、多步骤的 RAG：不是一次性检索一次性注入，而是每步按需检索，结果层层累积。<br><br>
+
+                  <strong>"编排代码"是 Agent 的大脑外壳</strong><br>
+                  模型本身是无状态的——每次 API 调用完全独立。所谓"Agent 在思考多步任务"，实际上是<em>你写的编排代码</em>在维护 messages 历史、决定循环继续还是终止、路由工具调用到具体函数。模型只做一件事：在给定对话历史下预测下一段文本。"Agent 的智能"一半来自模型，一半来自你的编排逻辑。
+
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">ReAct 原始论文（Yao et al., 2022）</a>
+                  <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener">Anthropic：构建有效 Agent 的实践指南</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S4: 工具描述与选择 -->
+          <div class="content-section" id="ch6-s4">
+            <div class="sec-head"><div class="sec-ico">◇</div><h3>工具描述与工具选择</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">模型选择"调哪个工具、传什么参数"，完全依赖你对工具的<span class="term-chip" data-term="工具描述">工具描述</span>。描述写得好，选对；写得模糊，选错。这和 ch3 写好 prompt 的逻辑完全一致。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：工具描述的三要素</strong>
+                  <div class="flow-steps" style="margin-top:10px;margin-bottom:0">
+                    <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>名称（Name）</strong><p>简洁、唯一、动词/名词清晰。好：<code>search_documents</code>。差：<code>do_stuff</code>。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>描述（Description）</strong><p>说清楚"什么时候用这个工具"。好的描述直接回答"我应该在什么情况下调用它"。这是模型选择工具最依赖的字段。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>参数 Schema（Input Schema）</strong><p>每个参数要有类型（string / number / boolean）和描述。required 字段列出必填项，optional 说清楚默认值。</p></div></div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>工具描述的质量直接决定 Agent 的准确率</strong><br><br>
+
+                  回扣 ch3 提示词工程：模型选工具的过程本质上是在做"分类"任务——把用户意图分类到某个工具。这个分类的依据是描述文字，和 few-shot prompt 的例子起到的作用相同：给模型足够的语义信号，让它在 token 续写时走向正确的"分支"。<br><br>
+
+                  <strong>好工具描述 vs 差工具描述：</strong><br><br>
+
+                  差：<code>"calculator": "does math"</code><br>
+                  好：<code>"calculator": "当需要精确数值计算时使用，如乘法、除法、开方。不适合单位换算或文字推理。"</code><br><br>
+
+                  差：<code>"search_docs": "searches"</code><br>
+                  好：<code>"search_docs": "在公司内部文档库中语义搜索。适合回答'公司政策是什么''合同条款是什么'等问题。不适合搜索互联网或通用知识。"</code><br><br>
+
+                  <strong>工具数量与歧义：</strong><br>
+                  工具列表越长，模型误选的概率越高。生产实践中的建议：<br>
+                  • 每个工具功能单一、边界清晰<br>
+                  • 描述里明确说"不适合什么场景"，防止过度调用<br>
+                  • 工具数量超过 10-15 个时，考虑分层路由（先让模型选类别，再在类别内选工具）
+
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://platform.openai.com/docs/guides/function-calling/best-practices" target="_blank" rel="noopener">OpenAI Function Calling 最佳实践</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: 失败模式 -->
+          <div class="content-section" id="ch6-s5">
+            <div class="sec-head"><div class="sec-ico">⚠</div><h3>失败模式（诚实版）</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">Agent 比单次调用强大，也比单次调用<em>脆弱</em>。每增加一步，就多一个出错的机会。理解失败模式是在生产中使用 Agent 的前提。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>五种常见失败模式</strong>
+                  <div class="flow-steps" style="margin-top:10px;margin-bottom:0">
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>选错工具</strong><p>模型把"计算 3 × 4"发给了 search_docs 工具——因为工具描述不清晰，或任务描述歧义。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>瞎编参数</strong><p>工具需要合法的日期格式，模型传了 "yesterday"；或把字段名拼错了。JSON 解析失败，Agent 陷入错误处理循环。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>死循环</strong><p>工具每次返回"未找到"，模型换个角度再试，还是"未找到"，再试……没有终止条件就无限循环。必须设 MAX_STEPS 硬上限。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>成本爆炸</strong><p>回扣 ch4：每步都带完整历史，5步任务的 token 消耗可能是单次调用的 10-20 倍。没有步数上限和成本监控的 Agent 可能产生意外账单。</p></div></div>
+                    <div class="flow-step"><div class="flow-num" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">✗</div><div class="flow-content"><strong>工具报错后幻觉</strong><p>工具调用失败，模型没有得到真实结果，但仍然"续写"了一个听起来合理的答案——靠参数记忆凑出来的幻觉。回扣 ch1 + ch5 的结论。</p></div></div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>为什么 Agent 的错误比单次调用更难察觉</strong><br><br>
+
+                  单次 LLM 调用的错误通常是"答案不对"——用户问一个问题，得到一个错误答案，相对容易发现。<br><br>
+
+                  Agent 的错误更隐蔽：<br>
+                  • <em>中间步骤出错</em>：工具在第2步用了错误参数，第4步的"正确格式"答案实际上是基于错误数据推导的<br>
+                  • <em>错误被"合理化"</em>：模型很擅长把任何工具结果都整合进一个听起来合理的叙述<br>
+                  • <em>多步积累偏差</em>：每步有1%的偏差，5步后偏差叠加<br><br>
+
+                  这就是为什么 ch7（评估）在 Agent 场景下更重要：需要对每个中间步骤（工具选择是否正确、参数是否合理、工具结果是否被正确使用）做系统性评估，而不只是看最终答案。<br><br>
+
+                  <strong>生产环境的防护层：</strong><br>
+                  • MAX_STEPS 硬限制（防死循环）<br>
+                  • 工具执行前参数验证（防瞎编参数）<br>
+                  • 工具执行超时（防外部 API 挂起）<br>
+                  • 成本预算上限（防账单爆炸）<br>
+                  • 高风险操作（发邮件、删数据）要人工确认检查点
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S6: 互动演示 -->
+          <div class="content-section" id="ch6-s6">
+            <div class="sec-head"><div class="sec-ico">▷</div><h3>互动演示：迷你 Agent</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">下面是一个真实运行的迷你 Agent（需要 ch4 填写 API Key）。它配备了三个工具，<strong>每步的思考、工具调用、观察结果都会展示出来</strong>——不是只给最终答案，而是让你亲眼看到 ReAct 循环的每个节拍。</p>
+
+              <div style="border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:#0f172a;font-size:12px;line-height:1.6">
+                <div style="font-weight:800;font-size:11px;letter-spacing:.1em;color:var(--muted);margin-bottom:6px">🔧 可用工具（3 个）</div>
+                <div style="display:grid;gap:4px">
+                  <div><span style="color:var(--accent);font-weight:700">calculator</span> <span style="color:var(--muted)">—</span> 计算数学表达式（31 × 97、sqrt(2) 等）</div>
+                  <div><span style="color:var(--accent);font-weight:700">get_time</span> <span style="color:var(--muted)">—</span> 获取当前日期和时间</div>
+                  <div><span style="color:var(--accent);font-weight:700">search_docs</span> <span style="color:var(--muted)">—</span> 搜索 TechCorp 员工手册（同 ch5 知识库）</div>
+                </div>
+              </div>
+
+              <div style="border:1px solid rgba(251,191,36,.25);border-radius:8px;padding:10px 14px;background:rgba(251,191,36,.04);font-size:12px;color:#d97706;line-height:1.6">
+                ⚠️ <strong>实现说明：</strong>演示使用手写 ReAct 循环——提示模型输出 JSON 动作 → 解析 → 执行 → 回灌。生产环境用原生 Function Calling API（更可靠、有结构保证）。手写版更透明，适合教学。
+              </div>
+
+              <!-- 预设问题 -->
+              <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:6px">试试这些问题（会用到不同工具）：</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px" id="agent-presets">
+                  <button class="agent-preset-btn" data-q="现在是几点？今天是星期几？">⏰ 现在几点？</button>
+                  <button class="agent-preset-btn" data-q="31 乘以 97 再乘以 43 等于多少？">🔢 31×97×43</button>
+                  <button class="agent-preset-btn" data-q="TechCorp 的年假政策是什么，试用期员工有年假吗？">📄 年假政策</button>
+                  <button class="agent-preset-btn" data-q="地球到月球的平均距离是 384400 公里，光速是 299792 公里每秒，光从地球到月球需要几秒？">🌙 光到月球</button>
+                </div>
+              </div>
+
+              <!-- 输入区 -->
+              <div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:6px">或者输入你的问题：</div>
+                <div style="display:flex;gap:8px">
+                  <input type="text" id="agent-query" placeholder="问它需要工具才能回答的问题…" style="flex:1;background:#0f172a;border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit" />
+                  <button id="agent-run" style="background:var(--accent);color:#0a0f1e;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap">▶ 运行</button>
+                </div>
+              </div>
+
+              <!-- 输出区（步骤轨迹） -->
+              <div id="agent-output" style="display:none"></div>
+            </div>
+          </div>
+
+          <!-- S7: 贯穿项目 -->
+          <div class="content-section" id="ch6-s7">
+            <div class="sec-head"><div class="sec-ico">🗂</div><h3>本章给项目加了什么</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <div class="note-block">
+                <strong>文档助手进度：</strong><br>
+                ch3 → prompt 模板 ✅<br>
+                ch4 → API 接通 ✅<br>
+                ch5 → RAG 向量检索 ✅<br>
+                ch6 → Agent 循环 + 工具调用，助手现在能多步骤完成任务 ✅
+              </div>
+
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+                <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
+                  📄 project/ch6-agent.py
+                </div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.8;margin:0;overflow-x:auto"><code>"""
+文档助手 — ch6 产物：Agent 循环 + 工具调用
+来源：AI 学习路线 ch6 工具调用与 Agent
+
+依赖：pip install openai chromadb
+用法：
+  export OPENAI_API_KEY="sk-..."   # 嵌入模型
+  export DEEPSEEK_API_KEY="sk-..."  # 生成模型
+  python3 ch6-agent.py
+"""
+
+import os, json, re
+from openai import OpenAI
+
+# ── 复用 ch5 的 RAG 检索（已入库的 collection） ──
+from ch5_rag_pipeline import collection, embed_client as _emb
+
+def _search_docs(query: str, k: int = 2) -> str:
+    """把 ch5 的向量检索包装成 Agent 工具。"""
+    q_vec = _emb.embeddings.create(
+        model="text-embedding-3-small", input=[query]
+    ).data[0].embedding
+    results = collection.query(query_embeddings=[q_vec], n_results=k)
+    docs = results["documents"][0]
+    if not docs:
+        return "未在文档库中找到相关内容。"
+    return "\n\n".join(f"[片段{i+1}] {d}" for i, d in enumerate(docs))
+
+def _calculator(expression: str) -> str:
+    cleaned = re.sub(r"[^0-9+\-*/.() ]", "", expression)
+    try:
+        result = eval(cleaned, {"__builtins__": {}})
+        return f"{expression} = {result}"
+    except Exception as e:
+        return f"计算失败：{e}"
+
+def _get_time() -> str:
+    from datetime import datetime
+    return datetime.now().strftime("当前时间：%Y-%m-%d %H:%M:%S（本地）")
+
+# ── 工具路由表 ──
+TOOLS = {
+    "calculator": {
+        "desc": "精确计算数学表达式。适合乘除加减、开方等数值运算。input: {\"expression\":\"31*97\"}",
+        "fn": lambda inp: _calculator(inp["expression"]),
+    },
+    "get_time": {
+        "desc": "获取当前日期和时间。适合需要知道今天日期或现在时刻的问题。input: {}",
+        "fn": lambda _: _get_time(),
+    },
+    "search_docs": {
+        "desc": "在公司内部文档库（ch5 知识库）中语义搜索。适合回答公司政策、合同条款等私有信息。input: {\"query\":\"年假政策\"}",
+        "fn": lambda inp: _search_docs(inp["query"]),
+    },
+}
+
+SYSTEM_PROMPT = (
+    "你是一个使用工具完成任务的 AI Agent。\n\n"
+    "可用工具：\n"
+    + "\n".join(f"- {n}: {t['desc']}" for n, t in TOOLS.items())
+    + "\n\n每次回复必须且只能是以下格式的 JSON（不加任何额外文字）：\n"
+    "调用工具：{\"thought\":\"原因\",\"action\":\"工具名\",\"input\":{...}}\n"
+    "最终答案：{\"thought\":\"已有所有信息\",\"action\":\"final_answer\",\"content\":\"答案\"}"
+)
+
+ds = OpenAI(
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+    base_url="https://api.deepseek.com",
+)
+
+def _parse_json(text: str) -> dict:
+    """鲁棒解析：先直接 parse，再从文本中提取 {...}。"""
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError:
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            return json.loads(m.group())
+        return {"action": "final_answer", "content": text}
+
+def run_agent(question: str, max_steps: int = 5) -> str:
+    """ReAct 循环：思考 → 调工具 → 观察 → 再思考……"""
+    messages = [{"role": "user", "content": question}]
+
+    for step in range(max_steps):
+        # ── 每步都是一次 ch4 的 API 调用 ──
+        resp = ds.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+            max_tokens=512,
+        )
+        raw = resp.choices[0].message.content.strip()
+        print(f"\n[步骤 {step+1}] 模型输出：{raw}")
+
+        action = _parse_json(raw)
+
+        if action.get("action") == "final_answer":
+            return action.get("content", "")
+
+        # ── 执行工具 ──
+        tool_name = action.get("action", "")
+        tool_input = action.get("input", {})
+        if tool_name not in TOOLS:
+            tool_result = f"错误：工具 '{tool_name}' 不存在，可用：{list(TOOLS.keys())}"
+        else:
+            tool_result = TOOLS[tool_name]["fn"](tool_input)
+            print(f"[工具结果] {tool_result}")
+
+        # ── 把工具结果回灌进上下文（ch5 的上下文注入模式） ──
+        messages.append({"role": "assistant", "content": raw})
+        messages.append({"role": "user", "content": f"[工具结果] {tool_result}"})
+
+    return "已达最大步数，无法完成任务。"
+
+if __name__ == "__main__":
+    for q in ["现在几点？", "31 × 97 × 43 = ?", "公司年假政策？"]:
+        print(f"\n{'='*50}\n问：{q}")
+        print(f"答：{run_agent(q)}")</code></pre>
+              </div>
+
+              <div class="key-point">注意代码里两处注释回扣：<code># ch4 的 API 调用</code> 和 <code># ch5 的上下文注入模式</code>——Agent 循环在工程上正是把两者组合：ch4 给了调 LLM 的能力，ch5 给了"把外部结果塞进上下文"的模式，再加一个 for 循环就成了 Agent。</div>
+            </div>
+          </div>
+
+          <!-- S8: 知识自测 -->
+          <div class="content-section" id="ch6-s8">
+            <div class="sec-head"><div class="sec-ico">✦</div><h3>知识自测</h3></div>
+            <div class="panel" style="display:grid;gap:20px">
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q1. 所谓"模型调用工具"，底层实际发生的是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','模型无法直接执行任何代码。工具调用的真相：模型输出一段 JSON 格式的"调用请求"（仍然是 token 续写），你的编排代码解析这段 JSON、真正执行工具、再把结果放回 messages。')">A. 模型直接在内部运行函数并返回结果</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','模型无法直接执行任何代码。工具调用的真相：模型输出一段 JSON 格式的"调用请求"（仍然是 token 续写），你的编排代码解析这段 JSON、真正执行工具、再把结果放回 messages。')">B. 模型输出一段 JSON 请求，你的代码解析并执行工具，结果回灌进上下文</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','模型无法直接执行任何代码。工具调用的真相：模型输出一段 JSON 格式的"调用请求"（仍然是 token 续写），你的编排代码解析这段 JSON、真正执行工具、再把结果放回 messages。')">C. 工具结果被直接注入模型权重</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','模型无法直接执行任何代码。工具调用的真相：模型输出一段 JSON 格式的"调用请求"（仍然是 token 续写），你的编排代码解析这段 JSON、真正执行工具、再把结果放回 messages。')">D. 模型通过网络连接直接调用外部 API</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q2. ReAct Agent 每进行一步，token 消耗为什么会增加？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','每步 API 调用都携带完整对话历史（思考+工具调用+工具结果不断追加）。随步骤增加，messages 越来越长，每次调用消耗的 token 超线性增长。')">A. 模型每步都需要重新加载参数</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','每步 API 调用都携带完整对话历史（思考+工具调用+工具结果不断追加）。随步骤增加，messages 越来越长，每次调用消耗的 token 超线性增长。')">B. 每步都携带完整历史，messages 越来越长，token 随步骤超线性增长</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','每步 API 调用都携带完整对话历史（思考+工具调用+工具结果不断追加）。随步骤增加，messages 越来越长，每次调用消耗的 token 超线性增长。')">C. 工具调用本身有固定的 token 税</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','每步 API 调用都携带完整对话历史（思考+工具调用+工具结果不断追加）。随步骤增加，messages 越来越长，每次调用消耗的 token 超线性增长。')">D. Agent 模式要求更大的模型，模型本身更贵</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q3. 模型选错工具的最主要原因是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','工具描述的质量是模型选择工具的核心依据。描述模糊、边界不清的工具，模型自然难以正确分类用户意图。')">A. 模型参数数量不够多</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','工具描述的质量是模型选择工具的核心依据。描述模糊、边界不清的工具，模型自然难以正确分类用户意图。')">B. 工具数量超过了模型的处理上限</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','工具描述的质量是模型选择工具的核心依据。描述模糊、边界不清的工具，模型自然难以正确分类用户意图。')">C. 工具描述不清晰，模型无法准确判断应该用哪个</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','工具描述的质量是模型选择工具的核心依据。描述模糊、边界不清的工具，模型自然难以正确分类用户意图。')">D. 工具名称不是英文</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q4. Agent 为什么必须设置 MAX_STEPS 上限？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','没有终止条件的 Agent 在工具持续失败时会无限循环，导致 token 成本无限累积。MAX_STEPS 是防止死循环的硬性防护。')">A. 模型在超过一定步数后准确率会下降</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','没有终止条件的 Agent 在工具持续失败时会无限循环，导致 token 成本无限累积。MAX_STEPS 是防止死循环的硬性防护。')">B. API 接口有每分钟调用次数上限</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','没有终止条件的 Agent 在工具持续失败时会无限循环，导致 token 成本无限累积。MAX_STEPS 是防止死循环的硬性防护。')">C. 防止工具持续失败导致的死循环和成本爆炸</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','没有终止条件的 Agent 在工具持续失败时会无限循环，导致 token 成本无限累积。MAX_STEPS 是防止死循环的硬性防护。')">D. 服务器内存不够存储太多步骤的历史</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q5. 从架构上看，Agent 和 RAG（ch5）的核心共同点是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','两者的核心共同点都是"把外部获取的信息注入 prompt 上下文"：RAG 把检索到的文档片段注入，Agent 把工具返回的结果注入。都是靠上下文注入弥补参数记忆的局限。')">A. 两者都需要向量数据库</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','两者的核心共同点都是"把外部获取的信息注入 prompt 上下文"：RAG 把检索到的文档片段注入，Agent 把工具返回的结果注入。都是靠上下文注入弥补参数记忆的局限。')">B. 两者都会更新模型的参数</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','两者的核心共同点都是"把外部获取的信息注入 prompt 上下文"：RAG 把检索到的文档片段注入，Agent 把工具返回的结果注入。都是靠上下文注入弥补参数记忆的局限。')">C. 都是把外部获取的信息注入 prompt 上下文，弥补参数记忆的局限</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','两者的核心共同点都是"把外部获取的信息注入 prompt 上下文"：RAG 把检索到的文档片段注入，Agent 把工具返回的结果注入。都是靠上下文注入弥补参数记忆的局限。')">D. 两者都只能回答关于公司内部文档的问题</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- S9: 本章小结 -->
+          <div class="content-section" id="ch6-s9">
+            <div class="sec-head"><div class="sec-ico">◉</div><h3>本章小结</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>工具调用 = 模型生成 JSON 请求，你的代码执行</strong><p>模型从不"运行"任何代码，它只是生成 token。"调用工具"是你的编排代码在执行。这个认知决定了如何设计防御性系统。</p></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>Agent = ReAct 循环 + 不断增长的上下文</strong><p>每步是一次 ch4 的 API 调用，每步把结果回灌进 messages（ch5 的上下文注入模式）。循环本身是你写的，不是模型内置的。</p></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>工具描述决定工具选择质量</strong><p>和 ch3 写好 prompt 完全同样的逻辑：模型根据文字做判断，描述准确则选对，描述模糊则选错。</p></div></div>
+                <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>Agent 强大但脆弱</strong><p>选错工具、瞎编参数、死循环、成本爆炸——每一步都是新的出错机会。MAX_STEPS 上限、参数验证、工具报错处理是最低生产标准。</p></div></div>
+              </div>
+              <div class="note-block">🗂 本章给文档助手加入了 Agent 循环和工具调用（<code>project/ch6-agent.py</code>）。ch7 将系统性地评估助手的回答质量——因为 Agent 的错误比单次调用更隐蔽，评估不可跳过。</div>
+            </div>
+          </div>
+
+          <!-- S10: 词汇表 -->
+          <div class="content-section" id="ch6-s10">
+            <div class="sec-head"><div class="sec-ico">📖</div><h3>本章词汇表</h3></div>
+            <div class="panel">
+              <div class="glossary-grid">
+                <div class="gloss-item"><div class="gloss-term">工具调用</div><div class="gloss-def">让语言模型使用外部工具（计算器、搜索、API）的机制。模型输出一段结构化的调用请求（JSON），你的代码执行真实函数、把结果回灌进上下文。模型本身不执行任何代码。</div></div>
+                <div class="gloss-item"><div class="gloss-term">函数调用</div><div class="gloss-def">Function Calling。工具调用的另一种说法，来自 OpenAI 最初引入时的命名。和"工具调用"（Tool Use，Anthropic 的命名）本质相同，均指"模型输出请求→代码执行→结果回灌"这个流程。</div></div>
+                <div class="gloss-item"><div class="gloss-term">Agent</div><div class="gloss-def">能自主决定调用哪些工具、按什么顺序、多步完成复杂任务的 AI 系统。不同于单次回答：Agent 在完成任务前可进行多轮思考-行动-观察循环。"自主"的程度取决于编排代码给了它多少决定权。</div></div>
+                <div class="gloss-item"><div class="gloss-term">ReAct</div><div class="gloss-def">Reasoning + Acting。一种 Agent 设计模式：让模型交替进行推理（分析任务、决定下一步）和行动（调用工具）。每次行动后模型观察工具结果再推理，循环直到任务完成。2022年提出，目前最主流的 Agent 框架基础。</div></div>
+                <div class="gloss-item"><div class="gloss-term">Agent 循环</div><div class="gloss-def">实现 ReAct 的编排代码：while 循环，每次迭代调一次 LLM API、执行工具、把结果追加进 messages，直到模型输出"最终答案"或达到 MAX_STEPS 上限。循环是你写的，不是模型内置的。</div></div>
+                <div class="gloss-item"><div class="gloss-term">工具描述</div><div class="gloss-def">告诉模型"有哪些工具、各自做什么、何时用、参数格式是什么"的文字说明。模型根据工具描述选择调用哪个工具。描述质量直接决定工具选择准确率，和 prompt 工程的逻辑完全一致。</div></div>
+                <div class="gloss-item"><div class="gloss-term">动作 / 观察</div><div class="gloss-def">ReAct 循环的两个节拍。动作（Action）：模型输出要调用的工具和参数。观察（Observation）：工具执行后返回的结果，追加进 messages 让模型在下一步"看到"。</div></div>
+                <div class="gloss-item"><div class="gloss-term">编排</div><div class="gloss-def">Orchestration。管理多个 LLM 调用、工具调用、消息历史的代码层。在 Agent 系统里，编排代码负责：维护 messages、路由工具调用、控制循环终止条件、处理错误。LangChain、LlamaIndex 等框架本质上是编排框架。</div></div>
+              </div>
+            </div>
+          </div>
 
         </div>
       </div>
