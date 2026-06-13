@@ -26,5 +26,13 @@
   "上下文学习": "In-Context Learning（ICL）。模型从提示词中的示例推断任务规则并调整输出的能力，不更新参数。是 few-shot prompting 生效的底层机制。",
   "prompt injection": "提示词注入攻击。攻击者在输入数据中嵌入伪装成指令的文本，利用指令与数据共享同一 token 流、无硬边界这一结构性弱点，劫持模型的输出行为。",
   "指令微调": "Instruction Fine-Tuning。预训练后用大量\"指令 + 理想回复\"数据对继续训练，使模型形成遵循用户指令的行为偏好。是 ChatGPT 等助手类产品的关键步骤。",
-  "RLHF": "基于人类反馈的强化学习（Reinforcement Learning from Human Feedback）。人工标注员对模型输出进行偏好排序，训练奖励模型，再用强化学习让模型输出向人类偏好靠拢。"
+  "RLHF": "基于人类反馈的强化学习（Reinforcement Learning from Human Feedback）。人工标注员对模型输出进行偏好排序，训练奖励模型，再用强化学习让模型输出向人类偏好靠拢。",
+  "API": "Application Programming Interface（应用程序接口）。两个程序之间通信的约定：调用方按规定格式发请求，服务方按规定格式返回响应。大模型 API 让你用代码驱动模型，而不必自己训练。",
+  "HTTP POST": "HTTP 协议中用于\"提交数据\"的请求方法。调用大模型 API 时用 POST，因为需要在请求体（body）里携带消息历史和参数。与 GET（读取页面）不同，POST 请求有完整的请求体。",
+  "JSON": "JavaScript Object Notation。一种轻量级文本数据格式，用大括号 {} 表示对象，中括号 [] 表示数组。大模型 API 的请求体和响应体均采用 JSON 格式，易于机器解析和人类阅读。",
+  "endpoint": "API 调用的目标 URL，指向服务器上的特定功能。例如 api.deepseek.com/chat/completions 专门处理聊天请求，与图像生成或语音接口是不同的 endpoint。",
+  "API key": "API 服务商发给你的身份凭证（通常以 sk- 开头的长字符串）。每次请求都要携带，服务商据此识别账户、计费和限速。相当于该平台的\"密码 + 钱包\"组合，泄露后果严重。",
+  "bearer token": "HTTP 鉴权方案之一，放在 Authorization 请求头里（格式：Bearer sk-xxx）。\"Bearer\"意为持有者——谁持有 token 就被视为合法用户，服务器不验证发送者身份，只验证 token 合法性。",
+  "SSE": "Server-Sent Events（服务器推送事件）。HTTP 连接保持打开，服务器持续向客户端推送 data 行。大模型 API 用 SSE 实现流式输出：每生成一个 token 立即推回，用户看到文字逐词出现。",
+  "context window": "模型一次能处理的最大 token 数（输入 + 输出之和）。超出后早期内容被截断，模型会\"忘记\"对话开头。常见值：32K、128K、200K token。多轮对话成本随历史累积快速增加。"
 }

@@ -1,59 +1,465 @@
       <!-- Chapter 4 -->
       <div class="ch-panel" id="ch-4">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big">04</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 04</div><div class="ch-name">接入大模型 API</div></div></div>
-          <p class="ch-desc">学会调用 OpenAI / DeepSeek 等大模型 API，实现流式输出，理解 BYOK 架构与费用管控。</p>
+          <div class="ch-badge">
+            <div class="ch-big">04</div>
+            <div class="ch-vline"></div>
+            <div><div class="ch-label">Chapter 04</div><div class="ch-name">接入大模型 API</div></div>
+          </div>
+          <p class="ch-desc">揭开"点发送"背后的一层薄纸：一次 HTTP 请求、一个 JSON body、一条流式响应。理解机制，才能控制成本、排查问题、安全地用上自己的 API key。</p>
         </div>
         <div class="content-body">
 
-          <!-- S2: 大模型 API -->
-          <div class="content-section" id="ch5-s2">
-            <div class="sec-head"><div class="sec-ico">②</div><h3>大模型 API 调用</h3></div>
-            <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:14px">不必自己训练大模型。通过 API 调用已有的大模型（Claude、GPT 等），是绝大多数 AI 应用的实际做法。</p>
-
-              <div style="margin-bottom:16px">
-                <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px">▸ 基础 API 调用结构</div>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>import anthropic  # pip install anthropic
-
-client = anthropic.Anthropic(api_key="your_api_key")
-
-message = client.messages.create(
-    model="claude-opus-4-8",
-    max_tokens=1024,
-    system="你是一位专业的数据分析师，用简洁清晰的语言回答问题。",
-    messages=[
-        {"role": "user", "content": "请分析这组销售数据的趋势：[100, 120, 115, 140, 165, 180]"}
-    ]
-)
-
-print(message.content[0].text)</code></pre>
-              </div>
-
-              <div style="margin-bottom:16px">
-                <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:8px">▸ 结构化输出（让 AI 返回可解析的 JSON）</div>
-                <pre style="background:#1e293b;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12.5px;line-height:1.7;overflow-x:auto;margin:0 0 10px"><code>import json
-
-prompt = """分析以下产品评论，返回 JSON 格式：
-{"sentiment": "正面/负面/中性", "score": 1-5, "key_issues": ["问题1", "问题2"]}
-
-评论：这款耳机音质不错，但佩戴三小时后耳朵有些不舒服，包装也比较简陋。"""
-
-response = client.messages.create(
-    model="claude-opus-4-8",
-    max_tokens=512,
-    messages=[{"role": "user", "content": prompt}]
-)
-
-result = json.loads(response.content[0].text)
-print(result["sentiment"])     # 中性
-print(result["key_issues"])    # ["佩戴舒适度", "包装质量"]</code></pre>
-              </div>
-
-              <div class="key-point">API 调用的核心经济学：大模型按 token 计费（输入 + 输出）。好的提示词不只是为了效果，也是为了效率——清晰简洁的提示词减少 token 消耗，降低成本。</div>
+          <!-- S0: 概览 -->
+          <div class="content-section" id="ch4-s0">
+            <div class="sec-head"><div class="sec-ico">▦</div><h3>本章概览</h3></div>
+            <div class="overview-grid">
+              <div class="overview-card"><div class="overview-num">2~3h</div><div class="overview-label">预计学习时间</div></div>
+              <div class="overview-card"><div class="overview-num">4</div><div class="overview-label">核心概念</div></div>
+              <div class="overview-card"><div class="overview-num">5</div><div class="overview-label">知识自测题</div></div>
+            </div>
+            <div class="panel" style="margin-top:12px">
+              <div class="note-block">本章有一个实操环节：在 DeepSeek 注册账号并获取 API key，填入本页后，ch3 的 prompt 模板就能真正运行了。请准备好一张可充值的银行卡（初始充值 10 元足够实验用）。</div>
             </div>
           </div>
 
+          <!-- S1: 钩子 -->
+          <div class="content-section" id="ch4-s1">
+            <div class="sec-head"><div class="sec-ico">⬡</div><h3>你点发送的那一刻，底层发生了什么</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <div class="hook-story">
+                <div class="hook-label">🔍 拆开这 0.3 秒</div>
+                <p>你在 ChatGPT / DeepSeek 输入框里打完问题，按下回车。0.3 秒后，第一个字出现，然后一个词一个词地蹦出来。感觉像魔法——但底层不是。</p>
+                <p>这 0.3 秒里，你的浏览器做了<strong>一次 HTTP 请求</strong>：把你的消息打包成 JSON，POST 到 OpenAI / DeepSeek 的服务器，服务器把这段文本喂给模型，模型开始一个 token 一个 token 地生成，生成一个就推回来一个，浏览器收到就渲染。</p>
+                <div class="hook-question">→ 这和你用 Python 调用同一个 API 没有本质区别。理解这条链路，你就理解了"接入大模型 API"的全部。</div>
+              </div>
+
+              <!-- 请求链路图 -->
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>打包请求</strong><p>浏览器（或你的 Python 代码）把消息历史序列化成 JSON，加上 API key 和参数，构成一个 HTTP POST 请求。</p></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>服务器鉴权</strong><p>API 服务器读取请求头里的 API key，验证有效性，确认账户额度，记录这次调用的成本。</p></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>模型推理</strong><p>消息序列被 tokenize，送进 GPU 集群做推理。模型逐 token 生成回复（回扣 ch2 自回归）。</p></div></div>
+                <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>流式返回</strong><p>每生成一个 token 或一小块，服务器立刻通过保持住的 HTTP 连接推回客户端（SSE 流式）。你看到的"一个词一个词蹦出来"就是这个。</p></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S2: API 调用是什么 -->
+          <div class="content-section" id="ch4-s2">
+            <div class="sec-head"><div class="sec-ico">◈</div><h3>API 调用到底是什么</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)"><span class="term-chip" data-term="API">API</span> 听起来很神秘，但它就是一个约定：你按规定格式发一个 <span class="term-chip" data-term="HTTP POST">HTTP POST</span> 请求，服务器按规定格式返回一个 <span class="term-chip" data-term="JSON">JSON</span> 响应。仅此而已。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：一次完整的 API 调用</strong>
+                  <pre style="background:#1e293b;color:#e2e8f0;padding:12px 14px;border-radius:8px;font-size:12px;line-height:1.75;margin-top:10px;overflow-x:auto"><code><span style="color:#94a3b8"># POST https://api.deepseek.com/chat/completions</span>
+<span style="color:#94a3b8"># Headers:</span>
+<span style="color:#94a3b8">#   Content-Type: application/json</span>
+<span style="color:#94a3b8">#   Authorization: Bearer sk-xxxxxxxxxxxxxxxx</span>
+
+<span style="color:#94a3b8"># Body (JSON):</span>
+{
+  "model": "deepseek-chat",
+  "messages": [
+    {"role": "system",  "content": "你是严谨的文档助手。"},
+    {"role": "user",    "content": "合同的违约条款是什么？"},
+    {"role": "assistant","content": "根据第五条..."},
+    {"role": "user",    "content": "具体赔偿金额呢？"}
+  ],
+  "max_tokens": 1024,
+  "stream": true
+}</code></pre>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>HTTP 请求的四个要素（在这里第一次需要，就在这里讲清）</strong><br><br>
+
+                  <strong>① URL / Endpoint</strong><br>
+                  <span class="term-chip" data-term="endpoint">Endpoint</span> 就是目标地址，如 <code>https://api.deepseek.com/chat/completions</code>。"chat/completions"告诉服务器你要调用哪个功能（聊天完成），而不是图像生成或语音转录。<br><br>
+
+                  <strong>② HTTP 方法 = POST</strong><br>
+                  HTTP 有多种方法：GET 是"读取"（浏览器打开网页用的），POST 是"提交数据"。API 调用用 POST，因为你要把数据（消息历史 + 参数）发到服务器。GET 请求没有 body，放不了这么多内容。<br><br>
+
+                  <strong>③ Headers（请求头）</strong><br>
+                  HTTP header 是请求的"元数据"，格式是 <code>键: 值</code>。两个必须的 header：<br>
+                  • <code>Content-Type: application/json</code> — 告诉服务器 body 里装的是 JSON 格式<br>
+                  • <code>Authorization: Bearer sk-xxx</code> — 你的身份证明（见下一节）<br><br>
+
+                  <strong>④ Body（请求体）= JSON</strong><br>
+                  <span class="term-chip" data-term="JSON">JSON</span> 是一种文本格式，用大括号 <code>{}</code> 包对象，中括号 <code>[]</code> 包数组，键值用冒号分隔。大模型 API 的 body 核心是 <code>messages</code> 数组——这正是 ch2 讲过的那条 token 序列的文本表示：<br><br>
+
+                  每一条消息都有 <code>role</code>（谁说的：system / user / assistant）和 <code>content</code>（说了什么）。API 收到后会把所有消息按顺序 tokenize、拼接，送进模型——它和 ch2 里讲的"同一条 token 流"完全对应。<br><br>
+
+                  <strong>响应 JSON 的结构</strong><br>
+                  服务器返回：<br>
+                  <code>{"choices":[{"message":{"role":"assistant","content":"..."},"finish_reason":"stop"}],"usage":{"prompt_tokens":234,"completion_tokens":87,"total_tokens":321}}</code><br><br>
+
+                  <code>usage</code> 字段直接告诉你这次用了多少 token，是对账和成本监控的依据。
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://platform.deepseek.com/api-docs/" target="_blank" rel="noopener">DeepSeek API 官方文档（中英文）</a>
+                  <a href="https://docs.anthropic.com/en/api/getting-started" target="_blank" rel="noopener">Anthropic API 入门文档</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: API Key 与鉴权 -->
+          <div class="content-section" id="ch4-s3">
+            <div class="sec-head"><div class="sec-ico">🔑</div><h3>API Key 与鉴权</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)"><span class="term-chip" data-term="API key">API key</span> 是你在 API 服务商处的身份证明，每一次 API 调用都要带上它。一个字符都不能错，一个字符都不能泄露。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：key 放在哪、有什么用</strong>
+                  <pre style="background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.7;margin-top:10px;overflow-x:auto"><code><span style="color:#94a3b8"># key 放在 Authorization header 里，格式固定：</span>
+Authorization: Bearer sk-a1b2c3d4e5f6...
+
+<span style="color:#94a3b8"># 服务器收到后：</span>
+<span style="color:#94a3b8"># 1. 验证 key 存在且未被吊销</span>
+<span style="color:#94a3b8"># 2. 找到对应账户</span>
+<span style="color:#94a3b8"># 3. 检查余额是否足够</span>
+<span style="color:#94a3b8"># 4. 记录本次调用 token 数，从余额扣款</span>
+<span style="color:#94a3b8"># 5. 把请求转发给模型</span></code></pre>
+                  <div class="key-point" style="margin-top:10px">Bearer token：HTTP 鉴权方案之一。"Bearer"意为"持有者"——持有这个 token 的人，就被当作合法用户。服务器不问你是谁，只认 token。</div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>为什么 API key 必须绝对保密</strong><br><br>
+
+                  <span class="term-chip" data-term="bearer token">Bearer token</span> 的设计哲学是"谁持有就代表谁"——服务器<strong>没有办法</strong>区分"合法持有者"和"非法持有者"，它只验证 token 的合法性，不验证发送者的身份。<br><br>
+
+                  这意味着，如果你的 key 被拿走：<br>
+                  • 对方可以用你的账户和余额无限量调用 API，直到余额耗尽（或你设置的速率限制到达）<br>
+                  • 你的调用历史（包括发过去的所有 prompt 和回复）可能被访问<br>
+                  • 服务商账单里的成本爆炸——而且你很可能不会立即发现<br>
+                  • 吊销 key 后要重新生成、更新所有用到它的地方<br><br>
+
+                  <strong>常见泄露路径：</strong><br>
+                  ① 把 key 直接硬编码进代码，提交到 GitHub（GitHub 有爬虫专门扫这类 key，泄露后数分钟内就会被盗用）<br>
+                  ② 粘贴进不可信的网站（"帮你测试 key 是否有效"类服务）<br>
+                  ③ 把含 key 的日志文件上传到云端<br><br>
+
+                  <strong>生产级最佳实践：</strong><br>
+                  • key 只放在环境变量或密钥管理服务（如 AWS Secrets Manager）里<br>
+                  • 代码里通过 <code>os.environ["API_KEY"]</code> 读取，绝不硬编码<br>
+                  • 不同环境（开发/测试/生产）用不同的 key，权限分开<br>
+                  • 定期轮换 key；设置消费告警（服务商通常支持）<br>
+                  • 前端代码永远不能含有 key——浏览器开发者工具能看到所有前端代码
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S4: 流式输出 SSE -->
+          <div class="content-section" id="ch4-s4">
+            <div class="sec-head"><div class="sec-ico">◇</div><h3>流式输出（SSE）：文字为何一个词一个词蹦出来</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">这不是动画效果，也不是服务器在"假装流式"——它真的是模型每生成一个 token 就推一个。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：两种响应模式对比</strong>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+                    <div style="border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:12px;background:rgba(239,68,68,.04)">
+                      <div style="font-size:11px;font-weight:800;color:#ef4444;margin-bottom:6px">非流式（stream: false）</div>
+                      <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0">服务器等模型生成完整回复后，一次性返回全部内容。用户盯着空白等 10-30 秒，然后整段文字突然出现。</p>
+                    </div>
+                    <div style="border:1px solid rgba(0,212,170,.3);border-radius:8px;padding:12px;background:rgba(0,212,170,.04)">
+                      <div style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:6px">流式（stream: true，SSE）</div>
+                      <p style="font-size:12px;color:var(--muted);line-height:1.6;margin:0">生成一个 token 就立刻推回客户端。用户几乎立即看到第一个词，然后持续看到内容增加。感知速度快 10 倍以上。</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>SSE 的工作方式，以及为什么它和模型的生成方式天然吻合</strong><br><br>
+
+                  回到 <a href="javascript:void(0)" onclick="goTo('ch2-s4')" style="color:var(--accent)">ch2 自回归生成</a>：模型<strong>本就是逐 token 生成</strong>的——每次 forward pass 产生一个 token，追加到序列，再做下一次 forward pass。这不是流式的"模拟"，而是模型工作的物理方式。<br><br>
+
+                  <span class="term-chip" data-term="SSE">SSE（Server-Sent Events）</span> 是 HTTP 协议的一种用法：服务器和客户端之间的 HTTP 连接<strong>保持打开</strong>不关闭，服务器可以持续往里推送数据行，每行格式是 <code>data: {...}\n\n</code>。客户端（浏览器或 Python 代码）通过监听这条连接，实时读取每一行。<br><br>
+
+                  大模型 API 流式响应的每一行格式（以 OpenAI 兼容格式为例）：<br>
+                  <code>data: {"choices":[{"delta":{"content":"你"},"index":0}]}</code><br>
+                  <code>data: {"choices":[{"delta":{"content":"好"},"index":0}]}</code><br>
+                  <code>data: [DONE]</code><br><br>
+
+                  每个 <code>delta.content</code> 就是新生成的那一个（或几个）token 的文本。客户端把收到的 delta 追加到显示区域，用户就看到"字在蹦"。<br><br>
+
+                  <strong>从 Python 读流式响应：</strong>
+                  <pre style="background:#1e293b;color:#e2e8f0;padding:10px;border-radius:6px;font-size:12px;line-height:1.7;margin-top:8px;overflow-x:auto"><code>with client.messages.stream(
+    model="claude-opus-4-8",
+    max_tokens=1024,
+    messages=[{"role":"user","content":"讲一个故事"}]
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)  # 每来一块立刻打印</code></pre>
+
+                  <strong>延伸：为什么 stream: false 有时更合适？</strong><br>
+                  批量处理场景（不需要实时显示给用户）、结果要完整后才能处理（如 JSON 解析）、调试时不希望分块——这些场景用非流式更简单。
+                </div>
+                <div class="drawer-sources" hidden>
+                  <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events" target="_blank" rel="noopener">MDN：Server-Sent Events 文档</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: Token 与成本 -->
+          <div class="content-section" id="ch4-s5">
+            <div class="sec-head"><div class="sec-ico">💰</div><h3>Token 与成本：每次点发送花了多少钱</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">大模型 API 按 <span class="term-chip" data-term="token">token</span> 计费，输入和输出分开算，上下文历史每轮都要重新计入。</p>
+
+              <div class="concept-drawer">
+                <div class="drawer-surface">
+                  <strong>速览：DeepSeek V3 计费示例</strong>
+                  <div class="compare-table" style="margin-top:10px">
+                    <table>
+                      <thead><tr><th>类型</th><th>单价（约）</th><th>1000次对话估算</th></tr></thead>
+                      <tbody>
+                        <tr><td>输入 token</td><td>¥0.001 / 千 token</td><td>取决于对话长度</td></tr>
+                        <tr><td>输出 token</td><td>¥0.002 / 千 token</td><td>（输出通常比输入贵）</td></tr>
+                        <tr><td>一次普通问答</td><td colspan="2">约 500 输入 + 200 输出 = ¥0.0009（不到一厘钱）</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="key-point" style="margin-top:10px">10元人民币能做约 10,000 次普通问答实验。学习阶段完全够用。</div>
+                </div>
+                <div class="drawer-mechanism" hidden>
+                  <strong>为什么多轮对话的成本会快速累积</strong><br><br>
+
+                  回到 <a href="javascript:void(0)" onclick="goTo('ch2-s2')" style="color:var(--accent)">ch2 自回归与 ch2 token 概念</a>：每次 API 调用，你发送的 <code>messages</code> 数组里<strong>包含完整的对话历史</strong>——模型没有"记忆"，它只能通过每次重新读入历史来"记住"前文。<br><br>
+
+                  这意味着：<br>
+                  • 第 1 轮：发 100 token 历史 + 50 token 新问题 = 150 输入 token<br>
+                  • 第 2 轮：发 150 + 200（第1轮回复）+ 50 新问题 = 400 输入 token<br>
+                  • 第 10 轮：可能已经积累了 3000+ 输入 token，大部分都是"历史"<br><br>
+
+                  <strong>Context Window（上下文窗口）</strong>：模型能处理的最大 token 数，如 128K。超出后，早期内容被截断——这就是为什么超长对话里模型会"忘记"开头说的事。<br><br>
+
+                  <strong>成本控制实践：</strong><br>
+                  • <em>截断历史</em>：只保留最近 N 轮对话，不发全量<br>
+                  • <em>摘要历史</em>：用模型先把旧历史总结成短文，再放回 messages<br>
+                  • <em>结构化输出</em>：让模型直接输出 JSON 而非长篇解释，减少输出 token<br>
+                  • <em>缓存（Prompt Caching）</em>：部分服务商支持对 system prompt 等固定前缀做 token 缓存，重复调用时输入 token 费用打折（Anthropic 支持此功能）<br><br>
+
+                  <strong>输入 vs 输出 为什么定价不同？</strong><br>
+                  输入 token 在一次 forward pass 里并行处理（KV cache），计算量相对固定。输出 token 每个都要做一次完整的 forward pass（自回归），计算量是线性叠加的。所以输出通常贵 1.5~4 倍。
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S6: BYOK 正式一课 -->
+          <div class="content-section" id="ch4-s6">
+            <div class="sec-head"><div class="sec-ico">🗝</div><h3>BYOK：用你自己的 API Key</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+
+              <div class="note-block">
+                <strong>BYOK（Bring Your Own Key）</strong>：本站不提供共享 API，也不在服务器端转发你的请求。你用自己的 key，直接从浏览器调用大模型 API。这意味着：<br>
+                ① 成本由你的账户承担（学习阶段每次不到一厘钱）<br>
+                ② 你的对话不经过本站服务器，更私密<br>
+                ③ 你对 key 和额度有完全控制权
+              </div>
+
+              <!-- 手把手步骤 -->
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+                <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">手把手：获取 DeepSeek API Key</div>
+                <div style="padding:16px;display:grid;gap:14px">
+                  <div class="flow-steps" style="margin:0">
+                    <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>注册 / 登录</strong><p>访问 <strong>platform.deepseek.com</strong>，用手机号或邮箱注册账号。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>充值</strong><p>进入"充值"页面，最低充 ¥10。这笔费用以 token 额度的形式进入账户，做完本章所有实验通常只花 ¥1 以内。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>创建 API Key</strong><p>进入"API Keys"页面 → 点"创建 API Key" → 给它起个名字（如"ai-learning-roadmap"）→ <strong>立刻复制</strong>生成的 key（<code>sk-</code> 开头，64位字符串）。这是唯一一次能看到完整 key 的机会，关闭弹窗后将无法再看到。</p></div></div>
+                    <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>粘贴到下方</strong><p>把复制好的 key 粘贴到下一节的输入框里，按"保存"。</p></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 安全框架说明 -->
+              <div style="border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:16px;background:rgba(251,191,36,.04)">
+                <div style="font-size:11px;font-weight:800;letter-spacing:.1em;color:#d97706;margin-bottom:10px">🔐 安全说明——请在填写前阅读</div>
+                <div style="display:grid;gap:8px;font-size:13px;line-height:1.7;color:var(--muted)">
+                  <div>✅ <strong>本站如何处理你的 key：</strong>你的 key 只存在浏览器的 <code>sessionStorage</code> 里（关闭标签页后自动清除），不会发送到本站任何服务器，不会落入任何数据库。</div>
+                  <div>✅ <strong>API 调用路径：</strong>key 随 API 请求直接发往 DeepSeek 服务器（<code>api.deepseek.com</code>），中间不经过本站。你可以打开浏览器开发者工具 → Network 标签页，自己验证每一条请求的目的地。</div>
+                  <div>⚠️ <strong>通用原则：</strong>永远不要把 API key 粘贴进你不完全信任的网站或聊天窗口。本站代码完全开源（见 GitHub），你可以自行审计。如有疑虑，不要填入。</div>
+                  <div>⚠️ <strong>设置消费上限：</strong>在 DeepSeek 控制台设置单日 / 单月消费告警和上限，防止意外超支。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S7: 填 key 界面 -->
+          <div class="content-section" id="ch4-s7">
+            <div class="sec-head"><div class="sec-ico">▷</div><h3>填入你的 API Key</h3></div>
+            <div class="panel">
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">填入后，本章及后续章节的所有 AI 演示将使用你的 key 直接调用 DeepSeek API。</p>
+
+              <!-- Key 输入组件 -->
+              <div class="byok-panel" id="byok-panel">
+                <div class="byok-status" id="byok-status">
+                  <span id="byok-indicator" class="byok-dot byok-dot--empty"></span>
+                  <span id="byok-status-text">未填入 Key</span>
+                </div>
+
+                <div style="display:flex;gap:8px;margin:12px 0">
+                  <input
+                    type="password"
+                    id="byok-input"
+                    class="byok-input"
+                    placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <button class="byok-save-btn" id="byok-save">保存</button>
+                </div>
+
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  <button class="byok-clear-btn" id="byok-clear">🗑 清除 Key</button>
+                  <span style="font-size:11px;color:var(--muted)">Key 存在 sessionStorage，关闭标签页自动清除</span>
+                </div>
+
+                <div id="byok-saved-notice" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);font-size:13px;color:var(--accent)">
+                  ✅ Key 已保存。从本页面发起的 AI 演示请求将使用你的 DeepSeek 账户。
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S8: 贯穿项目 -->
+          <div class="content-section" id="ch4-s8">
+            <div class="sec-head"><div class="sec-ico">🗂</div><h3>本章给项目加了什么</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <div class="note-block">
+                <strong>文档助手进度：</strong>ch3 有了 prompt 模板，本章把 API 连通了。<br>
+                如果你已经填入了 key，下面的代码现在就能跑：把 ch3 模板里的 <code>{document_content}</code> 换成你的文档内容，<code>{user_question}</code> 换成问题，粘进去运行。
+              </div>
+
+              <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+                <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
+                  📄 project/ch4-api-client.py（下一步产物预览）
+                </div>
+                <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12.5px;line-height:1.8;margin:0;overflow-x:auto"><code>import os
+from openai import OpenAI  # DeepSeek 兼容 OpenAI SDK
+
+client = OpenAI(
+    api_key=os.environ["DEEPSEEK_API_KEY"],   # 从环境变量读，不要硬编码
+    base_url="https://api.deepseek.com",
+)
+
+# 读取 ch3 的 prompt 模板
+with open("ch3-qa-prompt.txt") as f:
+    template = f.read()
+
+def answer_question(document_content: str, user_question: str) -> str:
+    prompt = template.replace("{document_content}", document_content)
+    prompt = prompt.replace("{user_question}", user_question)
+
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=512,
+        stream=False,
+    )
+    return response.choices[0].message.content
+
+if __name__ == "__main__":
+    doc = "第一条：甲方须在签约后30日内支付定金50%。第五条：任一方违约须赔偿对方损失的200%。"
+    q   = "违约赔偿比例是多少？"
+    print(answer_question(doc, q))</code></pre>
+              </div>
+
+              <div class="key-point">ch5（RAG）将把这个 <code>answer_question</code> 函数变成真正的文档检索管道——不再靠手动粘贴 document_content，而是自动从向量数据库里检索最相关的段落。</div>
+            </div>
+          </div>
+
+          <!-- S9: 知识自测 -->
+          <div class="content-section" id="ch4-s9">
+            <div class="sec-head"><div class="sec-ico">✦</div><h3>知识自测</h3></div>
+            <div class="panel" style="display:grid;gap:20px">
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q1. 调用大模型 API 时，API key 放在请求的哪个位置？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','API key 放在 HTTP 请求头（Header）里，格式为 Authorization: Bearer sk-xxx。放在 URL 或 body 里虽然技术上可行，但不是标准做法，且 URL 参数会被记录在服务器日志里，更不安全。')">A. URL 参数（?api_key=xxx）</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','API key 放在 HTTP 请求头（Header）里，格式为 Authorization: Bearer sk-xxx。放在 URL 或 body 里虽然技术上可行，但不是标准做法，且 URL 参数会被记录在服务器日志里，更不安全。')">B. HTTP Authorization 请求头（Bearer token 格式）</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','API key 放在 HTTP 请求头（Header）里，格式为 Authorization: Bearer sk-xxx。放在 URL 或 body 里虽然技术上可行，但不是标准做法，且 URL 参数会被记录在服务器日志里，更不安全。')">C. JSON body 里的 api_key 字段</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','API key 放在 HTTP 请求头（Header）里，格式为 Authorization: Bearer sk-xxx。放在 URL 或 body 里虽然技术上可行，但不是标准做法，且 URL 参数会被记录在服务器日志里，更不安全。')">D. Cookie 里</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q2. 为什么流式输出（streaming）的感知速度比非流式快很多？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','流式输出并不减少总 token 数量，也没有并行处理。快的原因是：模型本就逐 token 生成，流式让每个 token 生成后立即推回客户端，用户看到第一个字的延迟从"等全部生成完"缩短到"等第一个 token 生成"。')">A. 流式模式下模型生成速度更快</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','流式输出并不减少总 token 数量，也没有并行处理。快的原因是：模型本就逐 token 生成，流式让每个 token 生成后立即推回客户端，用户看到第一个字的延迟从"等全部生成完"缩短到"等第一个 token 生成"。')">B. 流式模式总 token 数量更少</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','流式输出并不减少总 token 数量，也没有并行处理。快的原因是：模型本就逐 token 生成，流式让每个 token 生成后立即推回客户端，用户看到第一个字的延迟从"等全部生成完"缩短到"等第一个 token 生成"。')">C. 第一个 token 生成后立即推回，用户不用等全部完成</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','流式输出并不减少总 token 数量，也没有并行处理。快的原因是：模型本就逐 token 生成，流式让每个 token 生成后立即推回客户端，用户看到第一个字的延迟从"等全部生成完"缩短到"等第一个 token 生成"。')">D. 流式模式绕过了 tokenization 步骤</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q3. 多轮对话里，为什么 API 成本会随对话轮数快速增加？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','模型没有记忆，每次调用必须把完整对话历史放进 messages 数组里重新发送。所以轮数越多，每次的输入 token 数越大，成本线性增加。')">A. 每轮调用后模型参数会更新，变得更耗算力</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','模型没有记忆，每次调用必须把完整对话历史放进 messages 数组里重新发送。所以轮数越多，每次的输入 token 数越大，成本线性增加。')">B. 每次调用都要把全部对话历史作为输入 token 重新发送</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','模型没有记忆，每次调用必须把完整对话历史放进 messages 数组里重新发送。所以轮数越多，每次的输入 token 数越大，成本线性增加。')">C. 服务商对长对话收取溢价</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','模型没有记忆，每次调用必须把完整对话历史放进 messages 数组里重新发送。所以轮数越多，每次的输入 token 数越大，成本线性增加。')">D. 流式连接长时间保持会产生额外费用</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q4. Bearer token 鉴权机制的核心特点是什么？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','Bearer 的意思是"谁持有就代表谁"。服务器不验证发送者身份，只验证 token 合法性。这就是 key 泄露很危险的原因：任何持有 key 的人都能以你的身份调用。')">A. 每次请求需要用私钥签名，防止中间人攻击</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','Bearer 的意思是"谁持有就代表谁"。服务器不验证发送者身份，只验证 token 合法性。这就是 key 泄露很危险的原因：任何持有 key 的人都能以你的身份调用。')">B. Token 有 IP 绑定，只有注册时的 IP 才能使用</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','Bearer 的意思是"谁持有就代表谁"。服务器不验证发送者身份，只验证 token 合法性。这就是 key 泄露很危险的原因：任何持有 key 的人都能以你的身份调用。')">C. 谁持有 token 就被当作合法用户，服务器不验证身份</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','Bearer 的意思是"谁持有就代表谁"。服务器不验证发送者身份，只验证 token 合法性。这就是 key 泄露很危险的原因：任何持有 key 的人都能以你的身份调用。')">D. Token 每分钟自动轮换，截获后 60 秒内失效</div>
+                </div>
+              </div>
+
+              <div>
+                <p style="font-weight:700;margin-bottom:10px">Q5. 为什么大模型 API 的输出 token 通常比输入 token 贵？</p>
+                <div class="mc-options">
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','输出贵的原因：输入 token 在一次 forward pass 里并行处理（KV cache）；输出每个 token 都需要一次完整的 forward pass（自回归），计算量线性叠加。')">A. 输出 token 包含更多语义信息，价值更高</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','输出贵的原因：输入 token 在一次 forward pass 里并行处理（KV cache）；输出每个 token 都需要一次完整的 forward pass（自回归），计算量线性叠加。')">B. 服务商需要对输出做人工审核</div>
+                  <div class="mc-opt" onclick="checkMC(this,'wrong','输出贵的原因：输入 token 在一次 forward pass 里并行处理（KV cache）；输出每个 token 都需要一次完整的 forward pass（自回归），计算量线性叠加。')">C. 输出 token 需要额外的安全过滤步骤</div>
+                  <div class="mc-opt" onclick="checkMC(this,'correct','输出贵的原因：输入 token 在一次 forward pass 里并行处理（KV cache）；输出每个 token 都需要一次完整的 forward pass（自回归），计算量线性叠加。')">D. 每个输出 token 都要一次独立的 forward pass，计算量线性叠加</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- S10: 本章小结 -->
+          <div class="content-section" id="ch4-s10">
+            <div class="sec-head"><div class="sec-ico">◉</div><h3>本章小结</h3></div>
+            <div class="panel" style="display:grid;gap:14px">
+              <div class="flow-steps">
+                <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>API = 一次 POST + 一个 JSON body</strong><p>HTTP 请求并不神秘：URL 定位服务，header 携带 key，body 传消息历史。响应里的 usage 字段告诉你花了多少 token。</p></div></div>
+                <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>Key = 支票本，要像密码一样保管</strong><p>Bearer token 机制让任何持有 key 的人都能以你的身份消费。永远不要把 key 放进代码仓库、URL、前端文件，或粘贴进不可信的网站。</p></div></div>
+                <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>流式是模型工作的自然方式</strong><p>自回归生成本就逐 token 产出，SSE 让每个 token 立即推回客户端。感知速度的提升来自"首字延迟"的缩短，不是总计算量的减少。</p></div></div>
+                <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>多轮对话历史全量重发 = 成本快速累积</strong><p>模型无记忆，上下文历史每轮都要重新送进去。控制成本的核心：截断旧历史 + 结构化输出 + 必要时对 system prompt 启用缓存。</p></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S11: 词汇表 -->
+          <div class="content-section" id="ch4-s11">
+            <div class="sec-head"><div class="sec-ico">📖</div><h3>本章词汇表</h3></div>
+            <div class="panel">
+              <div class="glossary-grid">
+                <div class="gloss-item"><div class="gloss-term">API</div><div class="gloss-def">Application Programming Interface（应用程序接口）。两个程序之间通信的约定：调用方按规定格式发请求，服务方按规定格式返回响应。大模型 API 让你用代码驱动模型，而不必自己训练。</div></div>
+                <div class="gloss-item"><div class="gloss-term">HTTP POST</div><div class="gloss-def">HTTP 协议中用于"提交数据"的请求方法。调用大模型 API 用 POST，因为需要在请求体（body）里携带消息历史和参数。</div></div>
+                <div class="gloss-item"><div class="gloss-term">JSON</div><div class="gloss-def">JavaScript Object Notation。一种轻量级文本数据格式，用大括号表示对象，中括号表示数组。大模型 API 的请求体和响应体都用 JSON 格式。</div></div>
+                <div class="gloss-item"><div class="gloss-term">Endpoint</div><div class="gloss-def">API 调用的目标 URL，指向服务器上的特定功能。如 api.deepseek.com/chat/completions 专门处理聊天请求，与图像或音频接口是不同的 endpoint。</div></div>
+                <div class="gloss-item"><div class="gloss-term">API Key</div><div class="gloss-def">API 服务商发给你的身份凭证（通常以 sk- 开头的长字符串）。每次请求都要带上，服务商据此识别账户、计费、限速。相当于你在该平台的"密码+钱包"组合。</div></div>
+                <div class="gloss-item"><div class="gloss-term">Bearer Token</div><div class="gloss-def">HTTP 鉴权方案，放在 Authorization 请求头里。"Bearer"意为持有者，服务器不验证你是谁，只验证 token 合法性——谁持有就代表谁。这就是 key 泄露极危险的原因。</div></div>
+                <div class="gloss-item"><div class="gloss-term">SSE（流式输出）</div><div class="gloss-def">Server-Sent Events，服务器推送事件。HTTP 连接保持打开，服务器持续推送 data 行，每行含一个 token 的增量文本。大模型用它实现"字在蹦出来"的效果，与自回归逐 token 生成天然吻合。</div></div>
+                <div class="gloss-item"><div class="gloss-term">Context Window</div><div class="gloss-def">模型一次能处理的最大 token 数（输入 + 输出之和）。超出后早期内容被截断，模型会"忘记"对话开头。常见值：32K、128K、200K token。</div></div>
+              </div>
+            </div>
+          </div>
 
         </div>
       </div>

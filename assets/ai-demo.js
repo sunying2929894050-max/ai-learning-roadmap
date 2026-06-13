@@ -29,11 +29,20 @@ function initAiDemos(panelEl) {
         });
       } else {
         outputEl.hidden = false;
-        outputEl.innerHTML =
-          '<div class="demo-pending">' +
-          '🔌 LLM 接口尚未接入。<br>' +
-          '<span style="opacity:.7;font-size:12px">Component 3（prompt-runner）完成并配置好服务端地址后，此演示将自动变为可运行状态。</span>' +
-          '</div>';
+        const hasKey = !!(sessionStorage.getItem('byok_key') || '').trim();
+        if (hasKey) {
+          outputEl.innerHTML =
+            '<div class="demo-pending">' +
+            '✅ Key 已就绪。<br>' +
+            '<span style="opacity:.7;font-size:12px">AI 直连接口将在下一步开通，届时此演示将自动变为可运行状态。</span>' +
+            '</div>';
+        } else {
+          outputEl.innerHTML =
+            '<div class="demo-pending">' +
+            '🔑 请先在 <strong>ch4 第七节</strong>填入你的 DeepSeek API Key，再来运行演示。<br>' +
+            '<span style="opacity:.7;font-size:12px">Key 只存在浏览器 sessionStorage，关闭标签页自动清除。</span>' +
+            '</div>';
+        }
       }
     });
   });

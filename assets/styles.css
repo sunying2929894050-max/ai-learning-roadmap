@@ -337,6 +337,46 @@
       box-shadow: 0 0 20px rgba(0,212,170,.07), 0 6px 18px rgba(0,0,0,.25);
     }
 
+    /* ── BYOK panel ── */
+    .byok-panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px;
+      background: var(--surface);
+    }
+    .byok-status {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700; color: var(--muted);
+    }
+    .byok-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .byok-dot--empty  { background: #475569; }
+    .byok-dot--active { background: var(--accent); box-shadow: 0 0 6px rgba(0,212,170,.5); }
+    .byok-input {
+      flex: 1; min-width: 0;
+      background: #0f172a; border: 1px solid var(--line); border-radius: 8px;
+      padding: 9px 13px; color: var(--text); font-size: 13px;
+      font-family: monospace; letter-spacing: .04em;
+      outline: none; transition: border-color 180ms;
+    }
+    .byok-input:focus { border-color: var(--accent); }
+    .byok-save-btn {
+      background: var(--accent); color: #0a0f1e;
+      border: none; border-radius: 8px; padding: 9px 18px;
+      font-size: 13px; font-weight: 800; cursor: pointer;
+      white-space: nowrap; transition: opacity 160ms;
+    }
+    .byok-save-btn:hover { opacity: .85; }
+    .byok-clear-btn {
+      background: transparent; border: 1px solid var(--line);
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 12px; color: var(--muted); cursor: pointer;
+      transition: border-color 160ms, color 160ms;
+    }
+    .byok-clear-btn:hover { border-color: #ef4444; color: #ef4444; }
+
     /* ══════════════════════════════
        CONTENT VIEW
     ══════════════════════════════ */

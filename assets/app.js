@@ -3,7 +3,7 @@ const TOC_DATA = {
   1: [{id:"ch1-s0",l:"本章概览"},{id:"ch1-s1",l:"AI 是什么"},{id:"ch1-s2",l:"四大核心概念"},{id:"ch1-s3",l:"四大概念对比"},{id:"ch1-s4",l:"训练与推理"},{id:"ch1-s5",l:"数据：AI 的燃料"},{id:"ch1-s6",l:"四类核心任务"},{id:"ch1-s7",l:"AI 的风险"},{id:"ch1-s8",l:"何时用 AI"},{id:"ch1-s9",l:"实践：场景判断卡"},{id:"ch1-s10",l:"知识自测"},{id:"ch1-s11",l:"本章小结"},{id:"ch1-s12",l:"词汇表"}],
   2: [{id:"ch6-s0",l:"本章概览"},{id:"ch6-s1",l:"AI 数 r 的实验"},{id:"ch6-s2",l:"Token：分词与切块"},{id:"ch6-s3",l:"分词可视化"},{id:"ch6-s4",l:"Embedding：语义坐标"},{id:"ch6-s5",l:"语义运算实验室"},{id:"ch6-s6",l:"知识自测"},{id:"ch6-s7",l:"本章小结"},{id:"ch6-s8",l:"词汇表"}],
   3: [{id:"ch3-s0",l:"本章概览"},{id:"ch3-s1",l:"同一任务，两种结果"},{id:"ch3-s2",l:"Prompt 到底是什么"},{id:"ch3-s3",l:"Few-Shot 为什么有效"},{id:"ch3-s4",l:"思维链（CoT）"},{id:"ch3-s5",l:"常见失败与注入攻击"},{id:"ch3-s6",l:"互动演示"},{id:"ch3-s7",l:"本章给项目加了什么"},{id:"ch3-s8",l:"知识自测"},{id:"ch3-s9",l:"本章小结"},{id:"ch3-s10",l:"词汇表"}],
-  4: [{id:"ch5-s2",l:"大模型 API 调用"}],
+  4: [{id:"ch4-s0",l:"本章概览"},{id:"ch4-s1",l:"点发送底层发生了什么"},{id:"ch4-s2",l:"API 调用是什么"},{id:"ch4-s3",l:"API Key 与鉴权"},{id:"ch4-s4",l:"流式输出 SSE"},{id:"ch4-s5",l:"Token 与成本"},{id:"ch4-s6",l:"BYOK：用你的 Key"},{id:"ch4-s7",l:"填入 API Key"},{id:"ch4-s8",l:"本章给项目加了什么"},{id:"ch4-s9",l:"知识自测"},{id:"ch4-s10",l:"本章小结"},{id:"ch4-s11",l:"词汇表"}],
   5: [{id:"ch5-s3",l:"RAG 知识库系统"}],
   6: [{id:"ch5-s6",l:"工具调用与 Agent"}],
   7: [{id:"ch7-s0",l:"本章概览（筹备中）"}],
@@ -100,6 +100,7 @@ function initChapterComponents(panelEl) {
   initAiDemos(panelEl);
   if (typeof initTokenizerDemo === 'function') initTokenizerDemo(panelEl);
   if (typeof initEmbeddingDemo === 'function') initEmbeddingDemo(panelEl);
+  if (typeof initByokPanel === 'function') initByokPanel(panelEl);
 }
 
 // ── Back to map ──

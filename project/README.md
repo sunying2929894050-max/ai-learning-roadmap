@@ -21,7 +21,7 @@
 ## 当前状态
 
 - [x] ch3：QA prompt 模板已就绪（`ch3-qa-prompt.txt`）
-- [ ] ch4：等待接入 API
+- [x] ch4：API 客户端已就绪（`ch4-api-client.py`）；需设置环境变量 DEEPSEEK_API_KEY
 - [ ] ch5-ch8：未开始
 
 ## 运行方式
