@@ -326,6 +326,79 @@ Authorization: Bearer sk-a1b2c3d4e5f6...
             </div>
           </div>
 
+          <!-- ENV: 本地环境搭建 -->
+          <div class="content-section" id="ch4-env">
+            <div class="sec-head"><div class="sec-ico">🖥</div><h3>本地环境搭建 + 把项目跑起来</h3></div>
+            <div class="panel" style="display:grid;gap:16px">
+              <p style="font-size:13px;color:var(--light-muted)">页内演示点一点就行；从本章起，项目部分需要在自己的机器上跑 Python 脚本。五步搭好，一次搭完所有章节通用。</p>
+
+              <div class="flow-steps">
+                <div class="flow-step">
+                  <div class="flow-num">①</div>
+                  <div class="flow-content">
+                    <strong>安装 Python 3.11+</strong>
+                    <p><code>python3 --version</code> 看一下版本。没装的去 <code>python.org</code> 下载，Windows 安装时勾选"Add to PATH"。</p>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-num">②</div>
+                  <div class="flow-content">
+                    <strong>下载项目文件</strong>
+                    <pre style="background:#1e293b;color:#e2e8f0;padding:10px 14px;border-radius:7px;font-size:12px;line-height:1.7;margin:6px 0 0"><code>git clone https://github.com/sunying2929894050-max/ai-learning-roadmap.git
+cd ai-learning-roadmap/project</code></pre>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-num">③</div>
+                  <div class="flow-content">
+                    <strong>建虚拟环境（隔离依赖，推荐）</strong>
+                    <pre style="background:#1e293b;color:#e2e8f0;padding:10px 14px;border-radius:7px;font-size:12px;line-height:1.7;margin:6px 0 0"><code>python3 -m venv venv
+source venv/bin/activate      # Mac / Linux
+# venv\Scripts\activate       # Windows（cmd）</code></pre>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-num">④</div>
+                  <div class="flow-content">
+                    <strong>安装依赖</strong>
+                    <pre style="background:#1e293b;color:#e2e8f0;padding:10px 14px;border-radius:7px;font-size:12px;line-height:1.7;margin:6px 0 0"><code>pip install openai                       # ch4
+pip install openai chromadb             # ch5 ch6 ch7
+pip install fastapi uvicorn             # ch8</code></pre>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-num">⑤</div>
+                  <div class="flow-content">
+                    <strong>设置 API Key（回扣密钥安全原则：绝不进代码）</strong>
+                    <pre style="background:#1e293b;color:#e2e8f0;padding:10px 14px;border-radius:7px;font-size:12px;line-height:1.7;margin:6px 0 0"><code># Mac / Linux（每次新开终端都要设，或写进 ~/.zshrc）
+export DEEPSEEK_API_KEY="sk-你的key"
+export OPENAI_API_KEY="sk-你的key"     # ch5 嵌入用
+
+# Windows（cmd）
+set DEEPSEEK_API_KEY=sk-你的key</code></pre>
+                  </div>
+                </div>
+                <div class="flow-step">
+                  <div class="flow-num">⑥</div>
+                  <div class="flow-content">
+                    <strong>跑第一个脚本</strong>
+                    <pre style="background:#1e293b;color:#e2e8f0;padding:10px 14px;border-radius:7px;font-size:12px;line-height:1.7;margin:6px 0 0"><code>python3 ch4-api-client.py
+# 看到 "答：..." 说明环境 OK，API 接通了</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div style="padding:10px 14px;background:rgba(0,0,0,.18);border-radius:8px;font-size:12.5px;color:var(--light-muted)">
+                <strong style="color:var(--light)">各章脚本一览：</strong><br>
+                ch4 → <code>ch4-api-client.py</code>（参考码）·
+                ch5 → <code>ch5-rag-pipeline.py</code>（含你来写的检索函数）·
+                ch6 → <code>ch6-agent.py</code>（含你来写的 agent 循环）·
+                ch7 → <code>ch7-eval.py</code>（含你来写的 judge 打分）·
+                ch8 → <code>ch8-fastapi.py</code>（参考码）
+              </div>
+            </div>
+          </div>
+
           <!-- S8: 贯穿项目 -->
           <div class="content-section" id="ch4-s8">
             <div class="sec-head"><div class="sec-ico">🗂</div><h3>本章给项目加了什么</h3></div>
@@ -348,7 +421,7 @@ Authorization: Bearer sk-a1b2c3d4e5f6...
 
               <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
                 <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
-                  📄 project/ch4-api-client.py（下一步产物预览）
+                  📄 project/ch4-api-client.py &nbsp;<span class="task-ref-badge">📋 参考码</span>
                 </div>
                 <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12.5px;line-height:1.8;margin:0;overflow-x:auto"><code>import os
 from openai import OpenAI  # DeepSeek 兼容 OpenAI SDK
