@@ -296,9 +296,56 @@ for step in range(MAX_STEPS):<br>
                 ch6 → Agent 循环 + 工具调用，助手现在能多步骤完成任务 ✅
               </div>
 
+              <!-- task card: agent loop -->
+              <div class="task-card">
+                <div class="task-card-head">
+                  <span class="task-badge">✍ 你来写</span>
+                  <span class="task-card-title">Agent 循环 run_agent()</span>
+                  <span class="task-card-file">→ project/ch6-agent.py</span>
+                </div>
+                <div class="task-card-body">
+                  <div class="task-what">在 <code>ch6-agent.py</code> 里实现 <code>run_agent(question, max_steps=5) -&gt; str</code>：ReAct 循环——解析模型输出的 JSON 动作 → 调对应工具 → 把结果回灌进上下文 → 重复，直到 <code>final_answer</code>。这是 Agent 的心脏。</div>
+                  <div class="task-io">
+                    输入：<code>question</code>（用户问题）、<code>max_steps</code>（最大步数，防止死循环）<br>
+                    输出：<code>str</code>，最终答案（从模型的 <code>final_answer</code> 动作中提取）
+                  </div>
+                  <div class="task-hints">
+                    <div class="task-hint">💡 用 <code>for step in range(max_steps)</code> 循环，每轮调一次 LLM API</div>
+                    <div class="task-hint">💡 <code>_parse_json(raw)</code> 已提供——解析模型输出的 JSON；<code>action["action"] == "final_answer"</code> 时 return</div>
+                    <div class="task-hint">💡 否则 <code>TOOLS[tool_name]["fn"](tool_input)</code> 执行工具，再把 raw 和工具结果分别以 assistant / user 角色 append 进 messages</div>
+                  </div>
+                  <button class="task-answer-toggle">查看参考答案 <span class="task-toggle-arrow">▾</span></button>
+                  <div class="task-answer" hidden>
+                    <pre><code>def run_agent(question: str, max_steps: int = 5) -> str:
+    messages = [{"role": "user", "content": question}]
+    for step in range(max_steps):
+        resp = ds.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
+            max_tokens=512,
+        )
+        raw = resp.choices[0].message.content.strip()
+        print(f"\n[步骤 {step+1}] 模型输出：{raw}")
+        action = _parse_json(raw)
+        if action.get("action") == "final_answer":
+            return action.get("content", "")
+        tool_name = action.get("action", "")
+        tool_input = action.get("input", {})
+        if tool_name not in TOOLS:
+            tool_result = f"错误：工具 '{tool_name}' 不存在，可用：{list(TOOLS.keys())}"
+        else:
+            tool_result = TOOLS[tool_name]["fn"](tool_input)
+            print(f"[工具结果] {tool_result}")
+        messages.append({"role": "assistant", "content": raw})
+        messages.append({"role": "user", "content": f"[工具结果] {tool_result}"})
+    return "已达最大步数，无法完成任务。"</code></pre>
+                  </div>
+                </div>
+              </div>
+
               <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
                 <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
-                  📄 project/ch6-agent.py
+                  📋 参考码 · project/ch6-agent.py
                 </div>
                 <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.8;margin:0;overflow-x:auto"><code>"""
 文档助手 — ch6 产物：Agent 循环 + 工具调用

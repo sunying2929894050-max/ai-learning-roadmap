@@ -284,9 +284,39 @@
                 ch5 → 加入向量检索，助手现在能基于真实文档回答了 ✅
               </div>
 
+              <!-- task card: retrieve function -->
+              <div class="task-card">
+                <div class="task-card-head">
+                  <span class="task-badge">✍ 你来写</span>
+                  <span class="task-card-title">检索函数 retrieve()</span>
+                  <span class="task-card-file">→ project/ch5-rag-pipeline.py</span>
+                </div>
+                <div class="task-card-body">
+                  <div class="task-what">在 <code>ch5-rag-pipeline.py</code> 里实现 <code>retrieve(question, k=3) -&gt; list[str]</code>：把问题 embed → 查向量库 → 返回 top-k 文档片段。这是 RAG 的心脏。</div>
+                  <div class="task-io">
+                    输入：<code>question</code>（字符串）、<code>k</code>（取几条，默认 3）<br>
+                    输出：<code>list[str]</code>，最相关的 k 条文档片段
+                  </div>
+                  <div class="task-hints">
+                    <div class="task-hint">💡 先用 <code>embed_client.embeddings.create(model="text-embedding-3-small", input=[question])</code> 得到问题向量</div>
+                    <div class="task-hint">💡 然后 <code>collection.query(query_embeddings=[q_vec], n_results=k)</code> 得到结果</div>
+                    <div class="task-hint">💡 结果在 <code>results["documents"][0]</code>，直接 return 即可</div>
+                  </div>
+                  <button class="task-answer-toggle">查看参考答案 <span class="task-toggle-arrow">▾</span></button>
+                  <div class="task-answer" hidden>
+                    <pre><code>def retrieve(question: str, k: int = 3) -> list[str]:
+    q_vec = embed_client.embeddings.create(
+        model="text-embedding-3-small", input=[question]
+    ).data[0].embedding
+    results = collection.query(query_embeddings=[q_vec], n_results=k)
+    return results["documents"][0]</code></pre>
+                  </div>
+                </div>
+              </div>
+
               <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
                 <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
-                  📄 project/ch5-rag-pipeline.py
+                  📋 参考码 · project/ch5-rag-pipeline.py
                 </div>
                 <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.8;margin:0;overflow-x:auto"><code>"""
 文档助手 — ch5 产物：RAG 管线

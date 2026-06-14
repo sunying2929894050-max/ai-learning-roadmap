@@ -293,9 +293,52 @@
                 ch7 → 评估脚本，助手现在有办法度量改动是否让它变好了 ✅
               </div>
 
+              <!-- task card: LLM-as-judge -->
+              <div class="task-card">
+                <div class="task-card-head">
+                  <span class="task-badge">✍ 你来写</span>
+                  <span class="task-card-title">评判函数 judge_answer()</span>
+                  <span class="task-card-file">→ project/ch7-eval.py</span>
+                </div>
+                <div class="task-card-body">
+                  <div class="task-what">在 <code>ch7-eval.py</code> 里实现 <code>judge_answer(question, context, answer) -&gt; dict</code>：组 rubric prompt → 调 LLM → 从输出里解析总分。这是 LLM-as-judge 的心脏。</div>
+                  <div class="task-io">
+                    输入：<code>question</code>、<code>context</code>（RAG 检索到的内容）、<code>answer</code>（待评判的回答）<br>
+                    输出：<code>{"raw": str, "total_score": int | None}</code>
+                  </div>
+                  <div class="task-hints">
+                    <div class="task-hint">💡 把 <code>JUDGE_PROMPT</code>（已定义）里的 <code>{question}</code>/<code>{context}</code>/<code>{answer}</code> 替换成实际内容</div>
+                    <div class="task-hint">💡 调 <code>ds.chat.completions.create()</code>，取 <code>resp.choices[0].message.content</code></div>
+                    <div class="task-hint">💡 遍历 <code>raw.splitlines()</code>，找到以 <code>"总分"</code> 开头的行，用 <code>line.split("：")[1].split("/")[0]</code> 取出数字</div>
+                  </div>
+                  <button class="task-answer-toggle">查看参考答案 <span class="task-toggle-arrow">▾</span></button>
+                  <div class="task-answer" hidden>
+                    <pre><code>def judge_answer(question: str, context: str, answer: str) -> dict:
+    prompt = (JUDGE_PROMPT
+              .replace("{question}", question)
+              .replace("{context}", context)
+              .replace("{answer}", answer))
+    resp = ds.chat.completions.create(
+        model="deepseek-chat",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=512,
+    )
+    raw = resp.choices[0].message.content
+    total = None
+    for line in raw.splitlines():
+        if line.startswith("总分"):
+            try:
+                total = int(line.split("：")[1].split("/")[0].strip())
+            except (IndexError, ValueError):
+                pass
+    return {"raw": raw, "total_score": total}</code></pre>
+                  </div>
+                </div>
+              </div>
+
               <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
                 <div style="background:#0f172a;padding:8px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);border-bottom:1px solid var(--line)">
-                  📄 project/ch7-eval.py
+                  📋 参考码 · project/ch7-eval.py
                 </div>
                 <pre style="background:#1e293b;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.8;margin:0;overflow-x:auto"><code>"""
 文档助手 — ch7 产物：评估脚本（LLM-as-judge + 忠实度检查）

@@ -102,27 +102,14 @@ JUDGE_PROMPT = """你是一个严格的文档助手评判员。请根据以下 r
 
 
 def judge_answer(question: str, context: str, answer: str) -> dict:
-    """LLM-as-judge 评判，返回结构化结果。"""
-    prompt = (JUDGE_PROMPT
-              .replace("{question}", question)
-              .replace("{context}", context)
-              .replace("{answer}", answer))
-    resp = ds.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=400,
-    )
-    raw = resp.choices[0].message.content
-
-    # 提取总分
-    total = None
-    for line in raw.splitlines():
-        if line.startswith("总分"):
-            import re
-            m = re.search(r'(\d+)/10', line)
-            if m:
-                total = int(m.group(1))
-    return {"raw": raw, "total_score": total}
+    """LLM-as-judge 评判，返回结构化结果。
+    TODO: 在此处自己实现
+      1. 把 JUDGE_PROMPT 里的 {question}/{context}/{answer} 替换成实参
+      2. 调 ds.chat.completions.create()，取 resp.choices[0].message.content
+      3. 遍历 raw.splitlines() 找 "总分" 开头的行，解析出整数分数
+      4. return {"raw": raw, "total_score": total}
+    """
+    raise NotImplementedError("在此处自己实现 judge_answer()")
 
 
 # ── 关键词快速检查（零 API 成本）───────────────────────────────────

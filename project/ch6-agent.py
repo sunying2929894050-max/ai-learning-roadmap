@@ -89,38 +89,15 @@ def _parse_json(text: str) -> dict:
 
 
 def run_agent(question: str, max_steps: int = 5) -> str:
-    """ReAct 循环：思考 → 调工具 → 观察 → 再思考……"""
-    messages = [{"role": "user", "content": question}]
-
-    for step in range(max_steps):
-        # ── 每步都是一次 ch4 的 API 调用 ──
-        resp = ds.chat.completions.create(
-            model="deepseek-chat",
-            messages=[{"role": "system", "content": SYSTEM_PROMPT}] + messages,
-            max_tokens=512,
-        )
-        raw = resp.choices[0].message.content.strip()
-        print(f"\n[步骤 {step+1}] 模型输出：{raw}")
-
-        action = _parse_json(raw)
-
-        if action.get("action") == "final_answer":
-            return action.get("content", "")
-
-        # ── 执行工具 ──
-        tool_name = action.get("action", "")
-        tool_input = action.get("input", {})
-        if tool_name not in TOOLS:
-            tool_result = f"错误：工具 '{tool_name}' 不存在，可用：{list(TOOLS.keys())}"
-        else:
-            tool_result = TOOLS[tool_name]["fn"](tool_input)
-            print(f"[工具结果] {tool_result}")
-
-        # ── 把工具结果回灌进上下文（ch5 的上下文注入模式） ──
-        messages.append({"role": "assistant", "content": raw})
-        messages.append({"role": "user", "content": f"[工具结果] {tool_result}"})
-
-    return "已达最大步数，无法完成任务。"
+    """ReAct 循环：思考 → 调工具 → 观察 → 再思考……
+    TODO: 在此处自己实现
+      1. 初始化 messages = [{"role": "user", "content": question}]
+      2. for step in range(max_steps)：调 LLM API，用 _parse_json() 解析输出
+      3. 若 action["action"] == "final_answer"，return action["content"]
+      4. 否则执行 TOOLS[tool_name]["fn"](tool_input)，把结果回灌进 messages
+      5. 超过 max_steps 返回 "已达最大步数，无法完成任务。"
+    """
+    raise NotImplementedError("在此处自己实现 run_agent()")
 
 
 if __name__ == "__main__":

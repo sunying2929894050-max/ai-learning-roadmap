@@ -45,16 +45,22 @@ def index_document(doc_id: str, text: str) -> None:
     print(f"已入库 {len(chunks)} 个片段（doc_id={doc_id}）")
 
 
+# ── 检索（在此处自己实现） ──
+def retrieve(question: str, k: int = 3) -> list[str]:
+    """把问题 embed → 查向量库 → 返回 top-k 文档片段。
+    TODO: 在此处自己实现
+      1. 用 embed_client 把 question 转成向量
+      2. 用 collection.query() 检索最相近的 k 个片段
+      3. 返回 results["documents"][0]
+    """
+    raise NotImplementedError("在此处自己实现 retrieve()")
+
+
 # ── 检索 + 生成（每次提问） ──
 def rag_answer(question: str, k: int = 3) -> str:
-    # Step A：问题嵌入（必须和入库用同一个模型）
-    q_vec = embed_client.embeddings.create(
-        model="text-embedding-3-small", input=[question]
-    ).data[0].embedding
-
-    # Step B：top-k 向量检索
-    results = collection.query(query_embeddings=[q_vec], n_results=k)
-    context = "\n\n".join(results["documents"][0])
+    # Step A+B：检索（已拆成独立函数，请先完成上面的 retrieve()）
+    chunks = retrieve(question, k)
+    context = "\n\n".join(chunks)
 
     # Step C：上下文注入（直接复用 ch3 的 prompt 模板）
     template_path = os.path.join(os.path.dirname(__file__), "ch3-qa-prompt.txt")
