@@ -145,7 +145,8 @@
                   <div class="flow-num">🚧</div>
                   <div class="flow-content">
                     <strong>过拟合 / 正则化 在深度学习里的样子</strong>
-                    <p>从 ch22 你已经知道过拟合（训练好测试差）。深度学习里更常见也更严重——网络参数动辄百万。常用对策：<strong>Dropout</strong>（训练时随机关闭一些神经元，防止依赖特定路径）、<strong>BatchNorm</strong>（稳定每层数值分布，加速收敛）、<strong>Early Stopping</strong>（验证集误差开始升高就停止训练）。遇到"训练 loss 很低但 val loss 很高"，就是过拟合了，先加 Dropout 或减少网络层数。</p>
+                    <p>从 ch22 你已经知道过拟合（训练好测试差）。深度学习里更常见也更严重——网络参数动辄百万。遇到"训练 loss 很低但 val loss 很高"，就是过拟合了。常用对策：<strong>Dropout</strong>（训练时随机关闭一些神经元，防止依赖特定路径）、<strong>Early Stopping</strong>（验证集误差开始升高就停止训练）、权重衰减（L2 正则化）、减少网络层数/宽度。</p>
+                    <p style="margin-top:8px"><strong>BatchNorm</strong> 经常一起被提到，但它不是过拟合对策——它的主职是<strong>让训练更稳、更快</strong>：稳定每层输入的数值分布，允许使用更大学习率，缓解梯度消失。有一点附带的正则化副作用，但不能靠它治过拟合。新手容易把它和 Dropout 混为一谈。</p>
                   </div>
                 </div>
 
