@@ -1,8 +1,8 @@
       <!-- Chapter 8 -->
       <div class="ch-panel" id="ch-8">
         <div class="ch-header">
-          <div class="ch-badge"><div class="ch-big">08</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 08</div><div class="ch-name">部署与作品集</div></div></div>
-          <p class="ch-desc">把助手包成 API 发布上线；把整条 ch3→ch7 项目沉淀成可展示的作品集；主轴收尾。</p>
+          <div class="ch-badge"><div class="ch-big">08</div><div class="ch-vline"></div><div><div class="ch-label">Chapter 08</div><div class="ch-name">部署与项目整理</div></div></div>
+          <p class="ch-desc">把助手包成 API 发布上线；把整条 ch3→ch7 的工作文档化，整理成一个完整、有记录的项目；主轴收尾。</p>
         </div>
         <div class="content-body">
 
@@ -19,7 +19,7 @@
                     <li>生产密钥安全与 <span class="term-chip" data-term="密钥管理">密钥管理</span></li>
                     <li><span class="term-chip" data-term="可观测性">可观测性</span>：日志、监控、成本</li>
                     <li>流式输出与用户侧延迟</li>
-                    <li>项目→ GitHub README →简历表述</li>
+                    <li>项目→ GitHub README →文档化整理</li>
                   </ul>
                 </div>
                 <div class="overview-card">
@@ -28,14 +28,14 @@
                     <li>ch4 调用别人 API → 现在你自己提供 API</li>
                     <li>ch4 bearer token + SSE → 生产密钥 + 流式</li>
                     <li>ch7 在线评估 → 就是生产监控</li>
-                    <li>ch3→ch7 项目 → 作品集素材</li>
+                    <li>ch3→ch7 项目 → 整理成完整的学习记录</li>
                   </ul>
                 </div>
                 <div class="overview-card">
                   <div class="overview-card-title">本章产物</div>
                   <ul class="overview-list">
                     <li><code>project/ch8-fastapi.py</code>（部署骨架）</li>
-                    <li><code>project/PORTFOLIO_README.md</code>（作品集模板）</li>
+                    <li><code>project/PROJECT_README.md</code>（项目文档模板）</li>
                   </ul>
                 </div>
               </div>
@@ -271,7 +271,7 @@ def ask(req: AskRequest):
               <div class="drawer" data-open="false">
                 <button class="drawer-toggle">
                   <span class="drawer-ico">🌐</span>
-                  <span>视角层 — 作品集阶段怎么选？一张决策地图</span>
+                  <span>视角层 — 项目部署平台怎么选？一张决策地图</span>
                   <span class="drawer-arrow">›</span>
                 </button>
                 <div class="drawer-body">
@@ -290,8 +290,8 @@ def ask(req: AskRequest):
                       <ul style="font-size:12px;color:var(--light-muted);line-height:1.8;margin:0;padding-left:16px">
                         <li>零配置，传 Python 文件即可</li>
                         <li>Gradio / Streamlit 前端内置</li>
-                        <li>AI 招聘方熟悉这个平台</li>
-                        <li>作品集展示效果好</li>
+                        <li>社区活跃，反馈容易获得</li>
+                        <li>演示效果直观，分享链接即可</li>
                       </ul>
                     </div>
                   </div>
@@ -545,55 +545,34 @@ def ask_stream(req: AskRequest):
           </div>
 
 
-          <!-- S7: 作品集 -->
+          <!-- S7: 项目整理与文档化 -->
           <div class="content-section" id="ch8-s7">
-            <div class="sec-head"><div class="sec-ico">⑦</div><h3>作品集：让项目进简历</h3></div>
+            <div class="sec-head"><div class="sec-ico">⑦</div><h3>项目整理与文档化</h3></div>
             <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:18px">从 ch3 到 ch7，你已经搭了一个真实的 AI 应用：<strong style="color:var(--light)">TechCorp 文档问答助手</strong>——带提示词工程、RAG 检索、工具调用 Agent 和 LLM-judge 评估，通过 Cloudflare Worker 部署了密钥代理。这不是教学玩具，这就是你的旗舰作品。</p>
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:18px">从 ch3 到 ch7，你已经搭了一个真实的 AI 应用：<strong style="color:var(--light)">TechCorp 文档问答助手</strong>——带提示词工程、RAG 检索、工具调用 Agent 和 LLM-judge 评估，通过 Cloudflare Worker 部署了密钥代理。把这一路的工作整理成有完整记录的项目文档，是学习固化的最后一步——逼你把学到的东西讲清楚、串成整体、想清楚关键取舍和还能改进什么。</p>
 
               <div style="margin-bottom:24px">
-                <div style="font-size:14px;font-weight:800;color:#1e40af;margin-bottom:12px">▸ 一个 GitHub 仓库要有什么</div>
+                <div style="font-size:14px;font-weight:800;color:#1e40af;margin-bottom:12px">▸ 一份完整的项目 README 应该有什么</div>
                 <div class="flow-steps">
-                  <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>README 开头：一句话定义问题</strong><p>"构建了一个企业 HR 文档问答助手，让员工用自然语言查询公司政策，无需翻 PDF。"——招聘方 10 秒内知道这是什么。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>架构图或文字说明：三层</strong><p>提示词工程（ch3）→ RAG 检索（ch5）→ Agent 工具调用（ch6）→ LLM-judge 评估（ch7）→ FastAPI 部署（ch8）。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>做了什么·关键取舍</strong><p>不是"用了 RAG"，而是"用了 keyword-overlap 简化检索演示，真实场景替换为 text-embedding-3-small + ChromaDB，理由是…"。诚实讲清楚局限比吹嘘有说服力 10 倍。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>评估结果</strong><p>ch7 的 eval_report.json 就是你的数据——平均关键词命中率、LLM 评分、低分案例分析。量化结果比"效果很好"有说服力。</p></div></div>
-                  <div class="flow-step"><div class="flow-num">⑤</div><div class="flow-content"><strong>可跑的 Demo</strong><p>静态网站（就是这个！）就是 demo。或者 HuggingFace Space + Gradio 包一层，两小时搞定。能点的 demo 比 PDF 报告有说服力 10 倍。</p></div></div>
-                </div>
-              </div>
-
-              <div style="margin-bottom:24px">
-                <div style="font-size:14px;font-weight:800;color:#7c3aed;margin-bottom:12px">▸ 简历表述：把技能说具体</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                  <div style="padding:14px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px">
-                    <div style="font-size:12.5px;font-weight:700;color:#ef4444;margin-bottom:8px">❌ 模糊写法（没说服力）</div>
-                    <ul style="font-size:12.5px;color:var(--light-muted);line-height:1.9;margin:0;padding-left:16px">
-                      <li>熟悉人工智能相关技术</li>
-                      <li>了解大模型应用开发</li>
-                      <li>参与了 AI 项目</li>
-                    </ul>
-                  </div>
-                  <div style="padding:14px;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:10px">
-                    <div style="font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:8px">✓ 具体写法（有说服力）</div>
-                    <ul style="font-size:12.5px;color:var(--light-muted);line-height:1.9;margin:0;padding-left:16px">
-                      <li>独立构建企业文档问答助手：RAG 检索（ChromaDB + text-embedding-3-small）+ ReAct Agent 工具调用 + LLM-as-judge 自动评估，FastAPI + Cloudflare Worker 部署</li>
-                      <li>LLM-judge 评估平均分 8.2/10，关键词命中率 92%</li>
-                    </ul>
-                  </div>
+                  <div class="flow-step"><div class="flow-num">①</div><div class="flow-content"><strong>README 开头：一句话定义问题</strong><p>"构建了一个企业 HR 文档问答助手，让员工用自然语言查询公司政策，无需翻 PDF。"——读者 10 秒内知道这是什么、解决什么问题。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">②</div><div class="flow-content"><strong>架构说明：各层是什么、为什么</strong><p>提示词工程（ch3）→ RAG 检索（ch5）→ Agent 工具调用（ch6）→ LLM-judge 评估（ch7）→ FastAPI 部署（ch8）。每层一句话说明为什么这么选。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">③</div><div class="flow-content"><strong>关键取舍与局限</strong><p>不是"用了 RAG"，而是"页内演示用 keyword-overlap 简化，真实脚本换成 text-embedding-3-small + ChromaDB，理由是……局限是……"。能诚实讲出局限，说明你真的理解了。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">④</div><div class="flow-content"><strong>评估结果</strong><p>ch7 的 eval_report.json 就是你的数据——平均关键词命中率、LLM 评分、低分案例分析。有数据的记录比"效果不错"要诚实得多。</p></div></div>
+                  <div class="flow-step"><div class="flow-num">⑤</div><div class="flow-content"><strong>可运行的 Demo</strong><p>静态网站（就是这个！）就是 demo。或者 HuggingFace Space + Gradio 包一层，两小时搞定。能跑的 demo 让记录变得可验证。</p></div></div>
                 </div>
               </div>
 
               <div style="padding:16px;background:rgba(0,0,0,.2);border-radius:10px">
-                <div style="font-size:13px;font-weight:700;color:var(--light);margin-bottom:10px">▸ 招聘方真正在看什么</div>
+                <div style="font-size:13px;font-weight:700;color:var(--light);margin-bottom:10px">▸ 整理项目文档的真正价值</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
                   <div style="padding:10px 12px;background:rgba(59,130,246,.1);border-radius:8px;font-size:12px;color:var(--light-muted);line-height:1.7">
-                    <strong style="color:#3b82f6">可以独立交付</strong><br>从 0 到 1 搭起来，不只是跑别人的教程。
+                    <strong style="color:#3b82f6">固化理解</strong><br>把每层"为什么这么选"写清楚，才知道自己真的懂了还是只是跟着跑通了。
                   </div>
                   <div style="padding:10px 12px;background:rgba(0,212,170,.1);border-radius:8px;font-size:12px;color:var(--light-muted);line-height:1.7">
-                    <strong style="color:var(--accent)">懂工程味道</strong><br>评估集、版本控制、部署、密钥安全——不只是调 API。
+                    <strong style="color:var(--accent)">发现盲区</strong><br>写文档时才发现"这个我其实没搞清楚"——这是最有价值的学习反馈。
                   </div>
                   <div style="padding:10px 12px;background:rgba(139,92,246,.1);border-radius:8px;font-size:12px;color:var(--light-muted);line-height:1.7">
-                    <strong style="color:#8b5cf6">能讲清楚取舍</strong><br>为什么选这个方案？有什么局限？下一步怎么改进？
+                    <strong style="color:#8b5cf6">串成整体</strong><br>ch3 → ch8 八个技术点，在文档里第一次连成一条完整的线。
                   </div>
                 </div>
               </div>
@@ -612,7 +591,7 @@ def ask_stream(req: AskRequest):
                     <div style="font-size:12.5px;font-weight:700;color:var(--light);margin-bottom:8px">新增文件</div>
                     <ul style="font-size:12.5px;color:var(--light-muted);line-height:1.9;margin:0;padding-left:16px">
                       <li><code>project/ch8-fastapi.py</code><br><span style="font-size:11.5px">FastAPI 部署骨架，含流式接口</span></li>
-                      <li><code>project/PORTFOLIO_README.md</code><br><span style="font-size:11.5px">作品集 README 模板，填空即可用</span></li>
+                      <li><code>project/PROJECT_README.md</code><br><span style="font-size:11.5px">项目文档模板，填空即可用</span></li>
                     </ul>
                   </div>
                   <div>
@@ -624,7 +603,7 @@ def ask_stream(req: AskRequest):
                       <li>ReAct Agent（ch6）</li>
                       <li>LLM-judge 评估脚本（ch7）</li>
                       <li>FastAPI 部署骨架（ch8）</li>
-                      <li>作品集 README 模板（ch8）</li>
+                      <li>项目文档模板（ch8）</li>
                     </ul>
                   </div>
                 </div>
@@ -632,7 +611,7 @@ def ask_stream(req: AskRequest):
 
               <div style="padding:14px 18px;background:linear-gradient(135deg,#0d1421,#111827);border:1px solid rgba(0,212,170,.3);border-radius:12px;text-align:center">
                 <div style="font-size:16px;font-weight:800;color:var(--accent);margin-bottom:8px">🎓 主轴收尾：ch1 → ch8 完成</div>
-                <p style="font-size:13px;color:#94a3b8;line-height:1.75;margin:0">你从"AI 是什么"走到了"独立构建、评估、部署一个 AI 应用"。这条路线上的每一章，都是真实项目的一部分，而不是孤立的知识点。<br>下一步：把这个项目推上 GitHub，写好 README，在简历里具体描述，然后选一个你想深挖的方向继续走。</p>
+                <p style="font-size:13px;color:#94a3b8;line-height:1.75;margin:0">你从"AI 是什么"走到了"独立构建、评估、部署一个 AI 应用"。这条路线上的每一章，都是真实项目的一部分，而不是孤立的知识点。<br>下一步：把这个项目推上 GitHub，写好项目文档，然后选一个你想深挖的方向继续走。</p>
               </div>
             </div>
           </div>
@@ -642,7 +621,7 @@ def ask_stream(req: AskRequest):
           <div class="content-section" id="ch8-s9">
             <div class="sec-head"><div class="sec-ico">⑨</div><h3>知识自测</h3></div>
             <div class="panel">
-              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">点击选项查看解析。本章自测聚焦部署与作品集。</p>
+              <p style="font-size:13px;color:var(--light-muted);margin-bottom:16px">点击选项查看解析。本章自测聚焦部署与项目整理。</p>
               <div class="quiz-mc">
 
                 <div class="mc-item">
@@ -686,12 +665,12 @@ def ask_stream(req: AskRequest):
                 </div>
 
                 <div class="mc-item">
-                  <div class="mc-question">5. 简历里哪种表述对 AI 岗位更有说服力？</div>
+                  <div class="mc-question">5. 项目 README 里哪项内容对"整理项目文档"最有价值？</div>
                   <div class="mc-options">
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','"熟悉人工智能"几乎没有任何信息量——招聘方无法从中判断你能做什么，几乎所有 AI 简历都这么写。')"><span class="mc-opt-label">A</span>"熟悉人工智能和大模型相关技术。"</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','稍微具体一点，但还是太宽泛——"使用过"意味着可能只是跑了 Hello World。没有架构细节、没有评估数据、没有部署经验。')"><span class="mc-opt-label">B</span>"使用过 RAG 和 Agent 技术。"</div>
-                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！这个写法包含了：做了什么（文档问答助手）、用了什么技术（RAG/Agent/LLM-judge）、量化结果（LLM评分/命中率）、部署方式（FastAPI+Cloudflare Worker）——招聘方能直接判断你的能力水平，不需要猜测。')"><span class="mc-opt-label">C</span>"独立构建企业 HR 文档问答助手：RAG 检索 + ReAct Agent + LLM-judge 评估，LLM评分均值 8.2/10，FastAPI + Cloudflare Worker 部署。"</div>
-                    <div class="mc-opt" onclick="checkMC(this,'wrong','学习路线是背景，不是成果。招聘方想看你"做了什么"，不是"学了什么"。')"><span class="mc-opt-label">D</span>"完成了 AI 学习路线 ch1~ch8 的全部内容学习。"</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','代码行数没有实质信息。读者无法从中判断项目的复杂度或质量，也无法理解架构和取舍。')"><span class="mc-opt-label">A</span>项目总代码行数。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','技术名称列表只说明"用了什么"，没有说明"为什么选这个、有什么局限、换成什么会更好"。这是最浅的文档层。')"><span class="mc-opt-label">B</span>用到的技术名称列表（RAG、Agent、FastAPI……）。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'correct','正确！关键取舍说明才是文档的核心——"为什么选 ChromaDB 而不是 Pinecone？keyword-overlap 和向量检索各有什么局限？下一步怎么改进？"能写清楚取舍，才说明你真正理解了这套系统，而不只是跑通了代码。')"><span class="mc-opt-label">C</span>每层架构的关键取舍：为什么这么选、有什么局限、下一步怎么改进。</div>
+                    <div class="mc-opt" onclick="checkMC(this,'wrong','学习过程记录是日记，不是项目文档。文档的核心是"这个系统是什么、怎么工作、为什么这么设计"，而不是"我花了多久学会它"。')"><span class="mc-opt-label">D</span>每章的学习过程记录（"第一天学了 RAG，第二天遇到了 bug……"）。</div>
                   </div>
                 </div>
 
@@ -705,14 +684,14 @@ def ask_stream(req: AskRequest):
             <div class="sec-head"><div class="sec-ico">⑩</div><h3>本章小结 · 主轴总结</h3></div>
             <div class="panel">
               <div class="summary-box">
-                <div class="summary-title">ch8 核心要点：部署与作品集</div>
+                <div class="summary-title">ch8 核心要点：部署与项目整理</div>
                 <ul class="summary-list">
                   <li><strong>你成了 API 提供方：</strong>FastAPI 把 RAG+Agent 脚本包成 HTTP 服务。ch4 学的调用技术对称反转——对用户你是提供方，对 DeepSeek 你还是调用方。</li>
                   <li><strong>跑在哪取决于三角权衡：</strong>Serverless（≈0 闲时成本，冷启动高）/ 容器（推荐 RAG 场景）/ VM（完整控制）。你的 Cloudflare Worker 就是 serverless 的实践。</li>
                   <li><strong>密钥绝不进代码：</strong>环境变量注入 → 密钥管理服务 → 定期轮换。前端不持有密钥（你在 BYOK 方案里已经做过这件事）。</li>
                   <li><strong>可观测性 = 工程视角的在线评估：</strong>日志 + 指标 + 告警，持续追踪质量和成本。ch7 的在线评估指标就活在你的监控面板里。</li>
                   <li><strong>流式输出降低感知延迟：</strong>SSE 中继——从 DeepSeek 收到 chunk 立刻转发给浏览器，TTFT 而非 TTLT，用户体验差距巨大。ch4 的 SSE 知识正面用上。</li>
-                  <li><strong>作品集要具体：</strong>问题定义 + 架构 + 技术选型理由 + 定量评估结果 + 可运行 demo。简历表述用具体技术栈和数字，不用"熟悉 AI"。</li>
+                  <li><strong>项目文档化是学习固化：</strong>问题定义 + 架构 + 技术选型理由 + 定量评估结果 + 可运行 demo。能把关键取舍讲清楚，才说明真正理解了，而不只是跑通了代码。</li>
                 </ul>
               </div>
 
@@ -749,7 +728,7 @@ def ask_stream(req: AskRequest):
                   </div>
                   <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);border-radius:8px">
                     <div style="min-width:60px;font-size:11.5px;font-weight:700;color:var(--accent)">ch8</div>
-                    <div style="font-size:12.5px;color:var(--light-muted)">部署与作品集——FastAPI 提供方、serverless/容器选型、密钥管理、监控、作品集</div>
+                    <div style="font-size:12.5px;color:var(--light-muted)">部署与项目整理——FastAPI 提供方、serverless/容器选型、密钥管理、监控、项目文档化</div>
                   </div>
                 </div>
               </div>
@@ -771,7 +750,7 @@ def ask_stream(req: AskRequest):
                 <div class="glossary-item"><div class="glossary-term">密钥管理（Secret Management）</div><div class="glossary-def">加密存储、细粒度权限控制、自动轮换 API key 等敏感凭据的服务（AWS Secrets Manager、HashiCorp Vault）。比环境变量更安全：访问有日志、权限可撤销、密钥可自动轮换，适合生产环境。</div></div>
                 <div class="glossary-item"><div class="glossary-term">可观测性（Observability）</div><div class="glossary-def">通过日志（Logs）、指标（Metrics）、追踪（Traces）三类数据，使系统内部状态从外部可被理解和调试的工程能力。AI 服务的可观测性额外包括质量指标（答案满意度）和成本指标（每日 token 消耗）。</div></div>
                 <div class="glossary-item"><div class="glossary-term">FastAPI</div><div class="glossary-def">Python 的高性能异步 Web 框架，自动从函数类型注解生成 OpenAPI 文档（/docs）。把 Python 函数包成 HTTP 接口只需几行代码，是 AI 助手后端部署的常见选择。</div></div>
-                <div class="glossary-item"><div class="glossary-term">作品集（Portfolio）</div><div class="glossary-def">展示你技术能力的项目集合。AI 方向的作品集核心：能独立完成从问题定义→数据/知识库→模型/提示词→评估→部署的完整链条，并有可运行的 demo 和量化结果，而不只是学了哪些知识。</div></div>
+                <div class="glossary-item"><div class="glossary-term">项目文档化（Project Documentation）</div><div class="glossary-def">把一个项目的问题定义、架构选型、关键取舍、评估结果和运行方式整理成完整记录。文档化是学习固化的最后一步——能把自己做的东西讲清楚，才说明真正理解了，而不只是跑通了代码。</div></div>
               </div>
             </div>
           </div>
