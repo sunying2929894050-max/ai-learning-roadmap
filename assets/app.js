@@ -179,8 +179,42 @@ function checkMC(el, result, explanation) {
   explain.style.display = "block";
 }
 
+// ── TOC Toggle ──
+// Idempotent: guards with data-bound on the button element.
+// Called once on page load; state persists via .toc-collapsed on #app + localStorage.
+function initTocToggle() {
+  const btn     = document.getElementById('tocToggleBtn');
+  const overlay = document.getElementById('tocOverlay');
+  if (!btn || btn.dataset.bound) return;
+  btn.dataset.bound = '1';
+
+  function isCollapsed() { return app.classList.contains('toc-collapsed'); }
+
+  function setCollapsed(collapsed) {
+    app.classList.toggle('toc-collapsed', collapsed);
+    btn.title       = collapsed ? '展开目录' : '收起目录';
+    btn.textContent = collapsed ? '☰' : '✕';
+    try { localStorage.setItem('toc_collapsed', collapsed ? '1' : '0'); } catch (e) {}
+  }
+
+  // Restore persisted state, or default by viewport
+  let stored = null;
+  try { stored = localStorage.getItem('toc_collapsed'); } catch (e) {}
+  if (stored !== null) {
+    setCollapsed(stored === '1');
+  } else {
+    setCollapsed(window.innerWidth <= 900);   // mobile default: collapsed
+  }
+
+  btn.addEventListener('click', () => setCollapsed(!isCollapsed()));
+  if (overlay) overlay.addEventListener('click', () => setCollapsed(true));
+}
+
 // ── Wire up card clicks ──
 cards.forEach(c =>
   c.addEventListener("click", () => enterChapter(+c.dataset.chapter))
 );
 backBtn.addEventListener("click", backToMap);
+
+// Initialise TOC toggle once DOM is ready (button is in static HTML)
+initTocToggle();

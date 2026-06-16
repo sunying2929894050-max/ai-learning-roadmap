@@ -594,6 +594,61 @@
     .concept-deep p { font-size: 13px; line-height: 1.7; margin: 0; }
 
     /* ══════════════════════════════
+       TOC TOGGLE
+    ══════════════════════════════ */
+    /* Extend sidebar transition to include width/min-width for desktop collapse */
+    .sidebar {
+      transition: transform 420ms cubic-bezier(.22,1,.36,1), opacity 360ms ease,
+                  width 360ms ease, min-width 360ms ease, border-right-width 320ms ease;
+    }
+
+    /* Toggle button: hidden in map view, shown in content view */
+    .toc-toggle-btn {
+      display: none;
+      position: fixed;
+      top: 14px; left: 14px;
+      z-index: 300;
+      width: 34px; height: 34px;
+      border: 1px solid var(--line);
+      background: var(--bg2);
+      color: var(--muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      align-items: center; justify-content: center;
+      transition: color 160ms, border-color 160ms, background 160ms,
+                  left 420ms cubic-bezier(.22,1,.36,1);
+      flex-shrink: 0;
+    }
+    .toc-toggle-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .app.content .toc-toggle-btn { display: flex; }
+    /* When sidebar is visible, shift button to the right of it */
+    .app.content:not(.toc-collapsed) .toc-toggle-btn {
+      left: calc(var(--sidebar-w) + 8px);
+    }
+
+    /* Mobile overlay: darkens content when TOC is open */
+    .toc-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 9;
+      cursor: pointer;
+    }
+
+    /* ── Desktop collapse (≥901px): shrink sidebar out of flow ── */
+    @media (min-width: 901px) {
+      .app.content.toc-collapsed .sidebar {
+        width: 0;
+        min-width: 0;
+        border-right-width: 0;
+        opacity: 0;
+        pointer-events: none;
+        /* transform stays at 0 — it's already in-flow at this breakpoint */
+      }
+    }
+
+    /* ══════════════════════════════
        RESPONSIVE
     ══════════════════════════════ */
     @media (max-width: 900px) {
@@ -605,6 +660,16 @@
       .sidebar { position: fixed; transform: translateX(-300px); }
       .app.content .sidebar { transform: translateX(0); }
       .content-view { left: 0 !important; }
+      /* Collapsed on mobile: force sidebar off-screen even in content view */
+      .app.content.toc-collapsed .sidebar {
+        transform: translateX(-300px) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+      /* Show dark overlay when TOC is open on mobile */
+      .app.content:not(.toc-collapsed) .toc-overlay { display: block; }
+      /* TOC open: sidebar is above overlay (z-index already 10) */
+      .app.content:not(.toc-collapsed) .sidebar { z-index: 20; }
     }
     @media (max-width: 540px) {
       .chapter-grid { grid-template-columns: 1fr; }
